@@ -1,6 +1,6 @@
 services:
   lawyers-and-clients:
-    image: "elvisea/lawyers-and-clients:latest"  # Valor fixo conforme solicitado
+    image: "elvisea/lawyers-and-clients:latest"  # Valor fixo 
     container_name: lawyers-and-clients
     restart: unless-stopped
     ports:

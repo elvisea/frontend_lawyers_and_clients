@@ -5,15 +5,15 @@ on:
     branches:
       - main
     paths:
-      - "Dockerfile"  # Incluindo Dockerfile diretamente
-      - "docker-compose.yaml"  # Incluindo docker-compose.yml diretamente
-      - "package.json"  # Incluindo package.json diretamente
-      - "package-lock.json"  # Incluindo package-lock.json diretamente
-      - "**/*"  # Qualquer mudança no repositório irá disparar a action
+      - "Dockerfile"  
+      - "docker-compose.yml" 
+      - "package.json"  
+      - "package-lock.json" 
+      - "**/*"
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: elvisea/lawyers-and-clients  # Valor fixo conforme solicitado
+  IMAGE_NAME: elvisea/lawyers-and-clients  # Valor fixo 
 
 jobs:
   build:
