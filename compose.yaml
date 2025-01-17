@@ -1,9 +1,8 @@
 services:
   lawyers-and-clients:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: lawyers-and-clients
+    image: "elvisea/lawyers-and-clients:latest"  # Valor fixo conforme solicitado
+    container_name: lawyers-and-clients
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:

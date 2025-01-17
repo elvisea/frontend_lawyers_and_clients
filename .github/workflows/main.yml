@@ -5,16 +5,15 @@ on:
     branches:
       - main
     paths:
-      - "Dockerfile" # Incluindo Dockerfile diretamente
-      - "docker-compose.yaml" # Incluindo docker-compose.yml diretamente
-      - "compose.yaml" # Incluindo docker-compose.yml diretamente
-      - "package.json" # Incluindo package.json
-      - "package-lock.json" # Incluindo package-lock.json
-      - "**/*" # Qualquer mudança no repositório irá disparar a action
+      - "Dockerfile"  # Incluindo Dockerfile diretamente
+      - "docker-compose.yaml"  # Incluindo docker-compose.yml diretamente
+      - "package.json"  # Incluindo package.json diretamente
+      - "package-lock.json"  # Incluindo package-lock.json diretamente
+      - "**/*"  # Qualquer mudança no repositório irá disparar a action
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+  IMAGE_NAME: elvisea/lawyers-and-clients  # Valor fixo conforme solicitado
 
 jobs:
   build:
@@ -36,12 +35,6 @@ jobs:
       - name: Build App
         run: npm run build
 
-      - name: Print Image Name for Debugging
-        run: |
-          echo "Docker Hub Username: ${{ secrets.DOCKER_HUB_USERNAME }}"
-          echo "GitHub Repository: ${{ github.repository }}"
-          echo "Docker Image Name: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}"
-
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -50,11 +43,12 @@ jobs:
 
       - name: Build Docker Image (sem cache)
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:latest .
+          echo "Building image: ${{ env.IMAGE_NAME }}:latest"
+          docker build -t ${{ env.IMAGE_NAME }}:latest .
 
       - name: Push Docker Image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:latest
+          docker push ${{ env.IMAGE_NAME }}:latest
 
   deploy:
     name: Deploy to Production
@@ -73,9 +67,15 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Transfer Docker Compose, Dockerfile
+      - name: Transfer Docker Compose, Dockerfile e .env
         run: |
-          scp -i ~/.ssh/deploy_key -P ${{ secrets.REMOTE_PORT }} docker-compose.yml Dockerfile ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
+          # Gere o arquivo .env para o servidor
+          echo "REGISTRY=${{ env.REGISTRY }}" > .env
+          echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> .env
+          echo "NODE_ENV=production" >> .env
+          
+          # Transfira os arquivos necessários para o servidor
+          scp -i ~/.ssh/deploy_key -P ${{ secrets.REMOTE_PORT }} docker-compose.yml Dockerfile .env ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
 
       - name: Deploy to Server via SSH
         run: |
