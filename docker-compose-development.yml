@@ -1,5 +1,8 @@
 services:
   lawyers-and-clients:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: "elvisea/lawyers-and-clients:latest"  # Valor fixo
     container_name: lawyers-and-clients
     restart: unless-stopped
