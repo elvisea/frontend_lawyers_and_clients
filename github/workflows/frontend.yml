@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - "frontend/**" # Ajuste o caminho se seu frontend estiver em uma pasta específica
-      - "Dockerfile"
-      - "docker-compose.yml"
-      - ".github/workflows/**"
-      - "package.json"
-      - "package-lock.json"
+      - "Dockerfile" # Incluindo Dockerfile diretamente
+      - "docker-compose.yaml" # Incluindo docker-compose.yml diretamente
+      - "compose.yaml" # Incluindo docker-compose.yml diretamente
+      - "package.json" # Incluindo package.json
+      - "package-lock.json" # Incluindo package-lock.json
+      - "**/*" # Qualquer mudança no repositório irá disparar a action
 
 env:
   REGISTRY: docker.io
