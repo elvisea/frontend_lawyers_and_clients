@@ -1,0 +1,13 @@
+services:
+  lawyers-and-clients:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lawyers-and-clients
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - .:/app
+    command: ["npm", "run", "dev"]
