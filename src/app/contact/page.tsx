@@ -2,6 +2,6 @@ import Contact from '@/components/sections/contact'
 
 export default function ContactPage() {
   return (
-    <Contact resource='(Clents and Lawyers)' />
+    <Contact resource='(Clients and Lawyers)' />
   )
 }
