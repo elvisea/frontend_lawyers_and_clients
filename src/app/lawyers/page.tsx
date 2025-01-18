@@ -9,7 +9,7 @@ import Princing from '@/components/sections/princing'
 export default function Lawyers() {
   return (
     <React.Fragment>
-      <Hero resource='Lawyers' href='/registration-lawyer' />
+      <Hero resource='Lawyers' href='/register-lawyer' />
       <Features />
       <Princing />
     </React.Fragment>
