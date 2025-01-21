@@ -1,7 +1,7 @@
-import Contact from '@/components/sections/contact'
+import ContactSession from '@/components/contact-session'
 
 export default function RegistrationLawyer() {
   return (
-    <Contact resource='(Lawyer)' />
+    <ContactSession resource='(Lawyer)' />
   )
 }

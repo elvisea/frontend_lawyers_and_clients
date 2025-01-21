@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+// Importando as fontes com variáveis
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  weight: "400", // Ajuste para o peso desejado (exemplo: 400, 600, 700)
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  weight: "400", // Ajuste para o peso desejado para monoespaçado
 });
 
 export const metadata: Metadata = {
@@ -24,7 +27,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content={metadata.description ?? undefined} />
+      </head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} font-sans bg-gray-50 text-gray-900`}
+      >
         {children}
       </body>
     </html>

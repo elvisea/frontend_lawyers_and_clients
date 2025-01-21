@@ -13,7 +13,7 @@ type ContactProps = {
   resource: string;
 }
 
-export default function Contact({ resource }: ContactProps) {
+export default function ContactSession({ resource }: ContactProps) {
   const [agreed, setAgreed] = useState(false)
 
   return (
