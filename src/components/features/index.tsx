@@ -1,23 +1,23 @@
-type Features = {
+type Feature = {
   name: string;
   description: string;
   icon: React.ElementType;
 }
 
 type Props = {
-  features: Features[]
+  features: Feature[];
 }
 
-export const ListFeatures = (props: Props) => {
+export const Features = (props: Props) => {
   return props.features.map((feature) => (
-    <div key={feature.name} className="relative pl-16">
-      <dt className="text-base/7 font-semibold text-gray-900">
-        <div className="absolute left-0 top-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600">
-          <feature.icon aria-hidden="true" className="size-6 text-white" />
-        </div>
-        {feature.name}
-      </dt>
-      <dd className="mt-2 text-base/7 text-gray-600">{feature.description}</dd>
+    <div key={feature.name} className="flex flex-col bg-white shadow-lg rounded-xl p-6 transform transition-all hover:scale-105 hover:shadow-xl hover:border-indigo-500 border-2 border-transparent">
+      <div className="flex items-center gap-x-4 text-lg font-semibold text-gray-900">
+        <feature.icon className="h-8 w-8 text-indigo-600" aria-hidden="true" />
+        <span>{feature.name}</span>
+      </div>
+      <div className="mt-4 text-base text-gray-600">
+        <p>{feature.description}</p>
+      </div>
     </div>
-  ))
+  ));
 }

@@ -2,36 +2,40 @@
 
 import React from 'react'
 
-import Hero from '@/components/sections/hero'
-import Features from '@/components/sections/features'
-import Benefits from '@/components/sections/benefits'
-
-import { texts } from './constants/texts'
+import { content } from './constants/content'
 import { features } from './constants'
 import { benefits } from './constants/benefits'
+
+import HeroSession from '@/components/hero-session'
+import FeaturesSession from '@/components/features-session'
+import BenefitsSession from '@/components/benefits-session'
 
 export default function Clients() {
   return (
     <React.Fragment>
-      <Hero
-        resource='Clients'
+
+      <HeroSession
+        resource={content.hero.resource}
         href='/register-client'
-        title='Resolva seus problemas jurídicos com facilidade!'
-        description='Descreva sua situação, envie documentos e conecte-se com os melhores profissionais.'
-        button='Descreva sua Situação Agora'
+        title={content.hero.title}
+        description={content.hero.description}
+        button={content.hero.button}
       />
-      <Features
-        miniTitle='Simplicidade e Conexão'
-        title='Como Funciona a Plataforma'
-        description='Com apenas alguns passos, você pode descrever sua situação, enviar documentos e ser conectado rapidamente a um advogado experiente que pode ajudar você.'
+
+      <FeaturesSession
+        miniTitle={content.features.miniTitle}
+        title={content.features.title}
+        description={content.features.description}
         features={features}
       />
-      <Benefits
-        miniTitle={texts.benefits.miniTitle}
-        title={texts.benefits.title}
-        description={texts.benefits.description}
+
+      <BenefitsSession
+        miniTitle={content.benefits.miniTitle}
+        title={content.benefits.title}
+        description={content.benefits.description}
         benefits={benefits}
       />
+
     </React.Fragment>
   )
 }
