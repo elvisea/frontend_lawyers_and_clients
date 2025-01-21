@@ -1,7 +1,7 @@
-import Contact from '@/components/sections/contact'
+import ContactSession from '@/components/contact-session'
 
 export default function ContactPage() {
   return (
-    <Contact resource='(Clients and Lawyers)' />
+    <ContactSession resource='(Clients and Lawyers)' />
   )
 }
