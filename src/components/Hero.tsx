@@ -1,35 +1,41 @@
 import { Button } from "./ui/button";
 import { buttonVariants } from "./ui/button";
-import { HeroCards } from "./HeroCards";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
-export const Hero = () => {
+import { HeroCards } from "./HeroCards";
+
+type HeroProps = {
+  title: string[];
+  description: string;
+  button: string;
+}
+
+export const Hero = ({ description, title, button }: HeroProps) => {
   return (
     <section className="container grid lg:grid-cols-2 place-items-center py-20 md:py-32 gap-10">
       <div className="text-center lg:text-start space-y-6">
         <main className="text-5xl md:text-6xl font-bold">
           <h1 className="inline">
             <span className="inline bg-gradient-to-r from-[#F596D3]  to-[#D247BF] text-transparent bg-clip-text">
-              Shadcn
+              {title[0]}
             </span>{" "}
-            landing page
+            {title[1]}
           </h1>{" "}
-          for{" "}
+          {title[2]}{" "}
           <h2 className="inline">
             <span className="inline bg-gradient-to-r from-[#61DAFB] via-[#1fc0f1] to-[#03a3d7] text-transparent bg-clip-text">
-              React
+              {title[3]}
             </span>{" "}
-            developers
+            {title[4]}
           </h2>
         </main>
 
         <p className="text-xl text-muted-foreground md:w-10/12 mx-auto lg:mx-0">
-          Build your React landing page effortlessly with the required sections
-          to your project.
+          {description}
         </p>
 
         <div className="space-y-4 md:space-y-0 md:space-x-4">
-          <Button className="w-full md:w-1/3">Get Started</Button>
+          <Button className="w-full md:w-1/3">{button}</Button>
 
           <a
             rel="noreferrer noopener"
