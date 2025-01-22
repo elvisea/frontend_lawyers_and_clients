@@ -20,11 +20,17 @@ import { Pricing } from "@/components/Pricing";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Team } from "@/components/Team";
 
-export default function Home() {
+import { content } from "@/app/constants/content";
+
+export default function Lawyers() {
   return (
     <React.Fragment>
       <Navbar />
-      <Hero />
+      <Hero
+        title={content.lawyers.hero.title}
+        description={content.lawyers.hero.description}
+        button={content.lawyers.hero.button}
+      />
       <Sponsors />
       <About />
       <HowItWorks />
