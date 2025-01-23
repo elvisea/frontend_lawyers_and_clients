@@ -1,7 +1,7 @@
 'use client'
 
 import { FormEvent, useState, useTransition } from 'react'
-
+import { useRouter } from 'next/compat/router'
 import { Loader2 } from 'lucide-react'
 
 import Link from 'next/link'
@@ -16,69 +16,109 @@ import { Separator } from '@/components/ui/separator'
 
 import gitHubIcon from '@/assets/github-icon.svg'
 
-import { State } from './types'
-import { initialState } from './constants'
+import { Form, Keys, State } from './types'
+import { initialForm, initialState } from './constants'
 import { createAccount } from './actions/create-account'
 
 export default function SignUpPage() {
-  const [state, setState] = useState<State>(initialState)
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
-  console.log(state);
+  const [data, setData] = useState<Form>(initialForm);
+  console.log("Form", data)
+
+  const [state, setState] = useState<State>(initialState)
+  console.log("State:", state)
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setData((prevState) => ({ ...prevState, [name]: value }))
+  }
 
   const handleOnSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const form = event.currentTarget
-    const data = new FormData(form)
+    const formData = new FormData(form)
 
     startTransition(async () => {
-      const response = await createAccount(data, Type.CLIENT)
-      setState(response);
+      const result = await createAccount(formData, Type.CLIENT)
+
+      setState(result)
+
+      if (result.success) {
+        router?.push('/auth/confirm-token', {
+          query: { email: data.email },
+        })
+      }
     })
   }
 
+  const getError = (field: keyof Keys) => state.errors?.[field] ? state.errors[field][0] : null
+
   return (
     <form onSubmit={handleOnSubmit} action="" className="space-y-4">
+
+      {/* Nome */}
       <div className="space-y-1">
         <Label htmlFor="name">Name</Label>
-        <Input name="name" id="name" />
+        <Input
+          name="name"
+          id="name"
+          value={data.name}
+          onChange={handleInputChange}
+        />
 
-        {state.errors?.name && (
+        {getError('name') && (
           <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {state.errors.name[0]}
+            {getError('name')}
           </p>
         )}
       </div>
 
+      {/* E-mail */}
       <div className="space-y-1">
         <Label htmlFor="email">E-mail</Label>
-        <Input name="email" type="email" id="email" />
+        <Input
+          name="email"
+          type="email"
+          id="email"
+          value={data.email}
+          onChange={handleInputChange}
+        />
 
-        {state.errors?.email && (
+        {getError('email') && (
           <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {state.errors.email[0]}
+            {getError('email')}
           </p>
         )}
       </div>
 
+      {/* Senha */}
       <div className="space-y-1">
         <Label htmlFor="password">Password</Label>
-        <Input name="password" type="password" id="password" />
+        <Input
+          name="password"
+          type="password"
+          id="password"
+          value={data.password}
+          onChange={handleInputChange}
+        />
 
-        {state.errors?.password && (
+        {getError('password') && (
           <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {state.errors.password[0]}
+            {getError('password')}
           </p>
         )}
       </div>
 
+      {/* Confirmação de Senha */}
       <div className="space-y-1">
         <Label htmlFor="confirmation">Confirm your password</Label>
-        <Input name="confirmation" type="password" id="confirmation" />
+        <Input name="confirmation" type="password" id="confirmation" value={data.confirmation} onChange={handleInputChange} />
 
-        {state.errors?.confirmation && (
+        {getError('confirmation') && (
           <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {state.errors.confirmation[0]}
+            {getError('confirmation')}
           </p>
         )}
       </div>

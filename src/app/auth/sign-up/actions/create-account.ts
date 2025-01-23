@@ -19,18 +19,16 @@ export async function createAccount(data: FormData, type: Type): Promise<State> 
       message: null,
       errors,
       errorCode: null,
-      response: null
     }
   }
 
   try {
-    const response = await signUp({ ...result.data, type })
+    await signUp({ ...result.data, type })
     return {
       success: true,
       message: null,
       errors: null,
       errorCode: null,
-      response
     }
 
   } catch (error) {
@@ -41,7 +39,6 @@ export async function createAccount(data: FormData, type: Type): Promise<State> 
         errors: null,
         errorCode: error.errorCode,
         message: error.message,
-        response: null
       }
     }
 
@@ -50,7 +47,6 @@ export async function createAccount(data: FormData, type: Type): Promise<State> 
       message: ErrorCode.UNKNOWN_ERROR,
       errors: null,
       errorCode: ErrorCode.UNKNOWN_ERROR,
-      response: null
     }
   }
 }

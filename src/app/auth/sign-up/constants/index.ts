@@ -6,7 +6,13 @@ export const initialState: State = {
   success: false,
   errors: null,
   errorCode: null,
-  response: null
+}
+
+export const initialForm = {
+  name: '',
+  email: '',
+  password: '',
+  confirmation: '',
 }
 
 export const schema = z
