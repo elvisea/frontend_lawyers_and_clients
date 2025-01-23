@@ -3,39 +3,42 @@ import { buttonVariants } from "./ui/button";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 import { HeroCards } from "./HeroCards";
+import { hero, HeroContent } from "@/app/constants/hero";
 
-type HeroProps = {
-  title: string[];
-  description: string;
-  button: string;
+export type Keys = keyof HeroContent;
+
+type Props = {
+  resource: Keys
 }
 
-export const Hero = ({ description, title, button }: HeroProps) => {
+export const Hero = ({ resource }: Props) => {
+  const item = hero[resource]
+
   return (
     <section className="container grid lg:grid-cols-2 place-items-center py-20 md:py-32 gap-10">
       <div className="text-center lg:text-start space-y-6">
         <main className="text-5xl md:text-6xl font-bold">
           <h1 className="inline">
             <span className="inline bg-gradient-to-r from-[#F596D3]  to-[#D247BF] text-transparent bg-clip-text">
-              {title[0]}
+              {item.title[0]}
             </span>{" "}
-            {title[1]}
+            {item.title[1]}
           </h1>{" "}
-          {title[2]}{" "}
+          {item.title[2]}{" "}
           <h2 className="inline">
             <span className="inline bg-gradient-to-r from-[#61DAFB] via-[#1fc0f1] to-[#03a3d7] text-transparent bg-clip-text">
-              {title[3]}
+              {item.title[3]}
             </span>{" "}
-            {title[4]}
+            {item.title[4]}
           </h2>
         </main>
 
         <p className="text-xl text-muted-foreground md:w-10/12 mx-auto lg:mx-0">
-          {description}
+          {item.description}
         </p>
 
         <div className="space-y-4 md:space-y-0 md:space-x-4">
-          <Button className="w-full md:w-1/3">{button}</Button>
+          <Button className="w-full md:w-1/3">{item.button}</Button>
 
           <a
             rel="noreferrer noopener"
