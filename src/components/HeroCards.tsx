@@ -1,6 +1,12 @@
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import Image from "next/image";
+
 import { Badge } from "./ui/badge";
+import { Check, Linkedin } from "lucide-react";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+
 import { Button, buttonVariants } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -9,10 +15,8 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { Check, Linkedin } from "lucide-react";
+
 import { LightBulbIcon } from "./Icons";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import Image from "next/image";
 
 export const HeroCards = () => {
   return (
@@ -55,10 +59,7 @@ export const HeroCards = () => {
         </CardHeader>
 
         <CardContent className="text-center pb-2">
-          <p>
-            I really enjoy transforming ideas into functional software that
-            exceeds expectations
-          </p>
+          <p>Gosto muito de transformar ideias em software funcional que supere as expectativas</p>
         </CardContent>
 
         <CardFooter>
