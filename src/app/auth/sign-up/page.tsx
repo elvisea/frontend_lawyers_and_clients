@@ -1,11 +1,11 @@
 'use client'
 
 import { FormEvent, useState, useTransition } from 'react'
-import { useRouter } from 'next/compat/router'
 import { Loader2 } from 'lucide-react'
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 import { Type } from '@/enums/type'
 
@@ -25,10 +25,8 @@ export default function SignUpPage() {
   const [isPending, startTransition] = useTransition()
 
   const [data, setData] = useState<Form>(initialForm);
-  console.log("Form", data)
 
   const [state, setState] = useState<State>(initialState)
-  console.log("State:", state)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -46,9 +44,7 @@ export default function SignUpPage() {
       setState(result)
 
       if (result.success) {
-        router?.push('/auth/confirm-token', {
-          query: { email: data.email },
-        })
+        router.push(`/auth/confirm-token?email=${data.email}`)
       }
     })
   }
