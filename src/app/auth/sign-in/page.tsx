@@ -88,6 +88,7 @@ export default function SignInPage() {
         Sign in with GitHub
       </Button>
 
+      {/* Temporario */}
       {errorCode && <ErrorMessage message={`Código: ${errorCode}`} className='text-center mt-2' />}
     </form>
   )
