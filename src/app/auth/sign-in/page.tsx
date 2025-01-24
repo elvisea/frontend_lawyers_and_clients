@@ -1,61 +1,65 @@
 'use client'
 
-import { FormEvent, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 
 import Link from 'next/link'
 import Image from 'next/image'
 
 import { Loader2 } from 'lucide-react'
 
-import { State } from './types'
-import { initialState } from './constants'
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
 
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
+import { Form } from './types'
+import { schema } from './constants'
 
 import gitHubIcon from '@/assets/github-icon.svg'
 
-export default function SignInPage() {
-  const [isPending] = useTransition()
-  const [state] = useState<State>(initialState)
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { ErrorMessage } from '@/components/ErrorMessage'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 
-  const handleOnSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    console.log("handleOnSubmit")
+import { AppError } from '@/errors/app-error'
+import { ErrorCode } from '@/enums/error-code'
+
+export default function SignInPage() {
+  const [isPending, startTransition] = useTransition()
+  const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
+
+  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver<Form>(schema) })
+
+  const onSubmit = async ({ email, password }: Form) => {
+    startTransition(async () => {
+      try {
+        console.log('irá realizar a chamada para:', { email, password })
+
+      } catch (error) {
+        if (error instanceof AppError) {
+          setErrorCode(error.errorCode)
+        } else {
+          setErrorCode(ErrorCode.UNKNOWN_ERROR)
+        }
+      }
+    })
   }
 
   return (
-    <form onSubmit={handleOnSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
-      <div className="space-y-1">
+      <div className="space-y-2">
         <Label htmlFor="email">E-mail</Label>
-        <Input name="email" type="email" id="email" />
+        <Input {...register("email")} name="email" type="email" id="email" />
 
-        {state.errors?.email && (
-          <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {state.errors.email[0]}
-          </p>
-        )}
+        {errors.email?.message && <ErrorMessage message={errors.email.message} />}
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input name="password" type="password" id="password" />
+        <Input {...register("password")} name="password" type="password" id="password" />
 
-        {state.errors?.password && (
-          <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {state.errors.password[0]}
-          </p>
-        )}
-
-        <Link
-          href="/auth/forgot-password"
-          className="text-xs font-medium text-foreground hover:underline"
-        >
-          Forgot your password?
-        </Link>
+        {errors.password?.message && <ErrorMessage message={errors.password.message} />}
       </div>
 
       <Button className="w-full" type="submit" disabled={isPending}>
@@ -70,12 +74,22 @@ export default function SignInPage() {
         <Link href="/auth/sign-up">Create new account</Link>
       </Button>
 
+      <Link
+        href="/auth/forgot-password"
+        className="text-xs font-medium text-foreground hover:underline text-center mt-8 sm:mt-6 md:mt-4 block"
+      >
+        Forgot your password?
+      </Link>
+
       <Separator />
 
       <Button type="submit" className="w-full" variant="outline">
         <Image src={gitHubIcon} alt="" className="mr-2 size-4 dark:invert" />
         Sign in with GitHub
       </Button>
-    </form>
+
+      {/* Temporario */}
+      {errorCode && <ErrorMessage message={`Código: ${errorCode}`} className='text-center mt-2' />}
+    </form >
   )
 }

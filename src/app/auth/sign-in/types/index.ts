@@ -1,5 +1,4 @@
-export type State = {
-  success: boolean
-  message: string | null
-  errors: Record<string, string[]> | null
-}
+import { schema } from "../constants";
+
+export type Form = Record<keyof typeof schema.fields, string>;
+

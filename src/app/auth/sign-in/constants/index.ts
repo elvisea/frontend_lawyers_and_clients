@@ -1,15 +1,12 @@
-import { z } from 'zod'
-import { State } from "../types";
+import * as yup from 'yup';
 
-export const initialState: State = {
-  success: false,
-  message: null,
-  errors: null,
-}
-
-export const schema = z.object({
-  email: z
+export const schema = yup.object({
+  email: yup
     .string()
-    .email({ message: 'Please, provide a valid e-mail address.' }),
-  password: z.string().min(1, { message: 'Please, provide your password.' }),
-})
+    .email('Please, provide a valid e-mail address.')
+    .required('E-mail is required.'),
+  password: yup
+    .string()
+    .min(1, 'Please, provide your password.')
+    .required('Password is required.'),
+});
