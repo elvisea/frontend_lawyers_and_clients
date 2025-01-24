@@ -84,12 +84,11 @@ export default function SignInPage() {
       <Separator />
 
       <Button type="submit" className="w-full" variant="outline">
-        <Image src={gitHubIcon} alt="" className="mr-2 size-4 dark:invert" />
+        <Image src={gitHubIcon} alt="GitHub" className="mr-2 size-4 dark:invert" />
         Sign in with GitHub
       </Button>
 
-      {/* Temporario */}
       {errorCode && <ErrorMessage message={`Código: ${errorCode}`} className='text-center mt-2' />}
-    </form >
+    </form>
   )
 }
