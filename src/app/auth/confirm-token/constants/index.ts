@@ -1,18 +1,10 @@
-import { z } from 'zod'
-import { State } from "../types";
+import * as yup from "yup";
 
-export const initialState: State = {
-  message: null,
-  success: false,
-  errors: null,
-  errorCode: null,
-}
-
-export const schema = z
-  .object({
-    token: z
-      .string()
-      .regex(/^\d+$/, { message: 'Code should contain only numbers.' })
-      .min(6, { message: 'Code should have at least 6 characters.' })
-      .max(6, { message: 'Code should have at most 6 characters.' }),
-  })
+export const schema = yup.object({
+  token: yup
+    .string()
+    .required('Please, provide your token.')
+    .min(6, 'Code should have at least 6 characters.')
+    .max(6, 'Code should have at most 6 characters.')
+    .matches(/^\d+$/, 'Code should contain only numbers.')
+});
