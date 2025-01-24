@@ -42,7 +42,7 @@ export default function ConfirmTokenPage() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-1">
+      <div className="space-y-2">
         <Label htmlFor="token">Code</Label>
         <Input {...register("token")} id="token" type="text" maxLength={6} />
 
