@@ -11,6 +11,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { ErrorMessage } from '@/components/ErrorMessage'
 
 import { Form } from './types'
 import { schema } from './constants'
@@ -42,15 +43,10 @@ export default function ConfirmTokenPage() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1">
-
         <Label htmlFor="token">Code</Label>
         <Input {...register("token")} id="token" type="text" maxLength={6} />
 
-        {errors.token?.message && (
-          <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {errors.token.message}
-          </p>
-        )}
+        {errors.token?.message && <ErrorMessage message={errors.token.message} />}
       </div>
 
       <Button className="w-full" type="submit" disabled={isPending}>
@@ -66,11 +62,7 @@ export default function ConfirmTokenPage() {
       </Button>
 
       {/* Temporario */}
-      {errorCode && (
-        <p className="text-xs font-medium text-red-500 dark:text-red-400 text-center mt-2">
-          {`Código: ${errorCode}`}
-        </p>
-      )}
+      {errorCode && <ErrorMessage message={`Código: ${errorCode}`} className='text-center mt-2' />}
 
     </form>
   )
