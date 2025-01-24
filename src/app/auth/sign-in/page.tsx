@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Form } from './types'
 import { schema } from './constants'
 
+import { signIn } from '@/http/sign-in'
 import gitHubIcon from '@/assets/github-icon.svg'
 
 import { Label } from '@/components/ui/label'
@@ -32,8 +33,11 @@ export default function SignInPage() {
 
   const onSubmit = async ({ email, password }: Form) => {
     startTransition(async () => {
+
       try {
-        console.log('irá realizar a chamada para:', { email, password })
+        await signIn({ email, password })
+        setErrorCode(null)
+        console.log('Será redirecionado para área autenticada')
 
       } catch (error) {
         if (error instanceof AppError) {
