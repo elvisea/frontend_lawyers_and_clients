@@ -1,132 +1,94 @@
 'use client'
 
-import { FormEvent, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { Loader2 } from 'lucide-react'
 
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+
 import { Type } from '@/enums/type'
+import { signUp } from '@/http/sign-up'
+import { AppError } from '@/errors/app-error'
+import { ErrorCode } from '@/enums/error-code'
 
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { ErrorMessage } from '@/components/ErrorMessage'
 
 import gitHubIcon from '@/assets/github-icon.svg'
 
-import { Form, Keys, State } from './types'
-import { initialForm, initialState } from './constants'
-import { createAccount } from './actions/create-account'
+import { Form } from './types'
+import { schema } from './constants'
 
 export default function SignUpPage() {
   const router = useRouter()
+
   const [isPending, startTransition] = useTransition()
+  const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
 
-  const [data, setData] = useState<Form>(initialForm);
+  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver<Form>(schema) })
 
-  const [state, setState] = useState<State>(initialState)
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setData((prevState) => ({ ...prevState, [name]: value }))
-  }
-
-  const handleOnSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const form = event.currentTarget
-    const formData = new FormData(form)
-
+  const onSubmit = async ({ email, name, password }: Form) => {
     startTransition(async () => {
-      const result = await createAccount(formData, Type.CLIENT)
+      const type = Type.CLIENT
 
-      setState(result)
+      try {
+        await signUp({ email, name, password, type })
+        router.push(`/auth/confirm-token?email=${email}`)
 
-      if (result.success) {
-        router.push(`/auth/confirm-token?email=${data.email}`)
+      } catch (error) {
+        if (error instanceof AppError) {
+          setErrorCode(error.errorCode)
+        } else {
+          setErrorCode(ErrorCode.UNKNOWN_ERROR)
+        }
       }
     })
   }
 
-  const getError = (field: keyof Keys) => state.errors?.[field] ? state.errors[field][0] : null
-
   return (
-    <form onSubmit={handleOnSubmit} action="" className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
-      {/* Nome */}
       <div className="space-y-1">
         <Label htmlFor="name">Name</Label>
-        <Input
-          name="name"
-          id="name"
-          value={data.name}
-          onChange={handleInputChange}
-        />
+        <Input {...register("name")} id="name" type="text" />
 
-        {getError('name') && (
-          <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {getError('name')}
-          </p>
-        )}
+        {errors.name?.message && <ErrorMessage message={errors.name.message} />}
       </div>
 
-      {/* E-mail */}
       <div className="space-y-1">
         <Label htmlFor="email">E-mail</Label>
-        <Input
-          name="email"
-          type="email"
-          id="email"
-          value={data.email}
-          onChange={handleInputChange}
-        />
+        <Input {...register("email")} type="email" id="email" />
 
-        {getError('email') && (
-          <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {getError('email')}
-          </p>
-        )}
+        {errors.email?.message && <ErrorMessage message={errors.email.message} />}
       </div>
 
-      {/* Senha */}
       <div className="space-y-1">
         <Label htmlFor="password">Password</Label>
-        <Input
-          name="password"
-          type="password"
-          id="password"
-          value={data.password}
-          onChange={handleInputChange}
-        />
+        <Input {...register("password")} type="password" id="password" />
 
-        {getError('password') && (
-          <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {getError('password')}
-          </p>
-        )}
+        {errors.password?.message && <ErrorMessage message={errors.password.message} />}
       </div>
 
-      {/* Confirmação de Senha */}
       <div className="space-y-1">
         <Label htmlFor="confirmation">Confirm your password</Label>
-        <Input name="confirmation" type="password" id="confirmation" value={data.confirmation} onChange={handleInputChange} />
+        <Input  {...register("confirmation")} type="password" id="confirmation" />
 
-        {getError('confirmation') && (
-          <p className="text-xs font-medium text-red-500 dark:text-red-400">
-            {getError('confirmation')}
-          </p>
-        )}
+        {errors.confirmation?.message && <ErrorMessage message={errors.confirmation.message} />}
       </div>
 
       <Button className="w-full" type="submit" disabled={isPending}>
-
         {isPending ? (
           <Loader2 className="size-4 animate-spin" />
         ) : (
           'Create account'
         )}
-
       </Button>
 
       <Button className="w-full" variant="link" size="sm" asChild disabled={isPending}>
@@ -136,7 +98,6 @@ export default function SignUpPage() {
       <Separator />
 
       <Button type="submit" className="w-full" variant="outline" disabled={isPending}>
-
         {isPending ? (
           <Loader2 className="size-4 animate-spin" />
         ) : (
@@ -146,6 +107,10 @@ export default function SignUpPage() {
           </>
         )}
       </Button>
+
+      {/* Temporario */}
+      {errorCode && <ErrorMessage message={`Código: ${errorCode}`} className='text-center mt-2' />}
+
     </form>
   )
 }
