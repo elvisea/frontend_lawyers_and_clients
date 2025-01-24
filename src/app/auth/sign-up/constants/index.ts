@@ -1,36 +1,24 @@
-import { z } from 'zod'
-import { State } from "../types";
+import * as yup from 'yup';
 
-export const initialState: State = {
-  message: null,
-  success: false,
-  errors: null,
-  errorCode: null,
-}
+export const schema = yup.object({
+  name: yup
+    .string()
+    .required('Please, enter your full name.')
+    .test('full-name', 'Please, enter your full name', (value) => value?.split(' ').length > 1),
 
-export const initialForm = {
-  name: '',
-  email: '',
-  password: '',
-  confirmation: '',
-}
+  email: yup
+    .string()
+    .email('Please, provide a valid e-mail address.')
+    .required('Please, provide your email address.'),
 
-export const schema = z
-  .object({
-    name: z.string().refine((value) => value.split(' ').length > 1, {
-      message: 'Please, enter your full name',
-    }),
-    email: z
-      .string()
-      .email({ message: 'Please, provide a valid e-mail address.' }),
-    password: z
-      .string()
-      .min(6, { message: 'Password should have at least 6 characters.' }),
-    confirmation: z
-      .string()
-      .min(6, { message: 'Password should have at least 6 characters.' }),
-  })
-  .refine((data) => data.password === data.confirmation, {
-    message: 'Password confirmation does not match.',
-    path: ['confirmation'],
-  })
+  password: yup
+    .string()
+    .min(6, 'Password should have at least 6 characters.')
+    .required('Please, enter your password.'),
+
+  confirmation: yup
+    .string()
+    .min(6, 'Password should have at least 6 characters.')
+    .required('Please, confirm your password.')
+    .oneOf([yup.ref('password')], 'Password confirmation does not match.')
+});
