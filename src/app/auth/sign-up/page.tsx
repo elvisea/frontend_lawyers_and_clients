@@ -10,8 +10,8 @@ import { useRouter } from 'next/navigation'
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
-import { Type } from '@/enums/type'
-import { signUp } from '@/http/sign-up'
+import { UserType } from '@/enums/type'
+import { signUp } from '@/http/auth'
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
 
@@ -36,7 +36,7 @@ export default function SignUpPage() {
 
   const onSubmit = async ({ email, name, password }: Form) => {
     startTransition(async () => {
-      const type = Type.CLIENT
+      const type = UserType.CLIENT
 
       try {
         await signUp({ email, name, password, type })

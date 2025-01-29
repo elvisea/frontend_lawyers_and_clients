@@ -1,11 +1,14 @@
 import { AppError } from '@/errors/app-error'
-import { validateToken as validateTokenApi } from '@/http/validate-token'
+import { validateToken as validateTokenApi } from '@/http/auth'
 
 interface ValidateTokenResponse {
-  status: number;
+  status: number
 }
 
-export const validateToken = async (token: string, email: string): Promise<ValidateTokenResponse> => {
+export const validateToken = async (
+  token: string,
+  email: string
+): Promise<ValidateTokenResponse> => {
   try {
     const response = await validateTokenApi({ token, email })
     return response
