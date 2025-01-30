@@ -8,3 +8,10 @@ services:
     environment:
       - NODE_ENV=production
     command: ["npm", "run", "start"]
+    networks:
+      - lawyers_and_clients_network  # Nome da rede que foi criada (deve bater com os outros arquivos)
+
+networks:
+  lawyers_and_clients_network:
+    external: true  # Usando a rede externa criada
+    name: lawyers_and_clients_network  # O nome da rede deve ser o mesmo em todos os arquivos
