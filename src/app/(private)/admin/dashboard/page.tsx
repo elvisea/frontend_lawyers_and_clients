@@ -76,7 +76,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="flex items-center justify-center w-full h-full">
-      <h1 className="text-xl font-semibold">Dashboard do Administrador</h1>
+      <h1 className="text-xl font-semibold">ADMIN DASHBOARD</h1>
     </div>
   )
 }
