@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import "../../../../src/app/index.css";
+import "@/app/index.css";
 
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
@@ -20,14 +20,14 @@ import { Pricing } from "@/components/Pricing";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Team } from "@/components/Team";
 
-export default function Clients() {
+export default function Lawyers() {
   return (
     <React.Fragment>
       <Navbar />
-      <Hero resource="clients" />
+      <Hero resource="lawyers" />
       <Sponsors />
       <About />
-      <HowItWorks resource="clients" />
+      <HowItWorks resource="lawyers" />
       <Features />
       <Services />
       <Cta />

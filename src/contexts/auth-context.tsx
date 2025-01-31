@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import api from '@/http/api'
-import { USER_TYPE_ROUTES } from '@/constants/routes'
+import { routes } from '@/constants/routes'
 import { UserType } from '@/enums/type'
 import { parseToken } from '@/utils/token'
 import { signIn } from '@/http/auth'
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser({ id: decoded.sub, type: decoded.type })
       console.log(`👤 [Auth] Estado do usuário atualizado → Tipo: ${decoded.type}`)
 
-      const redirectPath = USER_TYPE_ROUTES[decoded.type]
+      const redirectPath = routes[decoded.type].dashboard.href
       console.log(`⏩ [Auth] Redirecionando para: ${redirectPath}`)
       router.push(redirectPath)
     } catch (error) {
