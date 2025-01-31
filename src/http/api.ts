@@ -9,8 +9,7 @@ type PromiseType = {
 type APIInstanceProps = AxiosInstance & {};
 
 const api = axios.create({
-  // baseURL: "https://lawyers-and-clients-api.bytefulcode.tech", // URL do backend com o nome do serviço Docker
-  baseURL: "http://localhost:3334",
+  baseURL: "https://lawyers-and-clients-api.bytefulcode.tech", // URL do backend com o nome do serviço Docker
 }) as APIInstanceProps;
 
 let isRefreshing = false;
