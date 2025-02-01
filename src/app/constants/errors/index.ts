@@ -70,4 +70,24 @@ export const errors: Errors = {
     title: "INVALID_EMAIL_OR_PASSWORD_TITLE",
     description: "INVALID_EMAIL_OR_PASSWORD_DESCRIPTION"
   },
+
+  INVALID_DOCUMENT_TYPES: {
+    title: "INVALID_DOCUMENT_TYPES_TITLE",
+    description: "INVALID_DOCUMENT_TYPES_DESCRIPTION",
+  },
+
+  CASE_NOT_FOUND: {
+    title: "CASE_NOT_FOUND_TITLE",
+    description: "CASE_NOT_FOUND_DESCRIPTION",
+  },
+
+  CASE_NOT_OWNED: {
+    title: "CASE_NOT_OWNED_TITLE",
+    description: "CASE_NOT_OWNED_DESCRIPTION",
+  },
+
+  INVALID_FILE_SIZE: {
+    title: "INVALID_FILE_SIZE_TITLE",
+    description: "INVALID_FILE_SIZE_DESCRIPTION",
+  }
 };
