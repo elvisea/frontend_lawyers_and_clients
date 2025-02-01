@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { FileText, Clock, User, AlertCircle } from 'lucide-react'
@@ -22,7 +23,7 @@ interface CaseCardProps {
   data: Case
 }
 
-const statusMap = {
+export const statusMap = {
   OPEN: {
     label: 'Aguardando',
     color: 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20'
@@ -38,6 +39,12 @@ const statusMap = {
 } as const
 
 export function CaseCard({ data }: CaseCardProps) {
+  const router = useRouter()
+
+  const handleViewDetails = () => {
+    router.push(`/client/cases/${data.id}`)
+  }
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -88,6 +95,7 @@ export function CaseCard({ data }: CaseCardProps) {
           size="sm"
           variant="outline"
           className="text-primary border-primary/20 hover:bg-primary/10 hover:text-primary hover:border-primary"
+          onClick={handleViewDetails}
         >
           <FileText className="h-4 w-4 mr-2" />
           Ver Detalhes

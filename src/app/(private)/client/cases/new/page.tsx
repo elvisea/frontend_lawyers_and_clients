@@ -234,7 +234,7 @@ export default function NewCasePage() {
                       onChange={(e) =>
                         handleFileChange(index, e.target.files?.[0])
                       }
-                      className="cursor-pointer"
+                      className="cursor-pointer file:text-foreground dark:file:text-foreground text-foreground dark:text-foreground/70"
                     />
                     {errors.documents?.[index]?.file?.message && (
                       <ErrorMessage message={errors.documents[index].file?.message} />
