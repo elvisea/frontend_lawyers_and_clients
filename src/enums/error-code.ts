@@ -67,21 +67,65 @@ export enum ErrorCode {
    */
   EMAIL_ALREADY_EXISTS_VERIFIED = 'EMAIL_ALREADY_EXISTS_VERIFIED',
 
+  /**
+   * Código de erro para indicar que um telefone de estabelecimento já está cadastrado.
+   */
   PHONE_ESTABLISHMENT_ALREADY_EXISTS = 'PHONE_ESTABLISHMENT_ALREADY_EXISTS',
 
-  INVALID_EMAIL_OR_PASSWORD = 'INVALID_EMAIL_OR_PASSWORD'
+  /**
+   * Código de erro para indicar que o email ou senha fornecidos são inválidos.
+   */
+  INVALID_EMAIL_OR_PASSWORD = 'INVALID_EMAIL_OR_PASSWORD',
+
+  /**
+   * Código de erro para indicar que os tipos de documentos fornecidos são inválidos.
+   */
+  INVALID_DOCUMENT_TYPES = 'INVALID_DOCUMENT_TYPES',
+
+  /**
+   * Código de erro para indicar que o caso não foi encontrado.
+   */
+  CASE_NOT_FOUND = 'CASE_NOT_FOUND',
+
+  /**
+   * Código de erro para indicar que o usuário não é proprietário do caso.
+   */
+  CASE_NOT_OWNED = 'CASE_NOT_OWNED',
+
+  /**
+   * Código de erro para indicar que o tamanho do arquivo é inválido.
+   */
+  INVALID_FILE_SIZE = 'INVALID_FILE_SIZE',
 }
 
+/**
+ * Enumeração que representa os códigos de sucesso utilizados na aplicação.
+ */
 export enum SuccessCode {
+  /**
+   * Código de sucesso para indicar que a verificação de email foi concluída.
+   */
   EMAIL_VERIFICATION_SUCCESS = "EMAIL_VERIFICATION_SUCCESS",
+
+  /**
+   * Código de sucesso para indicar que a renovação da verificação de email foi concluída.
+   */
   EMAIL_VERIFICATION_RENEW_SUCCESS = "EMAIL_VERIFICATION_RENEW_SUCCESS",
+
+  /**
+   * Código de sucesso para indicar que a criação do estabelecimento foi concluída.
+   */
   ESTABLISHMENT_CREATION_SUCCESS = "ESTABLISHMENT_CREATION_SUCCESS",
+
+  /**
+   * Código de sucesso para indicar que a criação do serviço foi concluída.
+   */
   SERVICE_CREATION_SUCCESS = "SERVICE_CREATION_SUCCESS",
+
+  /**
+   * Código de sucesso para indicar que a criação do funcionário foi concluída.
+   */
   EMPLOYEE_CREATION_SUCCESS = "EMPLOYEE_CREATION_SUCCESS",
 }
 
-export enum Roles {
-  OWNER = "OWNER",
-  ADMIN = "ADMIN",
-  EMPLOYEE = "EMPLOYEE",
-}
+
