@@ -1,11 +1,24 @@
+'use client'
+
 import { Loader2 } from 'lucide-react'
 
-const Loading = () => {
+interface LoadingProps {
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const sizeMap = {
+  sm: 'h-6 w-6',
+  md: 'h-8 w-8',
+  lg: 'h-10 w-10',
+} as const
+
+export function Loading({ size = 'md' }: LoadingProps) {
+  console.log('📝 Loading Component')
+  console.log('├─ Size:', size)
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 z-50">
-      <Loader2 className="w-16 h-16 animate-spin text-black" />
+    <div className="flex items-center justify-center flex-1 h-full">
+      <Loader2 className={`animate-spin text-muted-foreground ${sizeMap[size]}`} />
     </div>
   )
 }
-
-export default Loading

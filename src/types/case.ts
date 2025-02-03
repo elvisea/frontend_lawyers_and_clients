@@ -92,3 +92,41 @@ export type DocumentUpload = {
   file: File
   type: string
 }
+
+type ClientProfile = {
+  id: string
+  cpf: string
+  rg: string
+  birthDate: Date
+  occupation: string
+  address: {
+    street: string
+    number: string
+    city: string
+    state: string
+    zipCode: string
+  }
+  phone: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+type ClientWithProfile = {
+  id: string
+  name: string
+  email: string
+  profile: ClientProfile | null
+}
+
+export type CaseFeatures = {
+  id: string
+  title: string
+  description: string
+  status: CaseStatus
+  price: number
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date
+  documents: CaseDocument[]
+  client: ClientWithProfile
+}
