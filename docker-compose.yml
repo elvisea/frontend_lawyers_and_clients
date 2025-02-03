@@ -1,7 +1,7 @@
 services:
   frontend_lawyers_and_clients:
-    image: "elvisea/lawyers-and-clients:latest"  # Valor fixo
-    container_name: lawyers-and-clients
+    image: ${REGISTRY}/${IMAGE_NAME}:latest
+    container_name: ${CONTAINER_NAME_APP}
     restart: unless-stopped
     ports:
       - "3000:3000"
