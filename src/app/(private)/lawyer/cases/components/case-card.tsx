@@ -18,21 +18,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
 import { Case } from '@/types/case'
-
-export const statusMap = {
-  OPEN: {
-    label: 'Aguardando',
-    color: 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20'
-  },
-  IN_PROGRESS: {
-    label: 'Em Andamento',
-    color: 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20'
-  },
-  CLOSED: {
-    label: 'Finalizado',
-    color: 'bg-green-500/10 text-green-500 hover:bg-green-500/20'
-  }
-} as const
+import { statusMap } from '@/app/(private)/client/cases/components/case-card'
 
 interface CaseCardProps {
   data: Case
@@ -40,13 +26,16 @@ interface CaseCardProps {
 
 export function CaseCard({ data }: CaseCardProps) {
   const router = useRouter()
+  const firstName = data.client.name.split(' ')[0]
+  const isAvailable = data.status === 'OPEN'
 
   const handleViewDetails = () => {
-    router.push(`/client/cases/${data.id}`)
+    if (!isAvailable) return
+    router.push(`/lawyer/cases/${data.id}`)
   }
 
   return (
-    <Card className="transition-colors hover:border-primary/50">
+    <Card className={`transition-colors ${!isAvailable ? 'opacity-60' : 'hover:border-primary/50'}`}>
       <CardHeader className="flex flex-col gap-3 pb-4">
         <div className="space-y-2.5">
           <CardTitle className="line-clamp-2 text-base">{data.title}</CardTitle>
@@ -65,19 +54,12 @@ export function CaseCard({ data }: CaseCardProps) {
       <CardContent className="flex-1 pb-4">
         <div className="space-y-4">
           <div className="flex flex-wrap gap-3">
-            {/* Status do Advogado */}
+            {/* Cliente */}
             <div className="flex items-center gap-2 text-sm">
               <User className="h-4 w-4 flex-shrink-0" />
-              {data.lawyer ? (
-                <span className="text-foreground line-clamp-1">
-                  {data.lawyer.name}
-                </span>
-              ) : (
-                <span className="text-muted-foreground flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                  <span>Aguardando advogado</span>
-                </span>
-              )}
+              <span className="text-foreground">
+                {firstName}
+              </span>
             </div>
 
             {/* Data */}
@@ -103,15 +85,27 @@ export function CaseCard({ data }: CaseCardProps) {
       </CardContent>
 
       <CardFooter className="pt-2">
-        <Button
-          size="sm"
-          variant="outline"
-          className="w-full text-primary border-primary/20 hover:bg-primary/10 hover:text-primary hover:border-primary"
-          onClick={handleViewDetails}
-        >
-          <FileText className="h-4 w-4 mr-2" />
-          Ver Detalhes
-        </Button>
+        {isAvailable ? (
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full text-primary border-primary/20 hover:bg-primary/10 hover:text-primary hover:border-primary"
+            onClick={handleViewDetails}
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Ver Detalhes
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full cursor-not-allowed"
+            disabled
+          >
+            <AlertCircle className="h-4 w-4 mr-2" />
+            Caso não disponível
+          </Button>
+        )}
       </CardFooter>
     </Card>
   )
