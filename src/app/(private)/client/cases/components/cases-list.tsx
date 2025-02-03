@@ -74,7 +74,7 @@ export function CasesList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center flex-1 h-full">
+      <div className="flex-1 flex items-center justify-center h-[calc(100vh-12rem)]">
         <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
       </div>
     )
@@ -82,11 +82,11 @@ export function CasesList() {
 
   if (cases.length === 0) {
     return (
-      <div className="flex items-center justify-center flex-1 h-full">
+      <div className="flex-1 flex items-center justify-center h-[calc(100vh-12rem)]">
         <div className="text-center">
-          <h3 className="text-sm font-semibold">Nenhum caso disponível</h3>
+          <h3 className="text-sm font-semibold">Nenhum caso encontrado</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            No momento não há casos disponíveis.
+            Você ainda não possui nenhum caso cadastrado.
           </p>
         </div>
       </div>
@@ -99,12 +99,10 @@ export function CasesList() {
         Total de casos: {total}
       </p>
 
-      <div className="flex justify-center flex-1">
-        <div className="space-y-4 w-full max-w-4xl">
-          {cases.map((item) => (
-            <CaseCard key={item.id} data={item} />
-          ))}
-        </div>
+      <div className="space-y-4">
+        {cases.map((item) => (
+          <CaseCard key={item.id} data={item} />
+        ))}
       </div>
 
       <div className="flex justify-center mt-6 pb-8">

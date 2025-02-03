@@ -89,12 +89,10 @@ export function CasesList() {
         Total de casos disponíveis: {total}
       </p>
 
-      <div className="flex justify-center flex-1">
-        <div className="space-y-4 w-full max-w-4xl">
-          {cases.map((item) => (
-            <CaseCard key={item.id} data={item} />
-          ))}
-        </div>
+      <div className="space-y-4">
+        {cases.map((item) => (
+          <CaseCard key={item.id} data={item} />
+        ))}
       </div>
 
       <div className="flex justify-center mt-6 pb-8">

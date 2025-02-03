@@ -1,13 +1,15 @@
 import { CasesList } from './components/cases-list'
 
-export default function LawyerCasesPage() {
+export default function CasesPage() {
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Casos Disponíveis</h1>
-      </div>
+    <div className="flex justify-center">
+      <div className="w-full max-w-4xl space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-semibold">Casos Disponíveis</h1>
+        </div>
 
-      <div className="flex-1">
+        {/* Lista */}
         <CasesList />
       </div>
     </div>
