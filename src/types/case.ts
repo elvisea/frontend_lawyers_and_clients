@@ -41,7 +41,18 @@ export type Lawyer = {
 
 export type CaseStatus = 'OPEN' | 'IN_PROGRESS' | 'CLOSED'
 
-export type Case = {
+export type Client = {
+  name: string
+}
+
+export type CaseDocument = {
+  id: string
+  name: string
+  type: string
+  url: string
+}
+
+export type CaseBase = {
   id: string
   title: string
   description: string
@@ -55,8 +66,16 @@ export type Case = {
   closedAt?: Date
   clientId: string
   lawyerId?: string
-  documents: Document[]
   lawyer?: Lawyer
+  client: Client
+}
+
+export type Case = CaseBase & {
+  documents: number
+}
+
+export type DetailedCase = CaseBase & {
+  documents: CaseDocument[]
 }
 
 export type CasesResponse = {

@@ -3,18 +3,25 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, use } from 'react'
 
-import { ArrowLeft, Clock, Edit, FileText, User } from 'lucide-react'
+import { ArrowLeft, Clock, Edit, FileText, User, Loader2 } from 'lucide-react'
 
 import { ptBR } from 'date-fns/locale'
 import { formatDistanceToNow } from 'date-fns'
 
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+import { statusMap } from '../components/case-card'
 
 import api from '@/http/api'
-import { Case } from '@/types/case'
-import { statusMap } from '../components/case-card'
+import { DetailedCase } from '@/types/case'
 
 interface CaseDetailsProps {
   params: Promise<{ id: string }>
@@ -22,7 +29,7 @@ interface CaseDetailsProps {
 
 export default function CaseDetails({ params }: CaseDetailsProps) {
   const router = useRouter()
-  const [caseData, setCaseData] = useState<Case | null>(null)
+  const [caseData, setCaseData] = useState<DetailedCase | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const { id } = use(params)
@@ -31,7 +38,11 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
     const fetchCase = async () => {
       try {
         setIsLoading(true)
-        const response = await api.get<Case>(`/cases/client/${id}`)
+        const response = await api.get<DetailedCase>(`/cases/client/${id}`)
+
+        // Delay artificial para suavizar a transição
+        await new Promise(resolve => setTimeout(resolve, 500))
+
         setCaseData(response.data)
       } catch (error) {
         console.error('Erro ao carregar caso:', error)
@@ -52,11 +63,24 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
   }
 
   if (isLoading) {
-    return <div>Carregando...</div> // TODO: Adicionar skeleton
+    return (
+      <div className="flex items-center justify-center flex-1 h-full">
+        <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
 
   if (!caseData) {
-    return <div>Caso não encontrado</div> // TODO: Adicionar componente de erro
+    return (
+      <div className="flex items-center justify-center flex-1 h-full">
+        <div className="text-center">
+          <h3 className="text-sm font-semibold">Caso não encontrado</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            O caso que você está procurando não existe ou foi removido.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -84,16 +108,14 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
         {/* Informações do Caso */}
         <Card>
           <CardHeader>
-            <div className="flex items-start justify-between gap-4">
-              <CardTitle className="line-clamp-1">{caseData.title}</CardTitle>
-              <div className="flex items-center justify-center min-w-[140px]">
-                <Badge
-                  variant="outline"
-                  className={`${statusMap[caseData.status].color} flex items-center justify-center w-full text-center`}
-                >
-                  {statusMap[caseData.status].label}
-                </Badge>
-              </div>
+            <div className="space-y-2.5">
+              <CardTitle className="line-clamp-2 text-base">{caseData.title}</CardTitle>
+              <Badge
+                variant="outline"
+                className={`${statusMap[caseData.status].color} flex items-center justify-center h-7 w-full max-w-[140px]`}
+              >
+                {statusMap[caseData.status].label}
+              </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">

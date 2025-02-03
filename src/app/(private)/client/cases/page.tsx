@@ -1,29 +1,27 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
+import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import { CasesList } from './components/cases-list'
 
 export default function ClientCasesPage() {
-  const router = useRouter()
-
-  const handleNewCase = () => {
-    router.push('/client/cases/new')
-  }
-
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Meus Casos</h1>
-        <Button onClick={handleNewCase}>
-          <Plus className="h-4 w-4 mr-2" />
-          Novo Caso
+        <Button asChild>
+          <Link href="/client/cases/new">
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Caso
+          </Link>
         </Button>
       </div>
 
-      <CasesList />
+      <div className="flex-1">
+        <CasesList />
+      </div>
     </div>
   )
 } 
