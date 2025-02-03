@@ -40,7 +40,7 @@ export default function SubscriptionPage() {
       try {
         setIsLoading(true)
         // Simula delay de rede
-        await new Promise(resolve => setTimeout(resolve, 750))
+        await new Promise(resolve => setTimeout(resolve, 500))
         setPlans(MOCK_PLANS)
       } catch (error) {
         console.error('Erro ao carregar planos:', error)

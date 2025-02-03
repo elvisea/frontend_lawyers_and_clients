@@ -59,7 +59,7 @@ export default function SubscriptionCheckout({ params }: CheckoutProps) {
 
       setIsProcessing(true)
       // Implementar integração com gateway de pagamento
-      await new Promise((resolve) => setTimeout(resolve, 2000)) // Simular processamento
+      await new Promise((resolve) => setTimeout(resolve, 500))
       router.push('/lawyer/subscription/success')
     } catch (error) {
       console.error('❌ Erro ao processar pagamento:', error)
