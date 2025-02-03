@@ -13,8 +13,8 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: elvisea/lawyers-and-clients  # Valor fixo 
-
+  IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
+  CONTAINER_NAME_APP: ${{ secrets.CONTAINER_NAME_APP }}
 jobs:
   build:
     name: Build Docker Image
@@ -72,6 +72,7 @@ jobs:
           # Gere o arquivo .env para o servidor
           echo "REGISTRY=${{ env.REGISTRY }}" > .env
           echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> .env
+          echo "CONTAINER_NAME_APP=${{ secrets.CONTAINER_NAME_APP }}" >> .env
           echo "NODE_ENV=production" >> .env
           
           # Transfira os arquivos necessários para o servidor
