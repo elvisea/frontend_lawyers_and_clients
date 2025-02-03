@@ -26,6 +26,7 @@ interface CaseCardProps {
 
 export function CaseCard({ data }: CaseCardProps) {
   const router = useRouter()
+
   const firstName = data.client.name.split(' ')[0]
   const isAvailable = data.status === 'OPEN'
 

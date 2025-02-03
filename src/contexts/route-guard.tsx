@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { RouteType, UserType } from '@/enums/type'
-import Loading from '@/components/loading'
+import { Loading } from '@/components/loading'
 import { useAuth } from '@/contexts/auth-context'
 
 type RouteGuardProps = {
