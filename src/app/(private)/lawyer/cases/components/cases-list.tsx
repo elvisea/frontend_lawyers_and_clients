@@ -18,8 +18,6 @@ import api from '@/http/api'
 import { Case, CasesResponse } from '@/types/case'
 
 import { CaseCard } from './case-card'
-import { AppError } from '@/errors/app-error'
-import { ErrorCode } from '@/enums/error-code'
 
 const ITEMS_PER_PAGE = 8
 
@@ -28,9 +26,6 @@ export function CasesList() {
   const [total, setTotal] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
-  const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
-
-  console.log('🚨 [CasesList] errorCode:', errorCode)
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE)
 
@@ -38,7 +33,7 @@ export function CasesList() {
     const fetchCases = async () => {
       try {
         setIsLoading(true)
-        const response = await api.get<CasesResponse>('/cases/client', {
+        const response = await api.get<CasesResponse>('/cases', {
           params: {
             page: currentPage,
             limit: ITEMS_PER_PAGE
@@ -51,11 +46,6 @@ export function CasesList() {
         setCases(response.data.cases)
         setTotal(response.data.total)
       } catch (error) {
-        if (error instanceof AppError) {
-          setErrorCode(error.errorCode)
-        } else {
-          setErrorCode(ErrorCode.UNKNOWN_ERROR)
-        }
         console.error('Erro ao carregar casos:', error)
       } finally {
         setIsLoading(false)
@@ -84,9 +74,9 @@ export function CasesList() {
     return (
       <div className="flex-1 flex items-center justify-center h-[calc(100vh-12rem)]">
         <div className="text-center">
-          <h3 className="text-sm font-semibold">Nenhum caso encontrado</h3>
+          <h3 className="text-sm font-semibold">Nenhum caso disponível</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Você ainda não possui nenhum caso cadastrado.
+            No momento não há casos disponíveis para aceitar.
           </p>
         </div>
       </div>
@@ -96,7 +86,7 @@ export function CasesList() {
   return (
     <div className="flex flex-col flex-1">
       <p className="text-sm text-muted-foreground mb-6">
-        Total de casos: {total}
+        Total de casos disponíveis: {total}
       </p>
 
       <div className="space-y-4">

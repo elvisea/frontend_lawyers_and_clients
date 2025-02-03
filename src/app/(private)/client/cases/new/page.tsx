@@ -125,150 +125,154 @@ export default function NewCasePage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleBack}
-          className="rounded-full"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-2xl font-semibold">Novo Caso</h1>
-      </div>
-
-      <form onSubmit={handleSubmit(handleCreateCase)} className="space-y-8">
-        {/* Informações Básicas */}
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Título do caso*</Label>
-            <Input
-              {...register('title')}
-              id="title"
-              type="text"
-              name="title"
-              placeholder="Digite um título descritivo"
-            />
-            {errors.title?.message && (
-              <ErrorMessage message={errors.title.message} />
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Descrição*</Label>
-            <Textarea
-              {...register('description')}
-              id="description"
-              name="description"
-              className="min-h-[120px]"
-              placeholder="Descreva os detalhes do seu caso"
-            />
-            {errors.description?.message && (
-              <ErrorMessage message={errors.description.message} />
-            )}
+    <div className="flex justify-center">
+      <div className="w-full max-w-4xl space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+              className="rounded-full"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-semibold">Novo Caso</h1>
           </div>
         </div>
 
-        {/* Documentos */}
-        <div className="space-y-6">
-          <div className="rounded-lg border bg-muted/40 p-4">
-            <h3 className="font-medium mb-2">Sobre os Documentos</h3>
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <p>
-                Os documentos são essenciais para dar suporte ao seu caso. Eles
-                servem como evidências que ajudam os advogados a entender melhor
-                sua situação e fortalecer seus argumentos.
-              </p>
-              <p>Exemplos de documentos úteis:</p>
-              <ul className="list-disc pl-4 space-y-1">
-                <li>Contratos e acordos relevantes</li>
-                <li>Registros de comunicação (e-mails, mensagens)</li>
-                <li>Comprovantes de pagamento</li>
-                <li>Fotos ou vídeos relacionados</li>
-                <li>Documentos pessoais quando necessário</li>
-              </ul>
-              <p className="text-primary font-medium">
-                Importante: Todos os documentos são tratados com confidencialidade e
-                só serão acessados por profissionais autorizados.
-              </p>
+        <form onSubmit={handleSubmit(handleCreateCase)} className="space-y-8">
+          {/* Informações Básicas */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Título do caso*</Label>
+              <Input
+                {...register('title')}
+                id="title"
+                type="text"
+                name="title"
+                placeholder="Digite um título descritivo"
+              />
+              {errors.title?.message && (
+                <ErrorMessage message={errors.title.message} />
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Descrição*</Label>
+              <Textarea
+                {...register('description')}
+                id="description"
+                name="description"
+                className="min-h-[120px]"
+                placeholder="Descreva os detalhes do seu caso"
+              />
+              {errors.description?.message && (
+                <ErrorMessage message={errors.description.message} />
+              )}
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>Documentos*</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleAddDocumentField}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar Documento
-              </Button>
+          {/* Documentos */}
+          <div className="space-y-6">
+            <div className="rounded-lg border bg-muted/40 p-4">
+              <h3 className="font-medium mb-2">Sobre os Documentos</h3>
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p>
+                  Os documentos são essenciais para dar suporte ao seu caso. Eles
+                  servem como evidências que ajudam os advogados a entender melhor
+                  sua situação e fortalecer seus argumentos.
+                </p>
+                <p>Exemplos de documentos úteis:</p>
+                <ul className="list-disc pl-4 space-y-1">
+                  <li>Contratos e acordos relevantes</li>
+                  <li>Registros de comunicação (e-mails, mensagens)</li>
+                  <li>Comprovantes de pagamento</li>
+                  <li>Fotos ou vídeos relacionados</li>
+                  <li>Documentos pessoais quando necessário</li>
+                </ul>
+                <p className="text-primary font-medium">
+                  Importante: Todos os documentos são tratados com confidencialidade e
+                  só serão acessados por profissionais autorizados.
+                </p>
+              </div>
             </div>
 
             <div className="space-y-4">
-              {fields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="flex gap-4 items-start p-4 rounded-lg border bg-muted/40"
+              <div className="flex items-center justify-between">
+                <Label>Documentos*</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddDocumentField}
                 >
-                  <div className="flex-1 space-y-2">
-                    <Input
-                      placeholder="Nome do documento"
-                      {...register(`documents.${index}.type`, {
-                        required: "O nome do documento é obrigatório",
-                      })}
-                    />
-                    {(errors.documents?.[index]?.type as { message?: string } | undefined)?.message && (
-                      <ErrorMessage
-                        message={(errors.documents?.[index]?.type as { message?: string })?.message || ''}
-                      />
-                    )}
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Documento
+                </Button>
+              </div>
 
-                    <Input
-                      type="file"
-                      onChange={(e) =>
-                        handleFileChange(index, e.target.files?.[0])
-                      }
-                      className="cursor-pointer file:text-foreground dark:file:text-foreground text-foreground dark:text-foreground/70"
-                    />
-                    {errors.documents?.[index]?.file?.message && (
-                      <ErrorMessage message={errors.documents[index].file?.message} />
+              <div className="space-y-4">
+                {fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="flex gap-4 items-start p-4 rounded-lg border bg-muted/40"
+                  >
+                    <div className="flex-1 space-y-2">
+                      <Input
+                        placeholder="Nome do documento"
+                        {...register(`documents.${index}.type`, {
+                          required: "O nome do documento é obrigatório",
+                        })}
+                      />
+                      {(errors.documents?.[index]?.type as { message?: string } | undefined)?.message && (
+                        <ErrorMessage
+                          message={(errors.documents?.[index]?.type as { message?: string })?.message || ''}
+                        />
+                      )}
+
+                      <Input
+                        type="file"
+                        onChange={(e) =>
+                          handleFileChange(index, e.target.files?.[0])
+                        }
+                        className="cursor-pointer file:text-foreground dark:file:text-foreground text-foreground dark:text-foreground/70"
+                      />
+                      {errors.documents?.[index]?.file?.message && (
+                        <ErrorMessage message={errors.documents[index].file?.message} />
+                      )}
+                    </div>
+                    {fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveDocumentField(index)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     )}
                   </div>
-                  {fields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveDocumentField(index)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
-        {/* Ações */}
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={handleBack}>
-            Cancelar
-          </Button>
-          <Button type="submit">
-            <Plus className="h-4 w-4 mr-2" />
-            Criar Caso
-          </Button>
-        </div>
-      </form>
+          {/* Ações */}
+          <div className="flex justify-end gap-4">
+            <Button type="button" variant="outline" onClick={handleBack}>
+              Cancelar
+            </Button>
+            <Button type="submit">
+              <Plus className="h-4 w-4 mr-2" />
+              Criar Caso
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
