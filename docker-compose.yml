@@ -1,5 +1,5 @@
 services:
-  lawyers-and-clients:
+  frontend_lawyers_and_clients:
     image: "elvisea/lawyers-and-clients:latest"  # Valor fixo
     container_name: lawyers-and-clients
     restart: unless-stopped
@@ -8,4 +8,9 @@ services:
     environment:
       - NODE_ENV=production
     command: ["npm", "run", "start"]
+    networks:
+      - lawyers_and_clients_network  # Conectando à rede compartilhada
 
+networks:
+  lawyers_and_clients_network:
+    driver: bridge  # Rede compartilhada usando o driver 'bridge'
