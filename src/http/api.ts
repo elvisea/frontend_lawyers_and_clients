@@ -9,7 +9,7 @@ type PromiseType = {
 type APIInstanceProps = AxiosInstance & {};
 
 const api = axios.create({
-  baseURL: 'https://lawyers-and-clients.bytefulcode.tech',
+  baseURL: 'http://backend_lawyers_and_clients:3334',
 }) as APIInstanceProps;
 
 let isRefreshing = false;
