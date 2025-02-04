@@ -7,10 +7,3 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-    command: ["npm", "run", "start"]
-    networks:
-      - lawyers_and_clients_network  # Conectando à rede compartilhada
-
-networks:
-  lawyers_and_clients_network:
-    driver: bridge  # Rede compartilhada usando o driver 'bridge'
