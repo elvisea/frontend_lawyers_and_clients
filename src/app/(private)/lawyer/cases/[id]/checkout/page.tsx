@@ -2,23 +2,34 @@
 
 import { useState, use, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, CreditCard, QrCode } from 'lucide-react'
+
+import {
+  ArrowLeft,
+  CreditCard,
+  QrCode,
+  Info,
+  ShieldCheck,
+  Lock,
+  Clock
+} from 'lucide-react'
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
 
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import { Loading } from '@/components/loading'
 import { CreditCardForm } from '@/components/credit-card-form'
+import { PageHeader, PageHeaderHeading, PageHeaderDescription } from '@/components/page-header'
 
 import api from '@/http/api'
 import { CaseFeatures } from '@/types/case'
@@ -31,6 +42,7 @@ type PaymentMethod = 'credit-card' | 'pix'
 
 export default function Checkout({ params }: CheckoutProps) {
   const router = useRouter()
+
   const [isLoading, setIsLoading] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
   const [caseData, setCaseData] = useState<CaseFeatures | null>(null)
@@ -39,11 +51,6 @@ export default function Checkout({ params }: CheckoutProps) {
   const { id } = use(params)
 
   useEffect(() => {
-    console.log('📝 CaseCheckout - useEffect')
-    console.log('├─ CaseId:', id)
-    console.log('├─ Loading:', isLoading)
-    console.log('└─ Case Data:', caseData)
-
     const fetchCase = async () => {
       try {
         setIsLoading(true)
@@ -63,13 +70,7 @@ export default function Checkout({ params }: CheckoutProps) {
 
   const handlePayment = async (data: unknown) => {
     try {
-      console.log('📝 CaseCheckout - handlePayment')
-      console.log('├─ Payment Data:', data)
-      console.log('├─ Case:', caseData)
-      console.log('└─ Payment Method:', paymentMethod)
-
       setIsProcessing(true)
-      // Implementar integração com gateway de pagamento
       await new Promise((resolve) => setTimeout(resolve, 500))
       router.push(`/lawyer/cases/success?id=${id}`)
     } catch (error) {
@@ -85,97 +86,162 @@ export default function Checkout({ params }: CheckoutProps) {
 
   return (
     <div className="flex justify-center">
-      <div className="w-full max-w-4xl space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-            className="rounded-full"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-2xl font-semibold">Checkout</h1>
-        </div>
+      <div className="w-full max-w-5xl space-y-8">
+        <PageHeader className="relative pb-4">
+          <div className="absolute left-0 top-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+              className="rounded-full"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </div>
+          <PageHeaderHeading>Finalizar Compra</PageHeaderHeading>
+          <PageHeaderDescription>
+            Complete sua compra de forma rápida e segura
+          </PageHeaderDescription>
+        </PageHeader>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Resumo do Caso */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Resumo da Compra</CardTitle>
+        <div className="grid gap-8 lg:grid-cols-3">
+          {/* Coluna da Esquerda - Detalhes do Caso */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Detalhes da Compra</CardTitle>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm font-medium">Caso</p>
-                <p className="text-sm text-muted-foreground">{caseData?.title}</p>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm font-medium">Caso</p>
+                  <p className="text-sm text-muted-foreground">
+                    {caseData?.title}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Descrição</p>
+                  <p className="text-sm text-muted-foreground line-clamp-3">
+                    {caseData?.description}
+                  </p>
+                </div>
               </div>
+
+              <Alert variant="default" className="bg-primary/5 border-primary/20">
+                <Clock className="h-4 w-4 text-primary" />
+                <AlertDescription className="text-sm ml-2">
+                  Acesso imediato após a confirmação do pagamento
+                </AlertDescription>
+              </Alert>
+
               <Separator />
-              <div className="flex justify-between">
-                <p className="text-sm font-medium">Total</p>
-                <p className="text-lg font-semibold">
-                  R$ {caseData?.price.toFixed(2)}
-                </p>
+
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-medium">Total a pagar</p>
+                  <p className="text-xs text-muted-foreground">Pagamento único</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-primary">
+                    R$ {caseData?.price.toFixed(2)}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Métodos de Pagamento */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Forma de Pagamento</CardTitle>
-              <CardDescription>
-                Escolha como deseja realizar o pagamento
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs
-                defaultValue="credit-card"
-                onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
-              >
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="credit-card">
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    Cartão
-                  </TabsTrigger>
-                  <TabsTrigger value="pix">
-                    <QrCode className="h-4 w-4 mr-2" />
-                    PIX
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="credit-card">
-                  <CreditCardForm
-                    onSubmit={handlePayment}
-                    isLoading={isProcessing}
-                    buttonText="Finalizar Compra"
-                  />
-                </TabsContent>
-                <TabsContent value="pix">
-                  {/* TODO: Implementar QR Code do PIX */}
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
+          {/* Coluna da Direita - Pagamento e Informações */}
+          <div className="space-y-6">
+            {/* Métodos de Pagamento */}
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-primary" />
+                  <CardTitle className="text-base">Pagamento Seguro</CardTitle>
+                </div>
+                <CardDescription>
+                  Escolha como deseja pagar
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs
+                  defaultValue="credit-card"
+                  onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
+                >
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="credit-card" className="gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Cartão
+                    </TabsTrigger>
+                    <TabsTrigger value="pix" className="gap-2">
+                      <QrCode className="h-4 w-4" />
+                      PIX
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="credit-card" className="mt-4">
+                    <CreditCardForm
+                      onSubmit={handlePayment}
+                      isLoading={isProcessing}
+                      buttonText="Finalizar Compra"
+                    />
+                  </TabsContent>
+                  <TabsContent value="pix" className="mt-4">
+                    <Card className="border-dashed">
+                      <CardContent className="flex items-center justify-center h-[300px]">
+                        <p className="text-sm text-muted-foreground">
+                          Em breve disponível
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
 
-        {/* Promoção de Assinatura */}
-        <Card className="bg-primary/5 border-primary/20">
-          <CardHeader>
-            <CardTitle>Economize com Assinatura</CardTitle>
-            <CardDescription>
-              Assine nosso plano e tenha acesso a casos com até 50% de desconto
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push('/lawyer/subscription')}
-            >
-              Ver Planos
-            </Button>
-          </CardFooter>
-        </Card>
+            {/* Card de Segurança */}
+            <Card className="bg-muted/50 border-dashed">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <ShieldCheck className="h-5 w-5 text-primary" />
+                  <p className="font-medium">Compra Protegida</p>
+                </div>
+                <ul className="grid gap-2 text-sm text-muted-foreground">
+                  <li className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+                    Pagamento processado com criptografia
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+                    Acesso imediato após confirmação
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+                    Garantia de 7 dias
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Promoção de Assinatura */}
+            <Alert variant="default" className="border-primary/20 bg-primary/5">
+              <Info className="h-5 w-5 text-primary" />
+              <AlertTitle className="mb-2 font-medium text-primary">
+                Economize com Assinatura
+              </AlertTitle>
+              <AlertDescription className="text-sm text-muted-foreground">
+                Assine nosso plano e tenha acesso a casos com até 50% de desconto
+                <Button
+                  variant="outline"
+                  className="w-full mt-4"
+                  onClick={() => router.push('/lawyer/subscription')}
+                >
+                  Ver Planos
+                </Button>
+              </AlertDescription>
+            </Alert>
+          </div>
+        </div>
       </div>
     </div>
   )
