@@ -1,4 +1,6 @@
-interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> { }
+import { HTMLAttributes } from 'react'
+
+type PageHeaderProps = HTMLAttributes<HTMLDivElement>
 
 export function PageHeader({ className, children, ...props }: PageHeaderProps) {
   return (
