@@ -43,10 +43,9 @@ type PaymentMethod = 'credit-card' | 'pix'
 export default function Checkout({ params }: CheckoutProps) {
   const router = useRouter()
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [caseData, setCaseData] = useState<CaseFeatures | null>(null)
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit-card')
 
   const { id } = use(params)
 
@@ -68,13 +67,13 @@ export default function Checkout({ params }: CheckoutProps) {
 
   const handleBack = () => router.back()
 
-  const handlePayment = async (data: unknown) => {
+  const handlePurchase = async () => {
     try {
       setIsProcessing(true)
       await new Promise((resolve) => setTimeout(resolve, 500))
       router.push(`/lawyer/cases/success?id=${id}`)
     } catch (error) {
-      console.error('❌ Erro ao processar pagamento:', error)
+      console.error('Erro ao processar pagamento:', error)
     } finally {
       setIsProcessing(false)
     }
@@ -167,7 +166,6 @@ export default function Checkout({ params }: CheckoutProps) {
               <CardContent>
                 <Tabs
                   defaultValue="credit-card"
-                  onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
                 >
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="credit-card" className="gap-2">
@@ -181,7 +179,7 @@ export default function Checkout({ params }: CheckoutProps) {
                   </TabsList>
                   <TabsContent value="credit-card" className="mt-4">
                     <CreditCardForm
-                      onSubmit={handlePayment}
+                      onSubmit={handlePurchase}
                       isLoading={isProcessing}
                       buttonText="Finalizar Compra"
                     />

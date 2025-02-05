@@ -16,7 +16,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-
 import { Plan } from '@/types/subscription'
 import { CreditCardForm } from '@/components/credit-card-form'
 
