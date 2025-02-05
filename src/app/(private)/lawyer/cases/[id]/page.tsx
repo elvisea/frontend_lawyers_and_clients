@@ -1,14 +1,12 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useEffect, useState, use } from 'react'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, Clock, FileText, User, ShoppingCart, Loader2 } from 'lucide-react'
+
 
 import { ptBR } from 'date-fns/locale'
 import { formatDistanceToNow } from 'date-fns'
-
-import { ArrowLeft, Clock, FileText, User, ShoppingCart, Loader2 } from 'lucide-react'
-
-import { Button } from '@/components/ui/button'
 
 import {
   Card,
@@ -18,10 +16,14 @@ import {
 } from '@/components/ui/card'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 import api from '@/http/api'
 
 import { CaseFeatures } from '@/types/case'
+import { useAuth } from '@/contexts/auth-context'
+import { SubscriptionResponse } from '@/types/subscription'
+
 import { statusMap } from '@/app/(private)/client/cases/components/case-card'
 
 interface CaseDetailsProps {
@@ -30,6 +32,7 @@ interface CaseDetailsProps {
 
 export default function CaseDetails({ params }: CaseDetailsProps) {
   const router = useRouter()
+  const { subscription, handleSubscription } = useAuth()
 
   const [isLoading, setIsLoading] = useState(true)
   const [caseData, setCaseData] = useState<CaseFeatures | null>(null)
@@ -53,15 +56,32 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
       }
     }
 
-    fetchCase()
-  }, [id])
+    const checkSubscription = async () => {
+      if (!subscription) {
+        try {
+          const { data: { subscription } } = await api.get<SubscriptionResponse>('/subscriptions')
+          console.log("🔍 [Subscription] Tem assinatura?", subscription)
+          handleSubscription(subscription)
 
-  const handleBack = () => {
-    router.push('/lawyer/cases')
-  }
+        } catch (error) {
+          console.error('Erro ao verificar assinatura:', error)
+          handleSubscription(null)
+        }
+      }
+    }
+
+    checkSubscription()
+    fetchCase()
+  }, [id, subscription])
+
+  const handleBack = () => router.push('/lawyer/cases')
 
   const handleBuyCase = () => {
-    router.push(`/lawyer/cases/${id}/checkout`)
+    if (subscription) {
+      router.push(`/lawyer/cases/${id}/checkout`)
+    } else {
+      router.push('/lawyer/subscription')
+    }
   }
 
   if (isLoading) {
