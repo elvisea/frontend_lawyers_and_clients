@@ -34,18 +34,20 @@ export default function SubscriptionCheckout({ params }: CheckoutProps) {
   const [plan, setPlan] = useState<Plan | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit-card')
 
+  console.log('isLoading:', isLoading)
+
   const { planId } = use(params)
 
   useEffect(() => {
-    console.log('📝 SubscriptionCheckout - useEffect')
-    console.log('├─ PlanId:', planId)
-    console.log('├─ Loading:', isLoading)
-    console.log('└─ Plan:', plan)
-
     const selectedPlan = MOCK_PLANS.find((p) => p.id === planId)
     setPlan(selectedPlan || null)
-    setIsLoading(false)
   }, [planId])
+
+  useEffect(() => {
+    if (plan) {
+      setIsLoading(false)
+    }
+  }, [plan])
 
   const handleBack = () => router.back()
 
