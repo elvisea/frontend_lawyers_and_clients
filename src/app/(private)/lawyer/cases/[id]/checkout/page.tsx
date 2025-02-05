@@ -38,8 +38,6 @@ interface CheckoutProps {
   params: Promise<{ id: string }>
 }
 
-type PaymentMethod = 'credit-card' | 'pix'
-
 export default function Checkout({ params }: CheckoutProps) {
   const router = useRouter()
 

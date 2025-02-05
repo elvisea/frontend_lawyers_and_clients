@@ -56,6 +56,10 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
       }
     }
 
+    fetchCase()
+  }, [id])
+
+  useEffect(() => {
     const checkSubscription = async () => {
       if (!subscription) {
         try {
@@ -71,8 +75,8 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
     }
 
     checkSubscription()
-    fetchCase()
-  }, [id, subscription])
+
+  }, [subscription, handleSubscription])
 
   const handleBack = () => router.push('/lawyer/cases')
 
