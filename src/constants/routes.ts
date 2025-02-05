@@ -1,5 +1,14 @@
 import { UserType } from '@/enums/type'
-import { File, LayoutGrid, Settings, User } from 'lucide-react'
+
+import {
+  LayoutGrid,
+  FileText,
+  InboxIcon,
+  FolderOpen,
+  ClipboardList,
+  UserCircle,
+  Cog
+} from 'lucide-react'
 
 export type Route = {
   label: string
@@ -17,17 +26,17 @@ export const routes: Record<UserType, Record<string, Route>> = {
     cases: {
       href: '/admin/cases',
       label: 'Casos',
-      icon: File
+      icon: ClipboardList
     },
     profile: {
       href: '/admin/profile',
       label: 'Perfil',
-      icon: User
+      icon: UserCircle
     },
     settings: {
       href: '/admin/settings',
       label: 'Configurações',
-      icon: Settings
+      icon: Cog
     },
   },
   [UserType.CLIENT]: {
@@ -39,17 +48,17 @@ export const routes: Record<UserType, Record<string, Route>> = {
     cases: {
       label: 'Casos',
       href: '/client/cases',
-      icon: File
+      icon: FileText
     },
     profile: {
       label: 'Perfil',
       href: '/client/profile',
-      icon: User
+      icon: UserCircle
     },
     settings: {
       label: 'Configurações',
       href: '/client/settings',
-      icon: Settings
+      icon: Cog
     },
   },
   [UserType.LAWYER]: {
@@ -60,18 +69,23 @@ export const routes: Record<UserType, Record<string, Route>> = {
     },
     cases: {
       href: '/lawyer/cases',
-      label: 'Casos',
-      icon: File
+      label: 'Casos Disponíveis',
+      icon: FolderOpen
+    },
+    accepted: {
+      href: '/lawyer/accepted',
+      label: 'Casos Aceitos',
+      icon: InboxIcon
     },
     profile: {
       href: '/lawyer/profile',
       label: 'Perfil',
-      icon: User
+      icon: UserCircle
     },
     settings: {
       href: '/lawyer/settings',
       label: 'Configurações',
-      icon: Settings
+      icon: Cog
     },
   },
 }

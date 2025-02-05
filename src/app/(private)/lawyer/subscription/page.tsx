@@ -1,15 +1,30 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Check, ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
+import {
+  ArrowLeft,
+  CalendarDays,
+  Check,
+  Info,
+} from 'lucide-react'
+
+import { useAuth } from '@/contexts/auth-context'
+
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Separator } from '@/components/ui/separator'
+
 import {
   Card,
+  CardContent,
   CardDescription,
+  CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+
 import {
   Select,
   SelectContent,
@@ -18,19 +33,23 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+import { PageHeader, PageHeaderHeading, PageHeaderDescription } from '@/components/page-header'
+import { Loading } from '@/components/loading'
+
 import { Plan, PlanInterval } from '@/types/subscription'
 import { MOCK_PLANS } from './constants'
-import { Loading } from '@/components/loading'
 
 const intervalLabels: Record<PlanInterval, string> = {
   MONTHLY: 'Mensal',
   QUARTERLY: 'Trimestral',
   SEMIANNUALLY: 'Semestral',
-  YEARLY: 'Anual'
+  YEARLY: 'Anual',
 }
 
 export default function SubscriptionPage() {
   const router = useRouter()
+
+  const { subscription } = useAuth()
   const [plans, setPlans] = useState<Plan[]>([])
   const [selectedInterval, setSelectedInterval] = useState<PlanInterval>('MONTHLY')
   const [isLoading, setIsLoading] = useState(true)
@@ -56,8 +75,6 @@ export default function SubscriptionPage() {
 
   const handleSubscribe = async (planId: string) => {
     try {
-      // Por enquanto, vamos apenas redirecionar para o checkout
-      // Quando a API estiver pronta, podemos fazer a chamada aqui
       router.push(`/lawyer/subscription/checkout/${planId}`)
     } catch (error) {
       console.error('Erro ao assinar plano:', error)
@@ -72,114 +89,128 @@ export default function SubscriptionPage() {
 
   return (
     <div className="flex justify-center">
-      <div className="w-full max-w-3xl space-y-6">
-        {/* Header com botão de voltar */}
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-            className="rounded-full"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex-1 text-center">
-            <h1 className="text-2xl font-semibold">Planos e Preços</h1>
-            <p className="text-sm text-muted-foreground">
-              Escolha o plano ideal para suas necessidades
-            </p>
+      <div className="w-full max-w-3xl space-y-8">
+        <PageHeader className="relative pb-4">
+          <div className="absolute left-0 top-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+              className="rounded-full"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
           </div>
-          {/* Elemento vazio para manter o título centralizado */}
-          <div className="w-9" />
-        </div>
+          <PageHeaderHeading>Planos e Preços</PageHeaderHeading>
+          <PageHeaderDescription>
+            {subscription
+              ? 'Gerencie sua assinatura ou mude de plano'
+              : 'Escolha o plano ideal para suas necessidades'
+            }
+          </PageHeaderDescription>
+        </PageHeader>
 
-        {/* Seletor de Intervalo */}
-        <div className="flex justify-center">
-          <Select
-            value={selectedInterval}
-            onValueChange={(value) => setSelectedInterval(value as PlanInterval)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Selecione o período" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(intervalLabels).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {!subscription && (
+          <Alert variant="default" className="border-primary/20 bg-primary/5">
+            <Info className="h-5 w-5 text-primary" />
+            <AlertTitle className="text-primary font-medium mb-2">
+              Assinatura necessária
+            </AlertTitle>
+            <AlertDescription className="text-sm text-muted-foreground leading-relaxed">
+              Para acessar e comprar casos individuais em nossa plataforma, é necessário ter uma assinatura ativa.
+              <span className="block mt-1">
+                Não se preocupe! Temos opções que cabem no seu orçamento, incluindo um plano gratuito para você começar.
+              </span>
+            </AlertDescription>
+          </Alert>
+        )}
 
-        {/* Cards dos Planos */}
         <div className="space-y-4">
+          <div className="flex items-center justify-center gap-2">
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            <Select
+              value={selectedInterval}
+              onValueChange={(value) => setSelectedInterval(value as PlanInterval)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Selecione o período" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(intervalLabels).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Separator className="my-4" />
+        </div>
+
+        <div className="grid gap-6">
           {filteredPlans.map((plan) => (
             <Card
               key={plan.id}
-              className={`relative w-full transition-colors ${plan.type === 'PREMIUM'
-                ? 'border-primary shadow-lg hover:border-primary'
+              className={`relative transition-all hover:shadow-md ${plan.type === 'PREMIUM'
+                ? 'border-primary shadow-lg'
                 : 'hover:border-primary/50'
                 }`}
             >
               {plan.type === 'PREMIUM' && (
-                <div className="absolute -top-3 right-4">
-                  <span className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                    Mais Popular
-                  </span>
-                </div>
+                <Badge
+                  variant="default"
+                  className="absolute -top-2.5 right-4 px-3 py-1"
+                >
+                  Mais Popular
+                </Badge>
               )}
 
-              <div className="flex flex-col md:flex-row md:items-center gap-6 p-6">
-                {/* Info do Plano */}
-                <div className="flex-1 space-y-4">
+              <CardHeader>
+                <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-xl">{plan.name}</CardTitle>
                     <CardDescription>
                       {plan.maxCases === 50 ? 'Casos ilimitados' : `Até ${plan.maxCases} casos`}
                     </CardDescription>
                   </div>
-
-                  {/* Preço */}
-                  <div>
-                    <p className="text-3xl font-bold">
+                  <div className="text-right">
+                    <div className="text-3xl font-bold">
                       R$ {plan.price.toFixed(2)}
-                      <span className="text-sm font-normal text-muted-foreground">
-                        /{intervalLabels[plan.interval].toLowerCase()}
-                      </span>
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {plan.caseDiscount}% de desconto por caso
-                    </p>
+                    </div>
+                    <CardDescription>
+                      /{intervalLabels[plan.interval].toLowerCase()}
+                    </CardDescription>
                   </div>
                 </div>
+              </CardHeader>
 
-                {/* Features */}
-                <div className="flex-1">
-                  <ul className="space-y-2">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+              <CardContent className="grid gap-4">
+                <div className="text-sm text-muted-foreground">
+                  {plan.caseDiscount}% de desconto por caso
                 </div>
 
-                {/* Botão */}
-                <div className="md:w-[200px] flex-shrink-0">
-                  <Button
-                    className={`w-full ${plan.type === 'PREMIUM'
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'text-primary border-primary/20 hover:bg-primary/10 hover:text-primary hover:border-primary'
-                      }`}
-                    variant={plan.type === 'PREMIUM' ? 'default' : 'outline'}
-                    onClick={() => handleSubscribe(plan.id)}
-                  >
-                    Assinar Plano
-                  </Button>
-                </div>
-              </div>
+                <Separator />
+
+                <ul className="grid gap-2">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  className={`w-full mt-4 ${plan.type === 'PREMIUM'
+                    ? 'bg-primary hover:bg-primary/90'
+                    : ''
+                    }`}
+                  variant={plan.type === 'PREMIUM' ? 'default' : 'outline'}
+                  onClick={() => handleSubscribe(plan.id)}
+                >
+                  Assinar Plano
+                </Button>
+              </CardContent>
             </Card>
           ))}
         </div>

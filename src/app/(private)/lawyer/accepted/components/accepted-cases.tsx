@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import {
@@ -13,35 +14,34 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
-import { Loader2 } from 'lucide-react'
-
 import api from '@/http/api'
-import { Case, CasesResponse } from '@/types/case'
 
+import { Case, CasesResponse } from '@/types/case'
 import { BaseCaseCard } from '@/components/base-case-card'
 
 const ITEMS_PER_PAGE = 8
 
-export function CasesList() {
-  const [total, setTotal] = useState(0)
-  const [cases, setCases] = useState<Case[]>([])
+export function AcceptedCases() {
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [total, setTotal] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE)
 
+  const [cases, setCases] = useState<Case[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
   const router = useRouter()
 
   const handleViewDetails = (item: Case) => {
-    router.push(`/lawyer/cases/${item.id}`)
+    router.push(`/lawyer/accepted/${item.id}`)
   }
 
   useEffect(() => {
     const fetchCases = async () => {
       try {
         setIsLoading(true)
-        const response = await api.get<CasesResponse>('/cases', {
+        const response = await api.get<CasesResponse>('/cases/lawyer', {
           params: {
             page: currentPage,
             limit: ITEMS_PER_PAGE
@@ -53,6 +53,7 @@ export function CasesList() {
 
         setCases(response.data.cases)
         setTotal(response.data.total)
+
       } catch (error) {
         console.error('Erro ao carregar casos:', error)
       } finally {
@@ -94,7 +95,7 @@ export function CasesList() {
   return (
     <div className="flex flex-col flex-1">
       <p className="text-sm text-muted-foreground mb-6">
-        Total de casos disponíveis: {total}
+        Total de casos aceitos: {total}
       </p>
 
       <div className="space-y-4">
@@ -102,8 +103,7 @@ export function CasesList() {
           <BaseCaseCard
             key={item.id}
             data={item}
-            showPrice={false}
-
+            showPrice={true}
             onAction={() => handleViewDetails(item)}
           />
         ))}
