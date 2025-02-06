@@ -86,7 +86,7 @@ export default function LawyerDashboardPage() {
   }
 
   return (
-    <div className="container space-y-8">
+    <div className="space-y-6 px-2 sm:px-8">
       <PageHeader>
         <PageHeaderHeading>Olá, Advogado</PageHeaderHeading>
         <PageHeaderDescription>
@@ -95,12 +95,12 @@ export default function LawyerDashboardPage() {
       </PageHeader>
 
       {/* Seção: Atalhos Rápidos */}
-      <section className="space-y-4">
+      <section className="space-y-3 sm:space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <h2 className="text-lg font-semibold">Atalhos Rápidos</h2>
           <p className="text-sm text-muted-foreground">Acesso direto às principais funções</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
           {[
             {
               label: 'Casos Disponíveis',
@@ -146,7 +146,7 @@ export default function LawyerDashboardPage() {
       </section>
 
       {/* Seção: Visão Geral dos Casos */}
-      <section className="space-y-4">
+      <section className="space-y-3 sm:space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <h2 className="text-lg font-semibold">Visão Geral dos Casos</h2>
           <Button
@@ -158,7 +158,7 @@ export default function LawyerDashboardPage() {
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Em Andamento</CardTitle>
@@ -200,7 +200,7 @@ export default function LawyerDashboardPage() {
       </section>
 
       {/* Seção: Financeiro */}
-      <section className="space-y-4">
+      <section className="space-y-3 sm:space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <h2 className="text-lg font-semibold">Financeiro</h2>
           <Button
@@ -212,7 +212,7 @@ export default function LawyerDashboardPage() {
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4">
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="text-base">Últimas Transações</CardTitle>
