@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, use, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, CreditCard, QrCode } from 'lucide-react'
 
@@ -16,57 +16,38 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-import { Plan } from '@/types/subscription'
+import { Loading } from '@/components/loading'
 import { CreditCardForm } from '@/components/credit-card-form'
 
-import { MOCK_PLANS } from '../../constants'
-
-interface CheckoutProps {
-  params: Promise<{ planId: string }>
-}
+import { usePlans } from '@/hooks/use-plans'
+import { intervalLabels } from '../utils/interval-labels'
 
 type PaymentMethod = 'credit-card' | 'pix'
 
-export default function SubscriptionCheckout({ params }: CheckoutProps) {
+export default function SubscriptionCheckout() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
+  const { selectedPlan } = usePlans()
   const [isProcessing, setIsProcessing] = useState(false)
-  const [plan, setPlan] = useState<Plan | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit-card')
 
-  console.log('isLoading:', isLoading)
-
-  const { planId } = use(params)
+  console.log('paymentMethod', paymentMethod)
 
   useEffect(() => {
-    const selectedPlan = MOCK_PLANS.find((p) => p.id === planId)
-    setPlan(selectedPlan || null)
-  }, [planId])
-
-  useEffect(() => {
-    if (plan) {
-      setIsLoading(false)
+    if (!selectedPlan) {
+      router.replace('/lawyer/subscription')
+      return
     }
-  }, [plan])
+  }, [selectedPlan, router])
 
   const handleBack = () => router.back()
 
   const handlePayment = async (data: unknown) => {
-    try {
-      console.log('📝 SubscriptionCheckout - handlePayment')
-      console.log('├─ Payment Data:', data)
-      console.log('├─ Plan:', plan)
-      console.log('└─ Payment Method:', paymentMethod)
+    setIsProcessing(true)
+    router.push('/lawyer/subscription/success')
+  }
 
-      setIsProcessing(true)
-      // Implementar integração com gateway de pagamento
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      router.push('/lawyer/subscription/success')
-    } catch (error) {
-      console.error('❌ Erro ao processar pagamento:', error)
-    } finally {
-      setIsProcessing(false)
-    }
+  if (!selectedPlan) {
+    return <Loading />
   }
 
   return (
@@ -90,17 +71,18 @@ export default function SubscriptionCheckout({ params }: CheckoutProps) {
           <Card>
             <CardHeader>
               <CardTitle>Resumo do Plano</CardTitle>
+              <CardDescription>Detalhes da sua assinatura</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <p className="text-sm font-medium">Plano Selecionado</p>
-                <p className="text-sm text-muted-foreground">{plan?.name}</p>
+                <p className="text-sm text-muted-foreground">{selectedPlan.name}</p>
               </div>
 
               <div>
                 <p className="text-sm font-medium">Benefícios</p>
                 <ul className="mt-2 space-y-2">
-                  {plan?.features.map((feature, index) => (
+                  {selectedPlan.features.map((feature, index) => (
                     <li key={index} className="text-sm text-muted-foreground">
                       • {feature}
                     </li>
@@ -114,12 +96,10 @@ export default function SubscriptionCheckout({ params }: CheckoutProps) {
                 <p className="text-sm font-medium">Total</p>
                 <div className="text-right">
                   <p className="text-lg font-semibold">
-                    R$ {plan?.price.toFixed(2)}
+                    R$ {selectedPlan.price.toFixed(2)}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Cobrado {plan?.interval === 'MONTHLY' ? 'mensalmente' :
-                      plan?.interval === 'QUARTERLY' ? 'trimestralmente' :
-                        plan?.interval === 'SEMIANNUALLY' ? 'semestralmente' : 'anualmente'}
+                    /{intervalLabels[selectedPlan.interval].toLowerCase()}
                   </p>
                 </div>
               </div>
@@ -134,6 +114,7 @@ export default function SubscriptionCheckout({ params }: CheckoutProps) {
                 Escolha como deseja realizar o pagamento
               </CardDescription>
             </CardHeader>
+
             <CardContent>
               <Tabs
                 defaultValue="credit-card"
