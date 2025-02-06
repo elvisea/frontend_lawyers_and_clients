@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import {
@@ -12,10 +12,11 @@ import {
 
 import { useAuth } from '@/contexts/auth-context'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Separator } from '@/components/ui/separator'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle
+} from '@/components/ui/alert'
 
 import {
   Card,
@@ -25,6 +26,10 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+
 import {
   Select,
   SelectContent,
@@ -33,52 +38,26 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import { PageHeader, PageHeaderHeading, PageHeaderDescription } from '@/components/page-header'
 import { Loading } from '@/components/loading'
+import { PageHeader, PageHeaderHeading, PageHeaderDescription } from '@/components/page-header'
 
+import { usePlans } from '@/hooks/use-plans'
 import { Plan, PlanInterval } from '@/types/subscription'
-import { MOCK_PLANS } from './constants'
 
-const intervalLabels: Record<PlanInterval, string> = {
-  MONTHLY: 'Mensal',
-  QUARTERLY: 'Trimestral',
-  SEMIANNUALLY: 'Semestral',
-  YEARLY: 'Anual',
-}
+import { intervalLabels } from './utils/interval-labels'
 
 export default function SubscriptionPage() {
   const router = useRouter()
 
   const { subscription } = useAuth()
-  const [plans, setPlans] = useState<Plan[]>([])
+  const { plans, isLoading, setSelectedPlan } = usePlans()
   const [selectedInterval, setSelectedInterval] = useState<PlanInterval>('MONTHLY')
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        setIsLoading(true)
-        // Simula delay de rede
-        await new Promise(resolve => setTimeout(resolve, 500))
-        setPlans(MOCK_PLANS)
-      } catch (error) {
-        console.error('Erro ao carregar planos:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchPlans()
-  }, [])
 
   const filteredPlans = plans.filter(plan => plan.interval === selectedInterval)
 
-  const handleSubscribe = async (planId: string) => {
-    try {
-      router.push(`/lawyer/subscription/checkout/${planId}`)
-    } catch (error) {
-      console.error('Erro ao assinar plano:', error)
-    }
+  const handleSubscribe = async (plan: Plan) => {
+    setSelectedPlan(plan)
+    router.push('/lawyer/subscription/checkout')
   }
 
   const handleBack = () => router.back()
@@ -206,7 +185,7 @@ export default function SubscriptionPage() {
                     : ''
                     }`}
                   variant={plan.type === 'PREMIUM' ? 'default' : 'outline'}
-                  onClick={() => handleSubscribe(plan.id)}
+                  onClick={() => handleSubscribe(plan)}
                 >
                   Assinar Plano
                 </Button>

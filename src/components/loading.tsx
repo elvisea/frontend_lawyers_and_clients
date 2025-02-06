@@ -13,9 +13,6 @@ const sizeMap = {
 } as const
 
 export function Loading({ size = 'md' }: LoadingProps) {
-  console.log('📝 Loading Component')
-  console.log('├─ Size:', size)
-
   return (
     <div className="flex items-center justify-center flex-1 h-full">
       <Loader2 className={`animate-spin text-muted-foreground ${sizeMap[size]}`} />

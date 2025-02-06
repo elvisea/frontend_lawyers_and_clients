@@ -1,5 +1,5 @@
-export type PlanInterval = 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUALLY' | 'YEARLY'
 export type PlanType = 'FREE' | 'BASIC' | 'PREMIUM' | 'ENTERPRISE'
+export type PlanInterval = 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUALLY' | 'YEARLY'
 
 export interface Plan {
   id: string
@@ -10,6 +10,9 @@ export interface Plan {
   maxCases: number
   caseDiscount: number
   features: string[]
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 export interface PlansResponse {
