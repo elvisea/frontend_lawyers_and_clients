@@ -41,7 +41,7 @@ export default function SubscriptionCheckout() {
 
   const handleBack = () => router.back()
 
-  const handlePayment = async (data: unknown) => {
+  const handlePayment = async () => {
     setIsProcessing(true)
     router.push('/lawyer/subscription/success')
   }
