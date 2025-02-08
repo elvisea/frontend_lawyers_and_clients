@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, CreditCard, QrCode } from 'lucide-react'
+import { ArrowLeft, CreditCard, QrCode, Copy, AlertCircle } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import {
@@ -19,16 +21,25 @@ import {
 import { Loading } from '@/components/loading'
 import { CreditCardForm } from '@/components/credit-card-form'
 
+import api from '@/http/api'
 import { usePlans } from '@/hooks/use-plans'
 import { intervalLabels } from '../utils/interval-labels'
 
 type PaymentMethod = 'credit-card' | 'pix'
+
+interface PixResponse {
+  code: string
+  url: string
+}
 
 export default function SubscriptionCheckout() {
   const router = useRouter()
   const { selectedPlan } = usePlans()
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit-card')
+  const [isLoadingPix, setIsLoadingPix] = useState(false)
+  const [pixData, setPixData] = useState<{ url: string; code: string } | null>(null)
+  const [copySuccess, setCopySuccess] = useState(false)
 
   console.log('paymentMethod', paymentMethod)
 
@@ -44,6 +55,49 @@ export default function SubscriptionCheckout() {
   const handlePayment = async () => {
     setIsProcessing(true)
     router.push('/lawyer/subscription/success')
+  }
+
+  const handleFetchPixData = async () => {
+    if (!selectedPlan) return
+
+    setIsLoadingPix(true)
+    try {
+      const { data } = await api.post<PixResponse>('/payments/pix', {
+        planId: selectedPlan.id
+      })
+      setPixData(data)
+    } catch (error) {
+      console.error('Erro ao gerar PIX:', error)
+      setPixData(null)
+    } finally {
+      setIsLoadingPix(false)
+    }
+  }
+
+  const handlePaymentMethodChange = (value: string) => {
+    setPaymentMethod(value as PaymentMethod)
+    setPixData(null) // Limpa dados anteriores
+    if (value === 'pix') {
+      handleFetchPixData()
+    }
+  }
+
+  useEffect(() => {
+    if (paymentMethod === 'pix') {
+      handleFetchPixData()
+    }
+  }, [paymentMethod])
+
+  const handleCopyPixCode = async () => {
+    if (!pixData?.code) return
+
+    try {
+      await navigator.clipboard.writeText(pixData.code)
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch (error) {
+      console.error('Erro ao copiar código:', error)
+    }
   }
 
   if (!selectedPlan) {
@@ -66,9 +120,9 @@ export default function SubscriptionCheckout() {
           <h1 className="text-2xl font-semibold">Checkout da Assinatura</h1>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 items-start">
           {/* Resumo do Plano */}
-          <Card>
+          <Card className="md:sticky md:top-4 min-h-[400px]">
             <CardHeader>
               <CardTitle>Resumo do Plano</CardTitle>
               <CardDescription>Detalhes da sua assinatura</CardDescription>
@@ -107,7 +161,7 @@ export default function SubscriptionCheckout() {
           </Card>
 
           {/* Métodos de Pagamento */}
-          <Card>
+          <Card className="min-h-[400px]">
             <CardHeader>
               <CardTitle>Forma de Pagamento</CardTitle>
               <CardDescription>
@@ -118,7 +172,7 @@ export default function SubscriptionCheckout() {
             <CardContent>
               <Tabs
                 defaultValue="credit-card"
-                onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
+                onValueChange={handlePaymentMethodChange}
               >
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="credit-card">
@@ -137,8 +191,72 @@ export default function SubscriptionCheckout() {
                     buttonText="Assinar Plano"
                   />
                 </TabsContent>
-                <TabsContent value="pix">
-                  {/* TODO: Implementar QR Code do PIX */}
+                <TabsContent value="pix" className="pt-6">
+                  {isLoadingPix ? (
+                    <div className="flex-1 flex items-center justify-center py-20">
+                      <Loading />
+                    </div>
+                  ) : pixData ? (
+                    <div className="space-y-6">
+                      <div className="flex flex-col items-center space-y-4">
+                        <p className="text-sm text-muted-foreground text-center">
+                          Escaneie o QR Code abaixo com o seu aplicativo de pagamento
+                        </p>
+                        <div className="border rounded-lg p-4 bg-white">
+                          <img
+                            src={pixData.url}
+                            alt="QR Code PIX"
+                            className="w-48 h-48 object-contain"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Ou copie o código PIX:</p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 p-3 bg-muted rounded-lg text-xs font-mono break-all">
+                            {pixData.code}
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={handleCopyPixCode}
+                            className={copySuccess ? 'text-green-500' : ''}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        {copySuccess && (
+                          <p className="text-xs text-green-500">Código copiado!</p>
+                        )}
+                      </div>
+
+                      <Alert>
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Importante</AlertTitle>
+                        <AlertDescription className="text-sm">
+                          Após realizar o pagamento, você receberá a confirmação por e-mail.
+                          O processo pode levar alguns minutos.
+                        </AlertDescription>
+                      </Alert>
+                    </div>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center py-16">
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground">
+                          Não foi possível gerar o QR Code.
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleFetchPixData}
+                          className="mt-4"
+                        >
+                          Tentar novamente
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </TabsContent>
               </Tabs>
             </CardContent>
