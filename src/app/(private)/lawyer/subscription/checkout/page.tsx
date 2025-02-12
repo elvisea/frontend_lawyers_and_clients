@@ -28,8 +28,10 @@ import { intervalLabels } from '../utils/interval-labels'
 type PaymentMethod = 'credit-card' | 'pix'
 
 interface PixResponse {
+  id: string
+  url?: string
+  image?: string
   code: string
-  url: string
 }
 
 export default function SubscriptionCheckout() {
@@ -38,7 +40,7 @@ export default function SubscriptionCheckout() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit-card')
   const [isLoadingPix, setIsLoadingPix] = useState(false)
-  const [pixData, setPixData] = useState<{ url: string; code: string } | null>(null)
+  const [pixData, setPixData] = useState<PixResponse | null>(null)
   const [copySuccess, setCopySuccess] = useState(false)
 
   console.log('paymentMethod', paymentMethod)
@@ -202,13 +204,15 @@ export default function SubscriptionCheckout() {
                         <p className="text-sm text-muted-foreground text-center">
                           Escaneie o QR Code abaixo com o seu aplicativo de pagamento
                         </p>
-                        <div className="border rounded-lg p-4 bg-white">
-                          <img
-                            src={pixData.url}
-                            alt="QR Code PIX"
-                            className="w-48 h-48 object-contain"
-                          />
-                        </div>
+                        {(pixData.image || pixData.url) && (
+                          <div className="border rounded-lg p-4 bg-white">
+                            <img
+                              src={pixData.image || pixData.url}
+                              alt="QR Code PIX"
+                              className="w-48 h-48 object-contain"
+                            />
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-2">
