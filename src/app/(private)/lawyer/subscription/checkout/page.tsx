@@ -29,7 +29,7 @@ type PaymentMethod = 'credit-card' | 'pix'
 
 interface PixResponse {
   id: string
-  url?: string
+
   image?: string
   code: string
 }
@@ -77,10 +77,11 @@ export default function SubscriptionCheckout() {
   }
 
   const handlePaymentMethodChange = (value: string) => {
-    setPaymentMethod(value as PaymentMethod)
-    setPixData(null) // Limpa dados anteriores
-    if (value === 'pix') {
-      handleFetchPixData()
+    const method = value as PaymentMethod
+    setPaymentMethod(method)
+
+    if (method === 'pix') {
+      setPixData(null) // Limpa dados anteriores apenas
     }
   }
 
@@ -204,15 +205,14 @@ export default function SubscriptionCheckout() {
                         <p className="text-sm text-muted-foreground text-center">
                           Escaneie o QR Code abaixo com o seu aplicativo de pagamento
                         </p>
-                        {(pixData.image || pixData.url) && (
-                          <div className="border rounded-lg p-4 bg-white">
-                            <img
-                              src={pixData.image || pixData.url}
-                              alt="QR Code PIX"
-                              className="w-48 h-48 object-contain"
-                            />
-                          </div>
-                        )}
+                        <div className="border rounded-lg p-4 bg-white">
+                          <img
+                            src={pixData.image}
+                            alt="QR Code PIX"
+                            className="w-48 h-48 object-contain"
+                          />
+                        </div>
+
                       </div>
 
                       <div className="space-y-2">
