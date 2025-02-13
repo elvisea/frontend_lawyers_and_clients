@@ -46,7 +46,7 @@ export function CasesList() {
         })
 
         // Delay artificial para suavizar a transição
-        await new Promise(resolve => setTimeout(resolve, 500))
+        await new Promise(resolve => setTimeout(resolve, 350))
 
         setCases(response.data.cases)
         setTotal(response.data.total)
