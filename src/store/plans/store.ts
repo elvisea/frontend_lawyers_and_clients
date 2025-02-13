@@ -21,7 +21,7 @@ export const usePlansStore = create<PlansStore>((set) => ({
     try {
       const { data } = await api.get<Plan[]>('/plans')
 
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 350))
 
       set({ plans: data.filter(plan => plan.isActive) })
     } catch (error) {

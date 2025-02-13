@@ -41,7 +41,7 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
         const response = await api.get<DetailedCase>(`/cases/client/${id}`)
 
         // Delay artificial para suavizar a transição
-        await new Promise(resolve => setTimeout(resolve, 500))
+        await new Promise(resolve => setTimeout(resolve, 350))
 
         setCaseData(response.data)
       } catch (error) {
