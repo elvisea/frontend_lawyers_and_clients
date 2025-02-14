@@ -19,7 +19,7 @@ export const usePlansStore = create<PlansStore>((set) => ({
     set({ isLoading: true, error: null })
 
     try {
-      const { data } = await api.get<Plan[]>('/plans')
+      const { data } = await api.get<Plan[]>('/plans/available')
 
       await new Promise(resolve => setTimeout(resolve, 350))
 
