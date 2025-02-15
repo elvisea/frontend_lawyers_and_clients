@@ -5,55 +5,22 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-interface FAQProps {
-  question: string;
-  answer: string;
-  value: string;
-}
+import { faq, Item, Keys, } from "@/constants/faq";
 
-const FAQList: FAQProps[] = [
-  {
-    question: "Is this template free?",
-    answer: "Yes. It is a free ChadcnUI template.",
-    value: "item-1",
-  },
-  {
-    question: "Lorem ipsum dolor sit amet consectetur adipisicing elit?",
-    answer:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint labore quidem quam? Consectetur sapiente iste rerum reiciendis animi nihil nostrum sit quo, modi quod.",
-    value: "item-2",
-  },
-  {
-    question:
-      "Lorem ipsum dolor sit amet  Consectetur natus dolores minus quibusdam?",
-    answer:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore qui nostrum reiciendis veritatis necessitatibus maxime quis ipsa vitae cumque quo?",
-    value: "item-3",
-  },
-  {
-    question: "Lorem ipsum dolor sit amet, consectetur adipisicing elit?",
-    answer: "Lorem ipsum dolor sit amet consectetur, adipisicing elit.",
-    value: "item-4",
-  },
-  {
-    question:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur natus?",
-    answer:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint labore quidem quam? Consectetur sapiente iste rerum reiciendis animi nihil nostrum sit quo, modi quod.",
-    value: "item-5",
-  },
-];
+type Props = { resource: Keys }
 
-export const FAQ = () => {
+export const FAQ = ({ resource }: Props) => {
+  const list = faq[resource]
+
   return (
     <section
       id="faq"
       className="container py-24 sm:py-32"
     >
       <h2 className="text-3xl md:text-4xl font-bold mb-4">
-        Frequently Asked{" "}
+        Dúvidas{" "}
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-          Questions
+          Frequentes
         </span>
       </h2>
 
@@ -62,10 +29,10 @@ export const FAQ = () => {
         collapsible
         className="w-full AccordionRoot"
       >
-        {FAQList.map(({ question, answer, value }: FAQProps) => (
+        {list.map(({ question, answer }: Item) => (
           <AccordionItem
-            key={value}
-            value={value}
+            key={question}
+            value={question}
           >
             <AccordionTrigger className="text-left">
               {question}
@@ -77,13 +44,13 @@ export const FAQ = () => {
       </Accordion>
 
       <h3 className="font-medium mt-4">
-        Still have questions?{" "}
+        Ainda tem dúvidas?{" "}
         <a
           rel="noreferrer noopener"
           href="#"
           className="text-primary transition-all border-primary hover:border-b-2"
         >
-          Contact us
+          Entre em contato
         </a>
       </h3>
     </section>

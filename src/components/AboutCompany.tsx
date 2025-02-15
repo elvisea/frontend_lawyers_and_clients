@@ -44,7 +44,7 @@ export const content = {
   ]
 } as const
 
-export const Process = () => {
+export const AboutCompany = () => {
   return (
     <section className="container py-24 sm:py-32">
       <div className="flex flex-col items-center space-y-4">
