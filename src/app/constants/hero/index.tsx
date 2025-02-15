@@ -1,18 +1,22 @@
-export type HeroContent = Record<'clients' | 'lawyers', {
-  title: string[];
-  description: string;
-  button: string;
-}>
-
-export const hero: HeroContent = {
+export const hero = {
   clients: {
-    title: ['Encontre', 'soluções', 'jurídicas', 'rápidas', 'e eficientes'],
-    description: "Compartilhe sua situação, envie os documentos necessários e conecte-se com advogados especializados para obter a assistência que você precisa.",
-    button: "Descreva sua Situação Agora"
+    title: ["Justiça", "ao seu", "alcance", "de forma", "simples"],
+    description: `Entendemos que problemas jurídicos podem ser intimidadores.
+
+Por isso, criamos uma forma simples e segura de conectar você aos melhores advogados especializados na sua necessidade.
+
+Receba atendimento humanizado, acompanhamento transparente e resolva sua situação com tranquilidade.`,
+    button: "Resolver Meu Caso",
   },
   lawyers: {
-    title: ['Aumente', 'sua', 'carteira', 'de', 'clientes!'],
-    description: "Conecte-se com pessoas que precisam dos seus serviços jurídicos.",
-    button: "Cadastre-se Agora"
-  }
-}
+    title: ["Conecte-se", "com clientes", "ideais", "para seu", "escritório"],
+    description: `Expanda sua atuação de forma inteligente.
+
+Receba casos alinhados com sua especialidade, gerencie seus processos e acompanhe tudo em um só lugar.
+
+Dedique mais tempo ao que realmente importa: exercer a advocacia com excelência.`,
+    button: "Começar Agora",
+  },
+} as const;
+
+export type HeroContent = typeof hero;
