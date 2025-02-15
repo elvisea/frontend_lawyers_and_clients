@@ -35,7 +35,7 @@ export default function Home() {
       <Team />
       <Pricing />
       <Newsletter />
-      <FAQ />
+      <FAQ resource="lawyer" />
       <Footer />
       <ScrollToTop />
     </React.Fragment>
