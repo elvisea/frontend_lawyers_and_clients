@@ -1,11 +1,19 @@
 'use client'
 
 import { useState } from "react";
+
+import Link from "next/link";
+import { usePathname } from 'next/navigation'
+import { Menu } from "lucide-react";
+
+import { buttonVariants } from "./ui/button";
+
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+
 import {
   Sheet,
   SheetContent,
@@ -14,12 +22,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { buttonVariants } from "./ui/button";
-import { Menu } from "lucide-react";
-import { ModeToggle } from "./mode-toggle";
 import { LogoIcon } from "./Icons";
-import Link from "next/link";
+import { ModeToggle } from "./mode-toggle";
 
 interface RouteProps {
   href: string;
@@ -47,6 +51,18 @@ const routeList: RouteProps[] = [
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const pathname = usePathname();
+
+  const getSignUpPath = () => {
+    if (pathname.startsWith('/landing/clients')) {
+      return '/auth/sign-up?type=CLIENT';
+    }
+    if (pathname.startsWith('/landing/lawyers')) {
+      return '/auth/sign-up?type=LAWYER';
+    }
+    return '/landing/clients'; // fallback para landing de clientes
+  };
+
   return (
     <header className="sticky border-b-[1px] top-0 z-40 w-full bg-white dark:border-b-slate-700 dark:bg-background">
       <NavigationMenu className="mx-auto">
@@ -97,17 +113,18 @@ export const Navbar = () => {
                       {label}
                     </a>
                   ))}
-                  <a
-                    rel="noreferrer noopener"
-                    href="https://github.com/elvisea"
-                    target="_blank"
-                    className={`w-[110px] border ${buttonVariants({
-                      variant: "secondary",
-                    })}`}
+                  <Link
+                    href="/auth/sign-in"
+                    className={buttonVariants({ variant: "ghost" })}
                   >
-                    <GitHubLogoIcon className="mr-2 w-5 h-5" />
-                    Github
-                  </a>
+                    Entrar
+                  </Link>
+                  <Link
+                    href={getSignUpPath()}
+                    className={buttonVariants({ variant: "default" })}
+                  >
+                    Criar Conta
+                  </Link>
                 </nav>
               </SheetContent>
             </Sheet>
@@ -129,17 +146,19 @@ export const Navbar = () => {
             ))}
           </nav>
 
-          <div className="hidden md:flex gap-2">
-            <a
-              rel="noreferrer noopener"
-              href="https://github.com/elvisea"
-              target="_blank"
-              className={`border ${buttonVariants({ variant: "secondary" })}`}
+          <div className="hidden md:flex items-center gap-2">
+            <Link
+              href="/auth/sign-in"
+              className={buttonVariants({ variant: "ghost" })}
             >
-              <GitHubLogoIcon className="mr-2 w-5 h-5" />
-              Github
-            </a>
-
+              Entrar
+            </Link>
+            <Link
+              href={getSignUpPath()}
+              className={buttonVariants({ variant: "default" })}
+            >
+              Criar Conta
+            </Link>
             <ModeToggle />
           </div>
         </NavigationMenuList>

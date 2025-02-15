@@ -1,8 +1,10 @@
-import { Button } from "./ui/button";
-import { buttonVariants } from "./ui/button";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
+'use client'
 
-import { HeroCards } from "./HeroCards";
+import Link from "next/link";
+import { usePathname } from 'next/navigation'
+
+import { Button } from "./ui/button";
+
 import { hero, HeroContent } from "@/app/constants/hero";
 
 export type Keys = keyof HeroContent;
@@ -13,13 +15,24 @@ type Props = {
 
 export const Hero = ({ resource }: Props) => {
   const item = hero[resource]
+  const pathname = usePathname()
+
+  const getSignUpPath = () => {
+    if (pathname.startsWith('/landing/clients')) {
+      return '/auth/sign-up?type=CLIENT'
+    }
+    if (pathname.startsWith('/landing/lawyers')) {
+      return '/auth/sign-up?type=LAWYER'
+    }
+    return '/landing/clients'
+  }
 
   return (
-    <section className="container grid lg:grid-cols-2 place-items-center py-20 md:py-32 gap-10">
-      <div className="text-center lg:text-start space-y-6">
+    <section className="min-h-[calc(100vh-3.5rem)] container flex flex-col items-center justify-center">
+      <div className="text-center space-y-8 max-w-3xl">
         <main className="text-5xl md:text-6xl font-bold">
           <h1 className="inline">
-            <span className="inline bg-gradient-to-r from-[#F596D3]  to-[#D247BF] text-transparent bg-clip-text">
+            <span className="inline bg-gradient-to-r from-[#F596D3] to-[#D247BF] text-transparent bg-clip-text">
               {item.title[0]}
             </span>{" "}
             {item.title[1]}
@@ -33,34 +46,21 @@ export const Hero = ({ resource }: Props) => {
           </h2>
         </main>
 
-        <p className="text-xl text-muted-foreground md:w-10/12 mx-auto lg:mx-0">
+        <p className="text-xl text-muted-foreground whitespace-pre-line">
           {item.description}
         </p>
 
-        <div className="space-y-4 md:space-y-0 md:space-x-4">
-          <Button className="w-full md:w-1/3">{item.button}</Button>
-
-          <a
-            rel="noreferrer noopener"
-            href="https://github.com/elvisea"
-            target="_blank"
-            className={`w-full md:w-1/3 ${buttonVariants({
-              variant: "outline",
-            })}`}
+        <div className="flex justify-center pt-4">
+          <Button
+            size="lg"
+            asChild
           >
-            Github Repository
-            <GitHubLogoIcon className="ml-2 w-5 h-5" />
-          </a>
+            <Link href={getSignUpPath()}>
+              {item.button}
+            </Link>
+          </Button>
         </div>
       </div>
-
-      {/* Hero cards sections */}
-      <div className="z-10">
-        <HeroCards />
-      </div>
-
-      {/* Shadow effect */}
-      <div className="shadow"></div>
     </section>
   );
 };

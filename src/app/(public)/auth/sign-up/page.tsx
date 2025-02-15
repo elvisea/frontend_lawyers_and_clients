@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -28,15 +28,31 @@ import { schema } from './constants'
 
 export default function SignUpPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const type = searchParams.get('type') as UserType
 
   const [isPending, startTransition] = useTransition()
   const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
 
   const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver<Form>(schema) })
 
+  useEffect(() => {
+    // Validação do tipo
+    const isValidType = type === UserType.CLIENT || type === UserType.LAWYER
+
+    if (!type || !isValidType) {
+      router.back() // Volta para página anterior se tipo não for válido
+      return
+    }
+  }, [type, router])
+
+  // Se não tiver tipo válido, não renderiza nada enquanto redireciona
+  if (!type || (type !== UserType.CLIENT && type !== UserType.LAWYER)) {
+    return null
+  }
+
   const onSubmit = async ({ email, name, password }: Form) => {
     startTransition(async () => {
-      const type = UserType.CLIENT
 
       try {
         await signUp({ email, name, password, type })
