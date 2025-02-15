@@ -35,7 +35,7 @@ export default function Lawyers() {
       <Team />
       <Pricing />
       <Newsletter />
-      <FAQ />
+      <FAQ resource="lawyer" />
       <Footer />
       <ScrollToTop />
     </React.Fragment>

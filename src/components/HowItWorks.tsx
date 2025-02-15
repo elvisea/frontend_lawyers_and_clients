@@ -10,9 +10,7 @@ import {
 
 export type Keys = keyof Features;
 
-type Props = {
-  resource: Keys
-}
+type Props = { resource: Keys }
 
 export const HowItWorks = ({ resource }: Props) => {
   const item = features[resource]
