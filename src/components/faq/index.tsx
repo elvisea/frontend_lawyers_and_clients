@@ -5,12 +5,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import { faq, Item, Keys, } from "@/constants/faq";
-
-type Props = { resource: Keys }
+import { faq } from "./constants";
+import { Item, Props } from "./types";
 
 export const FAQ = ({ resource }: Props) => {
-  const list = faq[resource]
+
+  const content = {
+    faq: faq[resource],
+  }
 
   return (
     <section
@@ -29,7 +31,7 @@ export const FAQ = ({ resource }: Props) => {
         collapsible
         className="w-full AccordionRoot"
       >
-        {list.map(({ question, answer }: Item) => (
+        {content.faq.map(({ question, answer }: Item) => (
           <AccordionItem
             key={question}
             value={question}

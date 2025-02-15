@@ -48,7 +48,7 @@ export const Process = () => {
   return (
     <section className="container py-24 sm:py-32">
       <div className="flex flex-col items-center space-y-4">
-        <h2 className="text-3xl font-bold md:text-4xl">{content.title}</h2>
+        <h2 className="text-3xl font-bold md:text-4xl text-center">{content.title}</h2>
 
         <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-center">
           {content.subtitle}

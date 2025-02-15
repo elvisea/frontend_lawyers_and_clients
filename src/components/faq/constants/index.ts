@@ -1,9 +1,4 @@
-
-
-export type Item = {
-  question: string;
-  answer: string;
-}
+import { Item, Keys } from "../types";
 
 export const client: Item[] = [
   {
@@ -68,9 +63,7 @@ export const lawyer: Item[] = [
   },
 ]
 
-export type Keys = 'client' | 'lawyer';
-
 export const faq: Record<Keys, Item[]> = {
-  client: client,
-  lawyer: lawyer
+  clients: client,
+  lawyers: lawyer
 }
