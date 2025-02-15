@@ -31,7 +31,6 @@ export function BaseCaseCard({
   showPrice = false,
   onAction,
 }: BaseCaseCardProps) {
-  const firstName = data.client.name.split(' ')[0]
 
   return (
     <Card className="hover:border-primary/50 transition-colors">
@@ -55,7 +54,7 @@ export function BaseCaseCard({
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <User className="h-4 w-4 flex-shrink-0" />
-            <span className="text-foreground">{firstName}</span>
+            <span className="text-foreground">{data.client.name}</span>
           </div>
           <Separator orientation="vertical" className="h-4 hidden sm:block" />
           <div className="flex items-center gap-2">
