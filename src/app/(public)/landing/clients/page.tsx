@@ -6,9 +6,9 @@ import "@/app/index.css";
 
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-import { Sponsors } from "@/components/Sponsors";
+
 import { About } from "@/components/About";
-import { HowItWorks } from "@/components/HowItWorks";
+import { Process } from "@/components/Process";
 import { Features } from "@/components/Features";
 import { Services } from "@/components/Services";
 import { Cta } from "@/components/Cta";
@@ -25,9 +25,9 @@ export default function Clients() {
     <React.Fragment>
       <Navbar />
       <Hero resource="clients" />
-      <Sponsors />
+
       <About />
-      <HowItWorks resource="clients" />
+      <Process />
       <Features />
       <Services />
       <Cta />
