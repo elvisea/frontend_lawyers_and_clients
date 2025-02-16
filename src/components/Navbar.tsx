@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from "react";
-
-import Link from "next/link";
-import { usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { Menu } from "lucide-react";
 
+import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 
 import {
@@ -25,32 +24,42 @@ import {
 import { LogoIcon } from "./Icons";
 import { ModeToggle } from "./mode-toggle";
 
-interface RouteProps {
-  href: string;
-  label: string;
-}
-
-const routeList: RouteProps[] = [
+const routes = [
+  {
+    href: "/landing/clients",
+    label: "Clientes",
+    isExternal: false
+  },
+  {
+    href: "/landing/lawyers",
+    label: "Advogados",
+    isExternal: false
+  },
   {
     href: "#features",
-    label: "Features",
+    label: "Recursos",
+    isExternal: true
+  },
+  {
+    href: "#services",
+    label: "Serviços",
+    isExternal: true
   },
   {
     href: "#testimonials",
-    label: "Testimonials",
-  },
-  {
-    href: "#pricing",
-    label: "Pricing",
+    label: "Depoimentos",
+    isExternal: true
   },
   {
     href: "#faq",
-    label: "FAQ",
+    label: "Dúvidas",
+    isExternal: true
   },
 ];
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const router = useRouter();
   const pathname = usePathname();
 
   const getSignUpPath = () => {
@@ -63,34 +72,33 @@ export const Navbar = () => {
     return '/landing/clients'; // fallback para landing de clientes
   };
 
+  const handleNavigation = (href: string, isExternal: boolean) => {
+    setIsOpen(false)
+    if (isExternal) {
+      window.location.href = href
+      return
+    }
+    router.push(href)
+  }
+
   return (
     <header className="sticky border-b-[1px] top-0 z-40 w-full bg-white dark:border-b-slate-700 dark:bg-background">
       <NavigationMenu className="mx-auto">
-        <NavigationMenuList className="container h-14 px-4 w-screen flex justify-between ">
+        <NavigationMenuList className="container h-14 px-4 w-screen flex justify-between">
           <NavigationMenuItem className="font-bold flex">
-            <Link
-              rel="noreferrer noopener"
-              href="/"
-              className="ml-2 font-bold text-xl flex"
-            >
+            <Link href="/" className="ml-2 font-bold text-xl flex">
               <LogoIcon />
               Lex Omni
             </Link>
           </NavigationMenuItem>
 
           {/* mobile */}
-          <span className="flex md:hidden">
+          <span className="flex lg:hidden">
             <ModeToggle />
 
-            <Sheet
-              open={isOpen}
-              onOpenChange={setIsOpen}
-            >
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger className="px-2">
-                <Menu
-                  className="flex md:hidden h-5 w-5"
-                  onClick={() => setIsOpen(true)}
-                >
+                <Menu className="flex lg:hidden h-5 w-5">
                   <span className="sr-only">Menu Icon</span>
                 </Menu>
               </SheetTrigger>
@@ -98,20 +106,18 @@ export const Navbar = () => {
               <SheetContent side={"left"}>
                 <SheetHeader>
                   <SheetTitle className="font-bold text-xl">
-                    Shadcn/React
+                    Lex Omni
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col justify-center items-center gap-2 mt-4">
-                  {routeList.map(({ href, label }: RouteProps) => (
-                    <a
-                      rel="noreferrer noopener"
-                      key={label}
-                      href={href}
-                      onClick={() => setIsOpen(false)}
+                  {routes.map((route) => (
+                    <button
+                      key={route.label}
+                      onClick={() => handleNavigation(route.href, route.isExternal)}
                       className={buttonVariants({ variant: "ghost" })}
                     >
-                      {label}
-                    </a>
+                      {route.label}
+                    </button>
                   ))}
                   <Link
                     href="/auth/sign-in"
@@ -131,22 +137,21 @@ export const Navbar = () => {
           </span>
 
           {/* desktop */}
-          <nav className="hidden md:flex gap-2">
-            {routeList.map((route: RouteProps, i) => (
-              <a
-                rel="noreferrer noopener"
-                href={route.href}
-                key={i}
+          <nav className="hidden lg:flex gap-2">
+            {routes.map((route, index) => (
+              <button
+                key={index}
+                onClick={() => handleNavigation(route.href, route.isExternal)}
                 className={`text-[17px] ${buttonVariants({
                   variant: "ghost",
                 })}`}
               >
                 {route.label}
-              </a>
+              </button>
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2">
             <Link
               href="/auth/sign-in"
               className={buttonVariants({ variant: "ghost" })}
