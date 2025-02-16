@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/pagination"
 
 import api from '@/http/api'
+import { CardCase } from '@/components/card-case'
 
 import { Case, CasesResponse } from '@/types/case'
-import { BaseCaseCard } from '@/components/base-case-card'
 
 const ITEMS_PER_PAGE = 8
 
@@ -100,10 +100,15 @@ export function AcceptedCases() {
 
       <div className="space-y-4">
         {cases.map((item) => (
-          <BaseCaseCard
+          <CardCase
             key={item.id}
-            data={item}
-            showPrice={true}
+            title={item.title}
+            description={item.description}
+            status={item.status}
+            price={item.price}
+            documents={item.documents}
+            createdAt={item.createdAt}
+            client={{ name: item.client.name }}
             onAction={() => handleViewDetails(item)}
           />
         ))}
