@@ -18,7 +18,7 @@ import { Loader2 } from 'lucide-react'
 import api from '@/http/api'
 import { Case, CasesResponse } from '@/types/case'
 
-import { BaseCaseCard } from '@/components/base-case-card'
+import { CardCase } from '@/components/card-case'
 
 const ITEMS_PER_PAGE = 8
 
@@ -99,11 +99,14 @@ export function CasesList() {
 
       <div className="space-y-4">
         {cases.map((item) => (
-          <BaseCaseCard
+          <CardCase
             key={item.id}
-            data={item}
-            showPrice={false}
-
+            title={item.title}
+            description={item.description}
+            status={item.status}
+            documents={item.documents}
+            createdAt={item.createdAt}
+            client={{ name: item.client.name }}
             onAction={() => handleViewDetails(item)}
           />
         ))}

@@ -2,11 +2,7 @@
 
 import { useEffect, useState, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Clock, FileText, User, ShoppingCart, Loader2 } from 'lucide-react'
-
-
-import { ptBR } from 'date-fns/locale'
-import { formatDistanceToNow } from 'date-fns'
+import { ArrowLeft, FileText, ShoppingCart, Loader2 } from 'lucide-react'
 
 import {
   Card,
@@ -15,16 +11,15 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { CardCase } from '@/components/card-case'
 
 import api from '@/http/api'
 
 import { CaseFeatures } from '@/types/case'
-import { useAuth } from '@/contexts/auth-context'
 import { SubscriptionResponse } from '@/types/subscription'
 
-import { statusMap } from '@/app/(private)/client/cases/components/case-card'
+import { useAuth } from '@/contexts/auth-context'
 
 interface CaseDetailsProps {
   params: Promise<{ id: string }>
@@ -130,57 +125,14 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
 
         <div className="space-y-6">
           {/* Informações do Caso */}
-          <Card>
-            <CardHeader>
-              <div className="space-y-2.5">
-                <CardTitle className="line-clamp-2 text-base">
-                  {caseData.title}
-                </CardTitle>
-                <Badge
-                  variant="outline"
-                  className={`${statusMap[caseData.status].color} flex items-center justify-center h-7 w-full max-w-[140px]`}
-                >
-                  {statusMap[caseData.status].label}
-                </Badge>
-              </div>
-            </CardHeader>
-
-            <CardContent className="space-y-6">
-              {/* Descrição */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium">Descrição</h3>
-                <p className="text-sm text-muted-foreground">
-                  {caseData.description}
-                </p>
-              </div>
-
-              {/* Metadados */}
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>
-                    {formatDistanceToNow(new Date(caseData.createdAt), {
-                      addSuffix: true,
-                      locale: ptBR
-                    })}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <FileText className="h-4 w-4" />
-                  <span>
-                    {caseData.documents.length}{' '}
-                    {caseData.documents.length === 1 ? 'documento' : 'documentos'}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <User className="h-4 w-4" />
-                  <span>{caseData.client.name}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <CardCase
+            title={caseData.title}
+            description={caseData.description}
+            status={caseData.status}
+            documents={caseData.documents.length}
+            createdAt={caseData.createdAt}
+            client={{ name: caseData.client.name }}
+          />
 
           {/* Documentos */}
           <Card>
