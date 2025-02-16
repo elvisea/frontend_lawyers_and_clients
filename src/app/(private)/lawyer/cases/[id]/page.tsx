@@ -77,9 +77,9 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
 
   const handleBuyCase = () => {
     if (subscription) {
-      router.push('/lawyer/subscription')
-    } else {
       router.push(`/lawyer/cases/${id}/checkout`)
+    } else {
+      router.push('/lawyer/subscription')
     }
   }
 
