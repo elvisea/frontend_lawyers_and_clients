@@ -10,7 +10,7 @@ import {
   Info,
 } from 'lucide-react'
 
-import { useAuth } from '@/contexts/auth-context'
+
 
 import {
   Alert,
@@ -29,6 +29,8 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+
+import { useSubscription } from '@/hooks/use-subscription'
 
 import {
   Select,
@@ -49,7 +51,7 @@ import { intervalLabels } from './utils/interval-labels'
 export default function SubscriptionPage() {
   const router = useRouter()
 
-  const { subscription } = useAuth()
+  const { subscription } = useSubscription()
   const { plans, isLoading, setSelectedPlan } = usePlans()
   const [selectedInterval, setSelectedInterval] = useState<PlanInterval>('MONTHLY')
 
