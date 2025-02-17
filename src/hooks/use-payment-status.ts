@@ -3,10 +3,22 @@ import { useRouter } from 'next/navigation';
 import { io, Socket } from 'socket.io-client';
 
 import { Subscription } from '@/types/subscription';
+import { Payment } from '@/types/payment';
 import { useSubscription } from '@/hooks/use-subscription';
 
+interface PaymentError {
+  code: string;
+  message: string;
+  details?: Record<string, unknown>;
+}
+
+interface PaymentSuccessData {
+  payment: Payment;
+  subscription: Subscription;
+}
+
 export const usePaymentStatus = (txid: string | null) => {
-  const router = useRouter()
+  const router = useRouter();
   const { setSubscription } = useSubscription();
   const socketRef = useRef<Socket | null>(null);
 
@@ -66,7 +78,7 @@ export const usePaymentStatus = (txid: string | null) => {
     });
 
     // Handler de status do pagamento
-    socket.on('payment_success', (data: { payment: any; subscription: Subscription }) => {
+    socket.on('payment_success', (data: PaymentSuccessData) => {
       console.log('💰 [Pagamento] Sucesso no pagamento recebido:', {
         txid,
         status: data.payment.status,
@@ -87,7 +99,7 @@ export const usePaymentStatus = (txid: string | null) => {
     });
 
     // Handler de erro no pagamento
-    socket.on('payment_error', (error: any) => {
+    socket.on('payment_error', (error: PaymentError) => {
       console.error('❌ [Pagamento] Erro no pagamento recebido:', {
         txid,
         error,
