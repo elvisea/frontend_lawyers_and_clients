@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { ArrowLeft, Copy, AlertCircle } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -41,7 +42,7 @@ export default function SubscriptionCheckout() {
   const [copySuccess, setCopySuccess] = useState(false)
   const [txid, setTxid] = useState<string | null>(null)
 
-  const handleFetchPixData = async () => {
+  const handleFetchPixData = useCallback(async () => {
     if (!selected) return
 
     setIsLoadingPix(true)
@@ -58,7 +59,7 @@ export default function SubscriptionCheckout() {
     } finally {
       setIsLoadingPix(false)
     }
-  }
+  }, [selected])
 
   useEffect(() => {
     if (!selected) {
@@ -67,7 +68,7 @@ export default function SubscriptionCheckout() {
     }
 
     handleFetchPixData()
-  }, [selected, router])
+  }, [selected, router, handleFetchPixData])
 
   const handleBack = () => router.back()
 
@@ -171,11 +172,15 @@ export default function SubscriptionCheckout() {
                       Escaneie o QR Code abaixo com o seu aplicativo de pagamento
                     </p>
                     <div className="border rounded-lg p-4 bg-white">
-                      <img
-                        src={pixData.image}
-                        alt="QR Code PIX"
-                        className="w-48 h-48 object-contain"
-                      />
+                      <div className="relative w-48 h-48">
+                        <Image
+                          src={pixData.image || ''}
+                          alt="QR Code PIX"
+                          fill
+                          className="object-contain"
+                          unoptimized // Como é um QR code, não precisamos otimizar
+                        />
+                      </div>
                     </div>
                   </div>
 
