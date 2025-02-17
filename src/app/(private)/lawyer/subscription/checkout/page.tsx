@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/card'
 
 import { Loading } from '@/components/loading'
-import { CreditCardForm } from '@/components/credit-card-form'
 
 import api from '@/http/api'
 import { usePlans } from '@/hooks/use-plans'
@@ -31,20 +30,6 @@ interface PixResponse {
 
   image?: string
   code: string
-}
-
-// Função separada para o conteúdo de cartão de crédito (para uso futuro)
-const CreditCardContent = ({ isProcessing, handlePayment }: {
-  isProcessing: boolean
-  handlePayment: () => Promise<void>
-}) => {
-  return (
-    <CreditCardForm
-      onSubmit={handlePayment}
-      isLoading={isProcessing}
-      buttonText="Assinar Plano"
-    />
-  )
 }
 
 export default function SubscriptionCheckout() {
