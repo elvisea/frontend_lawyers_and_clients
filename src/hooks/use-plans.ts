@@ -4,7 +4,7 @@ import { usePlansStore } from '@/store/plans/store'
 export const usePlans = () => {
   const {
     plans,
-    selectedPlan,
+    selected,
     isLoading,
     error,
     fetchPlans,
@@ -27,7 +27,7 @@ export const usePlans = () => {
 
   return {
     plans,
-    selectedPlan,
+    selected,
     isLoading,
     error,
     setSelectedPlan,

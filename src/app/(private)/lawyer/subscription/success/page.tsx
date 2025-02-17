@@ -1,12 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import {
   CheckCircle2,
   Sparkles,
-  Shield,
   Zap,
   LayoutGrid,
   File,
@@ -25,24 +23,33 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-import { Loading } from '@/components/loading'
+import { usePlans } from '@/hooks/use-plans'
 
 export default function SubscriptionSuccess() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [])
+  const { selected } = usePlans()
 
   const handleNavigate = (path: string) => router.push(path)
 
-  if (isLoading) {
-    return <Loading size="lg" />
+  if (!selected) {
+    return (
+      <div className="flex items-center justify-center flex-1 h-full">
+        <div className="text-center">
+          <h3 className="text-sm font-semibold">Nenhum pagamento encontrado</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Esta página só pode ser acessada após a confirmação do pagamento de um plano.
+          </p>
+          <Button
+            variant="default"
+            size="sm"
+            className="mt-4"
+            onClick={() => router.push('/lawyer/subscription')}
+          >
+            Ver Planos Disponíveis
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -56,9 +63,9 @@ export default function SubscriptionSuccess() {
             <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 ring-4 ring-primary/20">
               <CheckCircle2 className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl font-bold">Assinatura Confirmada!</CardTitle>
+            <CardTitle className="text-2xl font-bold">Assinatura do Plano {selected?.name} Confirmada!</CardTitle>
             <CardDescription className="text-base mt-2">
-              Seu plano já está ativo e você pode começar a usar agora mesmo
+              Seu plano {selected?.type.toLowerCase()} já está ativo com {selected?.maxCases} casos disponíveis
             </CardDescription>
           </CardHeader>
         </div>
@@ -68,41 +75,31 @@ export default function SubscriptionSuccess() {
           <div className="space-y-6">
             <Alert variant="default" className="bg-primary/5 border-primary/20">
               <AlertDescription>
-                <h3 className="font-medium text-primary mb-2">Benefícios Ativados</h3>
+                <h3 className="font-medium text-primary mb-2">Benefícios do Seu Plano</h3>
                 <div className="grid gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Sparkles className="h-4 w-4 text-primary" />
+                  {selected?.features.map((feature, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{feature}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">Acesso Premium</p>
-                      <p className="text-sm text-muted-foreground">
-                        Casos exclusivos e prioridade nas novidades
-                      </p>
+                  ))}
+                  {selected?.caseDiscount > 0 && (
+                    <div className="flex items-start gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Zap className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">Desconto em Casos</p>
+                        <p className="text-sm text-muted-foreground">
+                          Até {selected.caseDiscount}% de desconto em todos os casos
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Shield className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Garantia de Satisfação</p>
-                      <p className="text-sm text-muted-foreground">
-                        7 dias de garantia em todos os casos
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Zap className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Descontos Exclusivos</p>
-                      <p className="text-sm text-muted-foreground">
-                        Até 50% de desconto em todos os casos
-                      </p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </AlertDescription>
             </Alert>
@@ -153,4 +150,4 @@ export default function SubscriptionSuccess() {
       </Card>
     </div>
   )
-} 
+}

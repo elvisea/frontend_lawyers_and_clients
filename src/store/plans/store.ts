@@ -1,13 +1,11 @@
 import { create } from 'zustand'
-
 import api from '@/http/api'
 import { Plan } from '@/types/subscription'
-
 import { PlansStore } from './types'
 
 const initialState = {
   plans: [],
-  selectedPlan: null,
+  selected: null,
   isLoading: false,
   error: null,
 }
@@ -17,34 +15,40 @@ export const usePlansStore = create<PlansStore>((set) => ({
 
   fetchPlans: async () => {
     set({ isLoading: true, error: null })
+    console.log('🔄 [Planos] Iniciando o carregamento dos planos disponíveis...')
 
     try {
       const { data } = await api.get<Plan[]>('/plans/available')
 
-      await new Promise(resolve => setTimeout(resolve, 350))
+      // Delay artificial para suavizar a transição
+      await new Promise((resolve) => setTimeout(resolve, 350))
 
-      set({ plans: data.filter(plan => plan.isActive) })
+      const activePlans = data.filter((plan) => plan.isActive)
+      console.log('✅ [Planos] Planos carregados com sucesso. Total de planos ativos:', activePlans.length)
+
+      set({ plans: activePlans })
     } catch (error) {
-      console.error('Erro ao buscar planos:', error)
-      set({ error: 'Erro ao carregar planos. Tente novamente.' })
+      const errorMessage = '⚠️ [Planos] Erro ao carregar planos. Tente novamente.'
+      console.error(errorMessage, error)
+      set({ error: errorMessage })
     } finally {
       set({ isLoading: false })
+      console.log('🔄 [Planos] Carregamento finalizado.')
     }
   },
 
   setSelectedPlan: (plan) => {
-    console.log('💾 Salvando plano selecionado:', plan.name)
-    set({ selectedPlan: plan })
+    console.log('💾 [Plano Selecionado] Salvando plano selecionado:', plan.name)
+    set({ selected: plan })
   },
 
   clearSelectedPlan: () => {
-    console.log('🗑️ Limpando plano selecionado da store')
-    set({ selectedPlan: null })
+    console.log('🗑️ [Plano Selecionado] Limpando plano selecionado da store')
+    set({ selected: null })
   },
 
   resetState: () => {
-    console.log('🔄 Resetando estado da store')
+    console.log('🔄 [Plano] Resetando estado da store para o estado inicial.')
     set(initialState)
   },
-}),
-)
+}))

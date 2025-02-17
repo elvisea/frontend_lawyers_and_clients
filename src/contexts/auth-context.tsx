@@ -4,12 +4,13 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import api from '@/http/api'
+
 import { routes } from '@/constants/routes'
 import { UserType } from '@/enums/type'
 import { parseToken } from '@/utils/token'
+
 import { signIn } from '@/http/auth'
 import { SignInRequest } from '@/http/auth/types'
-import { Subscription } from '@/types/subscription'
 
 type User = {
   id: string
@@ -20,10 +21,9 @@ type AuthContextData = {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
-  subscription: Subscription | null;
+
   login: ({ email, password }: SignInRequest) => Promise<void>
   logout: () => Promise<void>
-  handleSubscription: (subscription: Subscription | null) => void
 }
 
 type AuthProviderProps = {
@@ -36,10 +36,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [subscription, setSubscription] = useState<Subscription | null>(null)
-
-  console.log("🔍 [Subscription] Assinatura:", subscription);
-
 
   const isAuthenticated = !!user
 
@@ -67,10 +63,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('🚨 [Auth] Erro ao decodificar token:', error)
       return false
     }
-  }
-
-  const handleSubscription = (subscription: Subscription | null) => {
-    setSubscription(subscription)
   }
 
   useEffect(() => {
@@ -142,11 +134,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         user,
         isAuthenticated,
         isLoading,
-        subscription,
         login,
         logout,
-        handleSubscription
-      }}>
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

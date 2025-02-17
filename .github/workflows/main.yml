@@ -13,7 +13,8 @@ on:
 
 env:
   REGISTRY: docker.io
-  API_URL: ${{ secrets.API_URL }}
+  NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+  NEXT_PUBLIC_WEBSOCKET_URL: ${{ secrets.NEXT_PUBLIC_WEBSOCKET_URL }}
   IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
   CONTAINER_NAME_APP: ${{ secrets.CONTAINER_NAME_APP }}
 jobs:
@@ -72,7 +73,8 @@ jobs:
         run: |
           # Gere o arquivo .env para o servidor
           echo "REGISTRY=${{ env.REGISTRY }}" > .env
-          echo "API_URL=${{ secrets.API_URL }}" >> .env
+          echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env
+          echo "NEXT_PUBLIC_WEBSOCKET_URL=${{ secrets.NEXT_PUBLIC_WEBSOCKET_URL }}" >> .env
           echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> .env
           echo "CONTAINER_NAME_APP=${{ secrets.CONTAINER_NAME_APP }}" >> .env
           echo "NODE_ENV=production" >> .env
