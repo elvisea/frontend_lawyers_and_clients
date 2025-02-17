@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   frontend_lawyers_and_clients:
     image: ${REGISTRY}/${IMAGE_NAME}:latest
@@ -7,4 +9,5 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-      API_URL: ${API_URL}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_WEBSOCKET_URL: ${NEXT_PUBLIC_WEBSOCKET_URL}

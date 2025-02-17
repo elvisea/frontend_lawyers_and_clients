@@ -17,9 +17,8 @@ import { CardCase } from '@/components/card-case'
 import api from '@/http/api'
 
 import { CaseFeatures } from '@/types/case'
-import { SubscriptionResponse } from '@/types/subscription'
 
-import { useAuth } from '@/contexts/auth-context'
+import { useSubscription } from '@/hooks/use-subscription';
 
 interface CaseDetailsProps {
   params: Promise<{ id: string }>
@@ -27,7 +26,8 @@ interface CaseDetailsProps {
 
 export default function CaseDetails({ params }: CaseDetailsProps) {
   const router = useRouter()
-  const { subscription, handleSubscription } = useAuth()
+
+  const { subscription } = useSubscription()
 
   const [isLoading, setIsLoading] = useState(true)
   const [caseData, setCaseData] = useState<CaseFeatures | null>(null)
@@ -37,16 +37,19 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
   useEffect(() => {
     const fetchCase = async () => {
       try {
+        console.log(`🔍 [Case] Iniciando carregamento dos dados do caso com ID: ${id}`)
         setIsLoading(true)
         const response = await api.get<CaseFeatures>(`/cases/${id}/features`)
 
         // Delay artificial para suavizar a transição
         await new Promise(resolve => setTimeout(resolve, 350))
 
+        console.log(`✅ [Case] Dados do caso carregados com sucesso:`, response.data)
         setCaseData(response.data)
       } catch (error) {
-        console.error('Erro ao carregar caso:', error)
+        console.error('🚨 [Case] Erro ao carregar dados do caso:', error)
       } finally {
+        console.log('🏁 [Case] Carregamento do caso finalizado')
         setIsLoading(false)
       }
     }
@@ -54,31 +57,17 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
     fetchCase()
   }, [id])
 
-  useEffect(() => {
-    const checkSubscription = async () => {
-      if (!subscription) {
-        try {
-          const { data: { subscription } } = await api.get<SubscriptionResponse>('/subscriptions')
-          console.log("🔍 [Subscription] Tem assinatura?", subscription)
-          handleSubscription(subscription)
-
-        } catch (error) {
-          console.error('Erro ao verificar assinatura:', error)
-          handleSubscription(null)
-        }
-      }
-    }
-
-    checkSubscription()
-
-  }, [subscription, handleSubscription])
 
   const handleBack = () => router.push('/lawyer/cases')
 
   const handleBuyCase = () => {
+    console.log('🔍 [Case] Iniciando o processo de compra do caso')
+
     if (subscription) {
+      console.log('✅ [Case] Assinatura ativa encontrada, redirecionando para checkout...')
       router.push(`/lawyer/cases/${id}/checkout`)
     } else {
+      console.log('⚠️ [Case] Nenhuma assinatura ativa encontrada, redirecionando para página de assinatura...')
       router.push('/lawyer/subscription')
     }
   }

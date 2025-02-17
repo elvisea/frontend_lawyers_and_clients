@@ -2,7 +2,7 @@ import { Plan } from '@/types/subscription'
 
 export type PlansStoreState = {
   plans: Plan[]
-  selectedPlan: Plan | null
+  selected: Plan | null
   isLoading: boolean
   error: string | null
 }
