@@ -1,13 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { ArrowLeft, Copy, AlertCircle } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 import {
@@ -20,55 +19,35 @@ import {
 
 import { Loading } from '@/components/loading'
 
-import api from '@/http/api'
 import { usePlans } from '@/hooks/use-plans'
-import { usePaymentStatus } from '@/hooks/use-payment-status'
-
 import { intervalLabels } from '../utils/interval-labels'
+import { usePaymentStatus } from '@/hooks/use-payment-status'
+import usePixPayment from '@/hooks/use-pix-payment'
 
-interface PixResponse {
-  id: string
 
-  image?: string
-  code: string
-}
 
 export default function SubscriptionCheckout() {
+  const [copySuccess, setCopySuccess] = useState(false)
+  const hasInitializedRef = useRef(false)
+
   const router = useRouter()
   const { selected } = usePlans()
+  const { pixData, isLoadingPix, fetchPixPayment } = usePixPayment(selected?.id);
 
-  const [isLoadingPix, setIsLoadingPix] = useState(false)
-  const [pixData, setPixData] = useState<PixResponse | null>(null)
-  const [copySuccess, setCopySuccess] = useState(false)
-  const [txid, setTxid] = useState<string | null>(null)
-
-  const handleFetchPixData = useCallback(async () => {
-    if (!selected) return
-
-    setIsLoadingPix(true)
-    try {
-      const { data } = await api.post<PixResponse>('/payments/pix', {
-        planId: selected.id
-      })
-      setPixData(data)
-      setTxid(data.id)
-    } catch (error) {
-      console.error('Erro ao gerar PIX:', error)
-      setPixData(null)
-      setTxid(null)
-    } finally {
-      setIsLoadingPix(false)
+  useEffect(() => {
+    if (!hasInitializedRef.current && selected?.id) {
+      fetchPixPayment();
+      hasInitializedRef.current = true;
     }
-  }, [selected])
+  }, [selected?.id]);
 
   useEffect(() => {
     if (!selected) {
       router.replace('/lawyer/subscription')
       return
     }
+  }, [selected, router])
 
-    handleFetchPixData()
-  }, [selected, router, handleFetchPixData])
 
   const handleBack = () => router.back()
 
@@ -85,7 +64,7 @@ export default function SubscriptionCheckout() {
   }
 
   // Inicializa a conexão WebSocket
-  usePaymentStatus(txid)
+  usePaymentStatus(pixData?.id);
 
   if (!selected) {
     return (
@@ -151,7 +130,7 @@ export default function SubscriptionCheckout() {
             </CardContent>
           </Card>
 
-          {/* Métodos de Pagamento */}
+          {/* Pagamento PIX */}
           <Card className="min-h-[400px]">
             <CardHeader>
               <CardTitle>Pagamento via PIX</CardTitle>
@@ -172,15 +151,13 @@ export default function SubscriptionCheckout() {
                       Escaneie o QR Code abaixo com o seu aplicativo de pagamento
                     </p>
                     <div className="border rounded-lg p-4 bg-white">
-                      <div className="relative w-48 h-48">
-                        <Image
-                          src={pixData.image || ''}
-                          alt="QR Code PIX"
-                          fill
-                          className="object-contain"
-                          unoptimized // Como é um QR code, não precisamos otimizar
-                        />
-                      </div>
+                      <Image
+                        src={pixData.image || ''}
+                        alt="QR Code PIX"
+                        width={192}
+                        height={192}
+                        className="w-48 h-48 object-contain"
+                      />
                     </div>
                   </div>
 
@@ -204,12 +181,10 @@ export default function SubscriptionCheckout() {
                     )}
                   </div>
 
-                  <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
-                    <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                    <AlertTitle className="text-blue-800 dark:text-blue-300">
-                      Importante
-                    </AlertTitle>
-                    <AlertDescription className="text-sm text-blue-700 dark:text-blue-400">
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Importante</AlertTitle>
+                    <AlertDescription className="text-sm">
                       Após realizar o pagamento, você receberá a confirmação por e-mail.
                       O processo pode levar alguns minutos.
                     </AlertDescription>
@@ -224,7 +199,7 @@ export default function SubscriptionCheckout() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={handleFetchPixData}
+                      onClick={fetchPixPayment}
                       className="mt-4"
                     >
                       Tentar novamente

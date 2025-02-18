@@ -6,18 +6,18 @@ import { Subscription } from '@/types/subscription';
 import { Payment } from '@/types/payment';
 import { useSubscription } from '@/hooks/use-subscription';
 
-interface PaymentError {
+type PaymentError = {
   code: string;
   message: string;
   details?: Record<string, unknown>;
 }
 
-interface PaymentSuccessData {
+type PaymentSuccessData = {
   payment: Payment;
   subscription: Subscription;
 }
 
-export const usePaymentStatus = (txid: string | null) => {
+export const usePaymentStatus = (txid: string | null | undefined) => {
   const router = useRouter();
   const { setSubscription } = useSubscription();
   const socketRef = useRef<Socket | null>(null);
@@ -25,6 +25,11 @@ export const usePaymentStatus = (txid: string | null) => {
   useEffect(() => {
     if (!txid) {
       console.log('⚠️ [WebSocket] TXID não fornecido. Conexão WebSocket será ignorada');
+      return;
+    }
+
+    if (socketRef.current) {
+      console.log('🔄 [WebSocket] Conexão já iniciada, ignorando nova tentativa');
       return;
     }
 
