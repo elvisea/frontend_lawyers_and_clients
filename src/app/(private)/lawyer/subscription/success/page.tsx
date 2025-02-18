@@ -8,7 +8,8 @@ import {
   Zap,
   LayoutGrid,
   File,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -24,12 +25,35 @@ import {
 } from '@/components/ui/card'
 
 import { usePlans } from '@/hooks/use-plans'
+import { useEffect, useState } from 'react'
 
 export default function SubscriptionSuccess() {
   const router = useRouter()
   const { selected } = usePlans()
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleNavigate = (path: string) => router.push(path)
+
+  useEffect(() => {
+    const delay = async () => {
+      setIsLoading(true)
+
+      // Delay artificial para suavizar a transição
+      await new Promise(resolve => setTimeout(resolve, 350))
+
+      setIsLoading(false)
+    }
+
+    delay()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center h-[calc(100vh-12rem)]">
+        <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   if (!selected) {
     return (
