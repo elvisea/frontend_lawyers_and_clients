@@ -28,7 +28,8 @@ export const usePaymentStatus = (txid: string | null) => {
       return;
     }
 
-    const url = 'wss://lawyers-and-clients-api.bytefulcode.tech/payments';
+    const url = 'https://lawyers-and-clients-api.bytefulcode.tech/payments';
+    // const url = 'http://localhost:3334/payments';
 
     if (!url) {
       console.error('❌ [WebSocket] URL do WebSocket não configurada');
@@ -41,13 +42,15 @@ export const usePaymentStatus = (txid: string | null) => {
       path: '/socket.io',
     });
 
-    socketRef.current = io('wss://lawyers-and-clients-api.bytefulcode.tech', {
+    // socketRef.current = io('wss://lawyers-and-clients-api.bytefulcode.tech', {
+    socketRef.current = io(url, {
       query: { txid },
+
       transports: ['websocket'],
-      path: '/socket.io/payments',
+      // path: '/socket.io/payments',
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
+      // reconnectionAttempts: 5,
+      // reconnectionDelay: 1000,
     });
 
     const socket = socketRef.current;
