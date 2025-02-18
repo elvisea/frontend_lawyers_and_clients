@@ -41,11 +41,10 @@ export const usePaymentStatus = (txid: string | null) => {
       path: '/socket.io',
     });
 
-    // Inicializa o socket
-    socketRef.current = io(url, {
+    socketRef.current = io('wss://lawyers-and-clients-api.bytefulcode.tech', {
       query: { txid },
       transports: ['websocket'],
-      path: '/socket.io',
+      path: '/socket.io/payments',
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
