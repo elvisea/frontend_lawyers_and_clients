@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LogOut, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -19,16 +20,10 @@ import {
 
 import { SidebarProps } from '@/types/sidebar'
 import { cn } from '@/lib/utils'
-import { useAuth } from '@/contexts/auth-context'
 
 export function Sidebar({ items, title = 'Dashboard' }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  const { logout } = useAuth()
-
-  const handleLogout = async () => {
-    await logout()
-  }
 
   const NavItems = () => (
     <ScrollArea className="flex-1">
@@ -86,16 +81,6 @@ export function Sidebar({ items, title = 'Dashboard' }: SidebarProps) {
         </SheetHeader>
         <div className="flex flex-col h-[calc(100vh-4rem)]">
           <NavItems />
-          <div className="mt-auto p-2 border-t">
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={handleLogout}
-            >
-              <LogOut className="h-4 w-4" />
-              Sair
-            </Button>
-          </div>
         </div>
       </SheetContent>
     </Sheet>
@@ -109,16 +94,6 @@ export function Sidebar({ items, title = 'Dashboard' }: SidebarProps) {
       </div>
       <div className="flex flex-col flex-1">
         <NavItems />
-        <div className="mt-auto p-2 border-t">
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-4 w-4" />
-            Sair
-          </Button>
-        </div>
       </div>
     </aside>
   )
