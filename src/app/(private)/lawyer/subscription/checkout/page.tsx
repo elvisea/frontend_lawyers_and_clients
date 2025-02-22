@@ -61,7 +61,7 @@ export default function SubscriptionCheckout() {
   }
 
   return (
-    <div className="container max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-6">
       {/* Header */}
       <div className="flex items-center h-16">
         <div className="flex items-center gap-4">
