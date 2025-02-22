@@ -33,8 +33,7 @@ export const useCasePaymentMonitor = (caseCharge: CaseChargeResponse | null) => 
       return;
     }
 
-    const url = 'https://lawyers-and-clients-api.bytefulcode.tech/payments';
-    // const url = 'http://localhost:3334/payments';
+    const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
 
     if (!url) {
       console.error('❌ [WebSocket] URL do WebSocket não configurada');

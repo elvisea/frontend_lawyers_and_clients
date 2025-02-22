@@ -1,0 +1,14 @@
+services:
+  frontend_lawyers_and_clients:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: elvisea/${CONTAINER_NAME_APP}:latest
+    container_name: ${CONTAINER_NAME_APP}
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_WEBSOCKET_URL: ${NEXT_PUBLIC_WEBSOCKET_URL}
