@@ -110,7 +110,7 @@ export default function LawyerDashboardPage() {
             },
             {
               label: 'Casos Aceitos',
-              href: '/lawyer/accepted',
+              href: '/lawyer/accepted-cases',
               icon: InboxIcon,
               description: `${stats?.acceptedCases} casos ativos`,
             },

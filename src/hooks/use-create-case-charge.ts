@@ -1,7 +1,7 @@
 import api from '@/http/api';
 import { useState } from 'react';
 
-type CaseChargeResponse = {
+export type CaseChargeResponse = {
   id: string;
   image: string;
   code: string;
