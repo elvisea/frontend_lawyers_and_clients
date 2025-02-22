@@ -34,7 +34,7 @@ export function AcceptedCases() {
   const router = useRouter()
 
   const handleViewDetails = (item: Case) => {
-    router.push(`/lawyer/accepted/${item.id}`)
+    router.push(`/lawyer/accepted-cases/${item.id}`)
   }
 
   useEffect(() => {

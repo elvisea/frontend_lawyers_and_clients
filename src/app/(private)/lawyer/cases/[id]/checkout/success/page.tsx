@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 import {
   CheckCircle2,
@@ -11,7 +11,6 @@ import {
   Clock,
   FileSearch,
   File,
-  ShieldCheck
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -31,9 +30,6 @@ import { Loading } from '@/components/loading'
 
 export default function CasePurchaseSuccess() {
   const router = useRouter()
-
-  const searchParams = useSearchParams()
-  const caseId = searchParams.get('id')
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -97,17 +93,7 @@ export default function CasePurchaseSuccess() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <ShieldCheck className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Suporte Disponível</p>
-                    <p className="text-sm text-muted-foreground">
-                      7 dias de garantia e suporte para dúvidas
-                    </p>
-                  </div>
-                </div>
+
               </div>
             </AlertDescription>
           </Alert>
@@ -141,9 +127,9 @@ export default function CasePurchaseSuccess() {
           <Button
             size="lg"
             className="w-full"
-            onClick={() => handleNavigate(`/lawyer/cases/${caseId}`)}
+            onClick={() => handleNavigate('/lawyer/accepted-cases')}
           >
-            Ver Detalhes do Caso
+            Ver Casos Aceitos
             <FileSearch className="ml-2 h-4 w-4" />
           </Button>
           <Button

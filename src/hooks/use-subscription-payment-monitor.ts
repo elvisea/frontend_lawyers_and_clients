@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+
 import { io, Socket } from 'socket.io-client';
 
-import { Subscription } from '@/types/subscription';
 import { Payment } from '@/types/payment';
+import { Subscription } from '@/types/subscription';
+
 import { useSubscription } from '@/hooks/use-subscription';
 
 type PaymentError = {
@@ -17,7 +19,7 @@ type PaymentSuccessData = {
   subscription: Subscription;
 }
 
-export const usePaymentStatus = (txid: string | null | undefined) => {
+export const useSubscriptionPaymentMonitor = (txid: string | null | undefined) => {
   const router = useRouter();
   const { setSubscription } = useSubscription();
   const socketRef = useRef<Socket | null>(null);
@@ -41,21 +43,10 @@ export const usePaymentStatus = (txid: string | null | undefined) => {
       return;
     }
 
-    console.log(`🔄 [WebSocket] Inicializando conexão WebSocket para o endereço ${url}`, {
-      txid,
-      transports: ['websocket'],
-      path: '/socket.io',
-    });
-
-    // socketRef.current = io('wss://lawyers-and-clients-api.bytefulcode.tech', {
     socketRef.current = io(url, {
       query: { txid },
-
-      transports: ['websocket'],
-      // path: '/socket.io/payments',
       reconnection: true,
-      // reconnectionAttempts: 5,
-      // reconnectionDelay: 1000,
+      transports: ['websocket'],
     });
 
     const socket = socketRef.current;
