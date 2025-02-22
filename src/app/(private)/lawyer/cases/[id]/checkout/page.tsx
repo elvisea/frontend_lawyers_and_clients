@@ -17,6 +17,8 @@ import { Loading } from '@/components/loading'
 import { PixPayment } from '@/components/pix-payment'
 import { SubscriptionPromo } from '@/components/subscription-promo'
 
+import { useCasePaymentMonitor } from '@/hooks/use-case-payment-monitor'
+
 type CaseCheckoutProps = {
   params: Promise<{ id: string }>
 }
@@ -52,6 +54,9 @@ export default function CaseCheckout({ params }: CaseCheckoutProps) {
       hasInitializedRef.current = true;
     }
   }, [id]);
+
+  // Inicializa a conexão WebSocket
+  useCasePaymentMonitor(caseCharge);
 
   const handleBack = () => router.back()
 

@@ -20,7 +20,7 @@ import { PixPayment } from '@/components/pix-payment'
 
 import { usePlans } from '@/hooks/use-plans'
 import usePixPayment from '@/hooks/use-pix-payment'
-import { usePaymentStatus } from '@/hooks/use-payment-status'
+import { useSubscriptionPaymentMonitor } from '@/hooks/use-subscription-payment-monitor'
 
 import { intervalLabels } from '../utils/interval-labels'
 
@@ -50,7 +50,7 @@ export default function SubscriptionCheckout() {
   const handleBack = () => router.back()
 
   // Inicializa a conexão WebSocket
-  usePaymentStatus(pixData?.id);
+  useSubscriptionPaymentMonitor(pixData?.id);
 
   if (!selected) {
     return (

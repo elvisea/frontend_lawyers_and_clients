@@ -73,7 +73,7 @@ export const routes: Record<UserType, Record<string, Route>> = {
       icon: FolderOpen
     },
     accepted: {
-      href: '/lawyer/accepted',
+      href: '/lawyer/accepted-cases',
       label: 'Casos Aceitos',
       icon: InboxIcon
     },
