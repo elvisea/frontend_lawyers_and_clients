@@ -36,12 +36,14 @@ export default function SubscriptionCheckout() {
     selected?.type !== 'FREE' ? selected?.id : null
   )
 
+  useSubscriptionPaymentMonitor(selected?.type !== 'FREE' ? pixData?.id : null)
+
   useEffect(() => {
-    if (!hasInitializedRef.current && selected?.id && selected.type !== 'FREE') {
+    if (!hasInitializedRef.current && selected?.id && selected?.type !== 'FREE') {
       fetchPixPayment()
       hasInitializedRef.current = true
     }
-  }, [selected?.id])
+  }, [selected?.id, selected?.type, fetchPixPayment])
 
   useEffect(() => {
     if (!selected) {
@@ -66,11 +68,6 @@ export default function SubscriptionCheckout() {
     } finally {
       setIsActivating(false)
     }
-  }
-
-  // Monitora pagamento apenas para planos pagos
-  if (selected?.type !== 'FREE') {
-    useSubscriptionPaymentMonitor(pixData?.id)
   }
 
   if (!selected) {

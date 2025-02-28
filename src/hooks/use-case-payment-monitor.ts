@@ -118,7 +118,7 @@ export const useCasePaymentMonitor = (caseCharge: CaseChargeResponse | null) => 
         console.log('🔌 [WebSocket] Conexão WebSocket limpa com sucesso');
       }
     };
-  }, [caseCharge]);
+  }, [caseCharge, router]);
 
   return socketRef.current;
 };
