@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, ShieldCheck, CheckCircle2, Loader2 } from 'lucide-react'
 
 import {
   Card,
@@ -15,6 +15,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
+import api from '@/http/api'
+
 import { Loading } from '@/components/loading'
 import { PixPayment } from '@/components/pix-payment'
 
@@ -25,19 +27,21 @@ import { useSubscriptionPaymentMonitor } from '@/hooks/use-subscription-payment-
 import { intervalLabels } from '../utils/interval-labels'
 
 export default function SubscriptionCheckout() {
-
   const hasInitializedRef = useRef(false)
-
   const router = useRouter()
+  const [isActivating, setIsActivating] = useState(false)
+
   const { selected } = usePlans()
-  const { pixData, isLoadingPix, fetchPixPayment } = usePixPayment(selected?.id);
+  const { pixData, isLoadingPix, fetchPixPayment } = usePixPayment(
+    selected?.type !== 'FREE' ? selected?.id : null
+  )
 
   useEffect(() => {
-    if (!hasInitializedRef.current && selected?.id) {
-      fetchPixPayment();
-      hasInitializedRef.current = true;
+    if (!hasInitializedRef.current && selected?.id && selected.type !== 'FREE') {
+      fetchPixPayment()
+      hasInitializedRef.current = true
     }
-  }, [selected?.id]);
+  }, [selected?.id])
 
   useEffect(() => {
     if (!selected) {
@@ -46,11 +50,28 @@ export default function SubscriptionCheckout() {
     }
   }, [selected, router])
 
-
   const handleBack = () => router.back()
 
-  // Inicializa a conexão WebSocket
-  useSubscriptionPaymentMonitor(pixData?.id);
+  const handleActivateFreeSubscription = async () => {
+    try {
+      setIsActivating(true)
+      await api.post('/subscriptions/free', { planId: selected?.id })
+
+      // Delay artificial para suavizar a transição
+      await new Promise(resolve => setTimeout(resolve, 350))
+
+      router.push('/lawyer/subscription/success')
+    } catch (error) {
+      console.error('❌ Erro ao ativar plano gratuito:', error)
+    } finally {
+      setIsActivating(false)
+    }
+  }
+
+  // Monitora pagamento apenas para planos pagos
+  if (selected?.type !== 'FREE') {
+    useSubscriptionPaymentMonitor(pixData?.id)
+  }
 
   if (!selected) {
     return (
@@ -106,11 +127,13 @@ export default function SubscriptionCheckout() {
             <p className="text-sm font-medium">Total</p>
             <div className="text-right">
               <p className="text-lg font-semibold">
-                R$ {selected.price.toFixed(2)}
+                {selected.type === 'FREE' ? 'Grátis' : `R$ ${selected.price.toFixed(2)}`}
               </p>
-              <p className="text-sm text-muted-foreground">
-                /{intervalLabels[selected.interval].toLowerCase()}
-              </p>
+              {selected.type !== 'FREE' && (
+                <p className="text-sm text-muted-foreground">
+                  /{intervalLabels[selected.interval].toLowerCase()}
+                </p>
+              )}
             </div>
           </div>
 
@@ -119,29 +142,76 @@ export default function SubscriptionCheckout() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-4">
                 <ShieldCheck className="h-5 w-5 text-primary" />
-                <p className="font-medium">Compra Protegida</p>
+                <p className="font-medium">
+                  {selected.type === 'FREE' ? 'Plano Seguro' : 'Compra Protegida'}
+                </p>
               </div>
               <ul className="grid gap-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
-                  Acesso imediato após a confirmação do pagamento
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
-                  Pagamento processado com criptografia
-                </li>
+                {selected.type === 'FREE' ? (
+                  <>
+                    <li className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+                      Acesso imediato após ativação
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+                      Sem compromisso de permanência
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+                      Acesso imediato após a confirmação
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+                      Pagamento processado com criptografia
+                    </li>
+                  </>
+                )}
               </ul>
             </CardContent>
           </Card>
         </CardContent>
       </Card>
 
-      {/* Pagamento PIX */}
-      <PixPayment
-        isLoading={isLoadingPix}
-        pix={pixData}
-        onRetry={fetchPixPayment}
-      />
+      {/* Pagamento ou Ativação */}
+      {selected.type === 'FREE' ? (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center gap-4 text-center">
+              <CheckCircle2 className="h-12 w-12 text-primary" />
+              <div className="space-y-2">
+                <h3 className="text-lg font-medium">Ative seu Plano Gratuito</h3>
+                <p className="text-sm text-muted-foreground">
+                  Você está prestes a ativar o plano gratuito. Clique no botão abaixo para começar.
+                </p>
+              </div>
+              <Button
+                className="w-full mt-4"
+                onClick={handleActivateFreeSubscription}
+                disabled={isActivating}
+              >
+                {isActivating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Ativando...
+                  </>
+                ) : (
+                  'Ativar Plano Gratuito'
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <PixPayment
+          isLoading={isLoadingPix}
+          pix={pixData}
+          onRetry={fetchPixPayment}
+        />
+      )}
     </div>
   )
 }
