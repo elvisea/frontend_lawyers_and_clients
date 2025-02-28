@@ -49,11 +49,11 @@ export default function CaseCheckout({ params }: CaseCheckoutProps) {
   }, [id])
 
   useEffect(() => {
-    if (!hasInitializedRef.current && id) {
-      createCaseCharge();
-      hasInitializedRef.current = true;
+    if (!hasInitializedRef.current) {
+      createCaseCharge()
+      hasInitializedRef.current = true
     }
-  }, [id]);
+  }, [createCaseCharge])
 
   // Inicializa a conexão WebSocket
   useCasePaymentMonitor(caseCharge);
