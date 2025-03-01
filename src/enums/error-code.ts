@@ -96,6 +96,11 @@ export enum ErrorCode {
    * Código de erro para indicar que o tamanho do arquivo é inválido.
    */
   INVALID_FILE_SIZE = 'INVALID_FILE_SIZE',
+
+  /**
+   * Código de erro para indicar que o limite de casos do plano foi excedido.
+   */
+  CASES_LIMIT_EXCEEDED = 'CASES_LIMIT_EXCEEDED',
 }
 
 /**
