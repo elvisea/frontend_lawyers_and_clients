@@ -89,5 +89,10 @@ export const errors: Errors = {
   INVALID_FILE_SIZE: {
     title: "INVALID_FILE_SIZE_TITLE",
     description: "INVALID_FILE_SIZE_DESCRIPTION",
-  }
+  },
+
+  CASES_LIMIT_EXCEEDED: {
+    title: "CASES_LIMIT_EXCEEDED_TITLE",
+    description: "CASES_LIMIT_EXCEEDED_DESCRIPTION",
+  },
 };

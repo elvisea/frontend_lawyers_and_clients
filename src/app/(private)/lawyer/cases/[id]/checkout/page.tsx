@@ -1,23 +1,22 @@
 'use client'
 
-import { useState, use, useEffect, useRef } from 'react'
+import { use, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, ShieldCheck, ArrowRight, AlertCircle } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-import api from '@/http/api'
-import useCreateCaseCharge from '@/hooks/use-create-case-charge'
+import { ErrorCode } from '@/enums/error-code'
 
-import { CaseFeatures } from '@/types/case'
+import { useCaseFeatures } from '@/hooks/use-case-features'
+import useCreateCaseCharge from '@/hooks/use-create-case-charge'
+import { useCasePaymentMonitor } from '@/hooks/use-case-payment-monitor'
 
 import { Loading } from '@/components/loading'
 import { PixPayment } from '@/components/pix-payment'
 import { SubscriptionPromo } from '@/components/subscription-promo'
-
-import { useCasePaymentMonitor } from '@/hooks/use-case-payment-monitor'
 
 type CaseCheckoutProps = {
   params: Promise<{ id: string }>
@@ -28,25 +27,14 @@ export default function CaseCheckout({ params }: CaseCheckoutProps) {
   const router = useRouter()
   const hasInitializedRef = useRef(false)
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [caseData, setCaseData] = useState<CaseFeatures | null>(null)
-  const { caseCharge, isLoading: isLoadingCaseCharge, createCaseCharge } = useCreateCaseCharge(id)
+  const { caseData, isLoading: isLoadingCaseFeatures } = useCaseFeatures(id)
 
-  useEffect(() => {
-    const fetchCase = async () => {
-      try {
-        setIsLoading(true)
-        const response = await api.get<CaseFeatures>(`/cases/${id}/features`)
-        setCaseData(response.data)
-      } catch (error) {
-        console.error('❌ Erro ao carregar caso:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchCase()
-  }, [id])
+  const {
+    caseCharge,
+    isLoading: isLoadingCaseCharge,
+    createCaseCharge,
+    errorCode,
+  } = useCreateCaseCharge(id)
 
   useEffect(() => {
     if (!hasInitializedRef.current) {
@@ -60,8 +48,44 @@ export default function CaseCheckout({ params }: CaseCheckoutProps) {
 
   const handleBack = () => router.back()
 
-  if (isLoading) {
-    return <Loading />
+  if (isLoadingCaseFeatures || isLoadingCaseCharge) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <Loading />
+      </div>
+    )
+  }
+
+  // Renderiza card de limite excedido
+  if (errorCode === ErrorCode.CASES_LIMIT_EXCEEDED) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="w-full max-w-2xl">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center">
+                  <AlertCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-600" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium">Limite de Casos Atingido</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Você atingiu o limite de casos do seu plano atual. Para continuar adquirindo novos casos, considere fazer um upgrade para um plano com mais benefícios.
+                  </p>
+                </div>
+                <Button
+                  className="w-full mt-4"
+                  onClick={() => router.push('/lawyer/subscription')}
+                >
+                  Ver Planos Disponíveis
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   return (

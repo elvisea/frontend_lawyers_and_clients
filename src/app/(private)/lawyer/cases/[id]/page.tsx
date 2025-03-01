@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import { use } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, FileText, ShoppingCart, Loader2 } from 'lucide-react'
 
@@ -14,11 +14,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { CardCase } from '@/components/card-case'
 
-import api from '@/http/api'
-
-import { CaseFeatures } from '@/types/case'
-
 import { useSubscription } from '@/hooks/use-subscription';
+import { useCaseFeatures } from '@/hooks/use-case-features';
 
 interface CaseDetailsProps {
   params: Promise<{ id: string }>
@@ -29,34 +26,9 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
 
   const { subscription } = useSubscription()
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [caseData, setCaseData] = useState<CaseFeatures | null>(null)
-
   const { id } = use(params)
 
-  useEffect(() => {
-    const fetchCase = async () => {
-      try {
-        console.log(`🔍 [Case] Iniciando carregamento dos dados do caso com ID: ${id}`)
-        setIsLoading(true)
-        const response = await api.get<CaseFeatures>(`/cases/${id}/features`)
-
-        // Delay artificial para suavizar a transição
-        await new Promise(resolve => setTimeout(resolve, 350))
-
-        console.log(`✅ [Case] Dados do caso carregados com sucesso:`, response.data)
-        setCaseData(response.data)
-      } catch (error) {
-        console.error('🚨 [Case] Erro ao carregar dados do caso:', error)
-      } finally {
-        console.log('🏁 [Case] Carregamento do caso finalizado')
-        setIsLoading(false)
-      }
-    }
-
-    fetchCase()
-  }, [id])
-
+  const { isLoading, caseData } = useCaseFeatures(id)
 
   const handleBack = () => router.push('/lawyer/cases')
 
