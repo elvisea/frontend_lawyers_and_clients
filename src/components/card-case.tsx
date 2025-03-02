@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { FileText, Clock, User, Banknote } from 'lucide-react'
+import { FileText, Clock, User } from 'lucide-react'
 
 import {
   Card,
@@ -24,7 +24,6 @@ type CardCaseProps = {
   title: string
   description: string
   status: CaseStatus
-  price?: number
   documents: number
   createdAt: Date
   client: {
@@ -37,7 +36,6 @@ export function CardCase({
   title,
   description,
   status,
-  price,
   documents,
   createdAt,
   client,
@@ -89,20 +87,6 @@ export function CardCase({
               {documents} {documents === 1 ? 'documento' : 'documentos'}
             </span>
           </div>
-
-          {price && (
-            <>
-              <Separator orientation="vertical" className="h-4 hidden sm:block" />
-
-              <div className="flex items-center gap-2">
-                <Banknote className="h-4 w-4 flex-shrink-0" />
-
-                <span className="text-lg font-semibold text-primary">
-                  {`${price.toFixed(2)}`}
-                </span>
-              </div>
-            </>
-          )}
 
         </div>
       </CardContent>
