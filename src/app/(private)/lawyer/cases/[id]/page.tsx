@@ -2,17 +2,11 @@
 
 import { use } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, FileText, ShoppingCart, Loader2 } from 'lucide-react'
-
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { ArrowLeft, ShoppingCart, Loader2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { CardCase } from '@/components/card-case'
+import { DocumentsList } from '@/components/documents-list'
 
 import { useSubscription } from '@/hooks/use-subscription';
 import { useCaseFeatures } from '@/hooks/use-case-features';
@@ -96,31 +90,11 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
           />
 
           {/* Documentos */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Documentos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {caseData.documents.map((document) => (
-                  <div
-                    key={document.id}
-                    className="flex items-center justify-between rounded-lg border p-4"
-                  >
-                    <div className="flex items-center gap-4">
-                      <FileText className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium">{document.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {document.type}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <DocumentsList
+            documents={caseData.documents}
+            isInteractive={false}
+          />
+
         </div>
       </div>
     </div>

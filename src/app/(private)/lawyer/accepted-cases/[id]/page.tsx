@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, use } from 'react'
 
-import { ArrowLeft, Clock, FileText, User, Phone, MessageSquare } from 'lucide-react'
+import { ArrowLeft, Clock, User, Phone, MessageSquare } from 'lucide-react'
 
 import { ptBR } from 'date-fns/locale'
 import { formatDistanceToNow } from 'date-fns'
@@ -12,12 +12,15 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
+import api from '@/http/api'
+
+import { CaseStatus } from '@/types/case'
+import { useDocumentDownload } from '@/hooks/use-document-download'
 
 import { Loading } from '@/components/loading'
-import { statusMap } from '@/app/(private)/client/cases/components/case-card'
+import { DocumentsList } from '@/components/documents-list'
 
-import api from '@/http/api'
-import { CaseStatus } from '@/types/case'
+import { statusMap } from '@/app/(private)/client/cases/components/case-card'
 
 interface AcceptedCase {
   id: string
@@ -65,6 +68,7 @@ export default function AcceptedCasePage({ params }: AcceptedCasePageProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   const { id } = use(params)
+  const { isDownloading, downloadDocument } = useDocumentDownload()
 
   useEffect(() => {
     const fetchCase = async () => {
@@ -110,176 +114,148 @@ export default function AcceptedCasePage({ params }: AcceptedCasePageProps) {
   }
 
   return (
-    <div className="flex justify-center">
-      <div className="w-full max-w-4xl space-y-6">
-        {/* Header */}
-        <div className="flex items-center h-16">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBack}
-              className="rounded-full"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <h1 className="text-2xl font-semibold">Detalhes do Caso</h1>
-          </div>
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center h-16">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBack}
+            className="rounded-full"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-2xl font-semibold">Detalhes do Caso</h1>
         </div>
+      </div>
 
-        <div className="space-y-6">
-          {/* Informações do Caso */}
-          <Card>
-            <CardHeader>
-              <div className="space-y-2.5">
-                <CardTitle className="line-clamp-2 text-base">{caseData.title}</CardTitle>
-                <Badge
-                  variant="outline"
-                  className={`${statusMap[caseData.status].color} flex items-center justify-center h-7 w-full max-w-[140px]`}
-                >
-                  {statusMap[caseData.status].label}
-                </Badge>
+      <div className="mx-auto w-full max-w-4xl space-y-6">
+        {/* Informações do Caso */}
+        <Card>
+          <CardHeader>
+            <div className="space-y-2.5">
+              <CardTitle className="line-clamp-2 text-base">{caseData.title}</CardTitle>
+              <Badge
+                variant="outline"
+                className={`${statusMap[caseData.status].color} flex items-center justify-center h-7 w-full max-w-[140px]`}
+              >
+                {statusMap[caseData.status].label}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Descrição</h3>
+              <p className="text-sm text-muted-foreground">{caseData.description}</p>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Data de Criação</h3>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>
+                  {formatDistanceToNow(new Date(caseData.createdAt), {
+                    addSuffix: true,
+                    locale: ptBR
+                  })}
+                </span>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium">Descrição</h3>
-                <p className="text-sm text-muted-foreground">{caseData.description}</p>
-              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium">Data de Criação</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>
-                    {formatDistanceToNow(new Date(caseData.createdAt), {
-                      addSuffix: true,
-                      locale: ptBR
-                    })}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Informações do Cliente */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Informações do Cliente
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-8">
-                {/* Informações Principais */}
-                <div>
-                  <h3 className="text-sm font-medium mb-4">Informações Principais</h3>
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <p className="text-sm">
-                        <span className="text-muted-foreground">Nome:</span>{' '}
-                        {caseData.client.name}
-                      </p>
-                      <p className="text-sm">
-                        <span className="text-muted-foreground">Profissão:</span>{' '}
-                        {caseData.client.occupation}
-                      </p>
-                      <p className="text-sm">
-                        <span className="text-muted-foreground">RG:</span>{' '}
-                        {caseData.client.documents.rg}
-                      </p>
-                      <p className="text-sm">
-                        <span className="text-muted-foreground">CPF:</span>{' '}
-                        {caseData.client.documents.cpf}
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-sm">
-                        <span className="text-muted-foreground">Endereço:</span>{' '}
-                        {caseData.client.address.street}, {caseData.client.address.number}
-                      </p>
-                      <p className="text-sm">
-                        <span className="text-muted-foreground">Cidade/Estado:</span>{' '}
-                        {caseData.client.address.city}/{caseData.client.address.state}
-                      </p>
-                      <p className="text-sm">
-                        <span className="text-muted-foreground">CEP:</span>{' '}
-                        {caseData.client.address.zipCode}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contatos */}
-                <div>
-                  <h3 className="text-sm font-medium mb-4">Contatos</h3>
+        {/* Informações do Cliente */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Informações do Cliente
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-8">
+              {/* Informações Principais */}
+              <div>
+                <h3 className="text-sm font-medium mb-4">Informações Principais</h3>
+                <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                      <p className="text-sm">
-                        <span className="text-muted-foreground">Email:</span>{' '}
-                        <a
-                          href={`mailto:${caseData.client.email}`}
-                          className="text-primary hover:underline"
-                        >
-                          {caseData.client.email}
-                        </a>
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <p className="text-sm">
-                        <span className="text-muted-foreground">Telefone:</span>{' '}
-                        <a
-                          href={`tel:${caseData.client.phone}`}
-                          className="text-primary hover:underline"
-                        >
-                          {caseData.client.phone}
-                        </a>
-                      </p>
-                    </div>
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Nome:</span>{' '}
+                      {caseData.client.name}
+                    </p>
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Profissão:</span>{' '}
+                      {caseData.client.occupation}
+                    </p>
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">RG:</span>{' '}
+                      {caseData.client.documents.rg}
+                    </p>
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">CPF:</span>{' '}
+                      {caseData.client.documents.cpf}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Endereço:</span>{' '}
+                      {caseData.client.address.street}, {caseData.client.address.number}
+                    </p>
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Cidade/Estado:</span>{' '}
+                      {caseData.client.address.city}/{caseData.client.address.state}
+                    </p>
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">CEP:</span>{' '}
+                      {caseData.client.address.zipCode}
+                    </p>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Documentos */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Documentos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {caseData.documents.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">{doc.type}</p>
-                      <p className="text-xs text-muted-foreground">{doc.name}</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => window.open(doc.url, '_blank')}
-                    >
-                      <FileText className="h-4 w-4" />
-                    </Button>
+              {/* Contatos */}
+              <div>
+                <h3 className="text-sm font-medium mb-4">Contatos</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Email:</span>{' '}
+                      <a
+                        href={`mailto:${caseData.client.email}`}
+                        className="text-primary hover:underline"
+                      >
+                        {caseData.client.email}
+                      </a>
+                    </p>
                   </div>
-                ))}
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Telefone:</span>{' '}
+                      <a
+                        href={`tel:${caseData.client.phone}`}
+                        className="text-primary hover:underline"
+                      >
+                        {caseData.client.phone}
+                      </a>
+                    </p>
+                  </div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-
-        </div>
+        {/* Documentos */}
+        <DocumentsList
+          documents={caseData.documents}
+          isInteractive={true}
+          isDownloading={isDownloading}
+          onDocumentClick={downloadDocument}
+        />
       </div>
     </div>
   )

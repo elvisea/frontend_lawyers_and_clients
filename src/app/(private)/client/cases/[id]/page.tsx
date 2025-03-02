@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, use } from 'react'
 
-import { ArrowLeft, Clock, Edit, FileText, User, Loader2 } from 'lucide-react'
+import { ArrowLeft, Clock, Edit, User, Loader2 } from 'lucide-react'
 
 import { ptBR } from 'date-fns/locale'
 import { formatDistanceToNow } from 'date-fns'
@@ -22,6 +22,7 @@ import { statusMap } from '../components/case-card'
 
 import api from '@/http/api'
 import { DetailedCase } from '@/types/case'
+import { DocumentsList } from '@/components/documents-list'
 
 interface CaseDetailsProps {
   params: Promise<{ id: string }>
@@ -150,39 +151,11 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
             </CardContent>
           </Card>
 
-          {/* Documentos */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Documentos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {caseData.documents.length > 0 ? (
-                  caseData.documents.map((doc) => (
-                    <div
-                      key={doc.id}
-                      className="flex items-center justify-between rounded-lg border p-3"
-                    >
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">{doc.type}</p>
-                        <p className="text-xs text-muted-foreground">{doc.name}</p>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <FileText className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground col-span-2">
-                    Nenhum documento anexado
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Documentos - Nova implementação */}
+          <DocumentsList
+            documents={caseData.documents}
+            isInteractive={false}
+          />
 
           {/* Informações do Advogado */}
           {caseData.lawyer && (
