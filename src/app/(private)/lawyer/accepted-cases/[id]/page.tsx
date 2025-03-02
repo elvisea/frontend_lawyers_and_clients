@@ -114,10 +114,10 @@ export default function AcceptedCasePage({ params }: AcceptedCasePageProps) {
   }
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="flex items-center h-16">
-        <div className="flex items-center gap-4">
+    <div className="flex justify-center px-1 sm:px-6">
+      <div className="w-full max-w-4xl space-y-6">
+        {/* Header */}
+        <div className="flex items-center h-16">
           <Button
             variant="ghost"
             size="icon"
@@ -126,11 +126,9 @@ export default function AcceptedCasePage({ params }: AcceptedCasePageProps) {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-semibold">Detalhes do Caso</h1>
+          <h1 className="ml-4 text-2xl font-semibold">Detalhes do Caso</h1>
         </div>
-      </div>
 
-      <div className="mx-auto w-full max-w-4xl space-y-6">
         {/* Informações do Caso */}
         <Card>
           <CardHeader>

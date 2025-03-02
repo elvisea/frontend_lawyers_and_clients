@@ -105,7 +105,6 @@ export function AcceptedCases() {
             title={item.title}
             description={item.description}
             status={item.status}
-            price={item.price}
             documents={item.documents}
             createdAt={item.createdAt}
             client={{ name: item.client.name }}

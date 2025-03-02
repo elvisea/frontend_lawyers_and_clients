@@ -39,7 +39,7 @@ export function DocumentsList({
             <AccordionTrigger className="text-base hover:no-underline">
               <div className="flex items-center gap-2 flex-1">
                 <FileText className="h-5 w-5 text-muted-foreground" />
-                <span className="text-2xl font-semibold">Lista de Documentos</span>
+                <span className="text-2xl font-semibold">Documentos</span>
                 <Badge variant="secondary">
                   {documents.length}
                 </Badge>
