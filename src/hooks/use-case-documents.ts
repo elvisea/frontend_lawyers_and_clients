@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 import api from '@/http/api'
 import { AppError } from '@/errors/app-error'
@@ -27,7 +27,7 @@ export const useCaseDocuments = (caseId: string) => {
   const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
 
   // Função para carregar documentos iniciais (se necessário)
-  const fetchInitialDocuments = async () => {
+  const fetchInitialDocuments = useCallback(async () => {
     if (!caseId) return
 
     setIsLoading(true)
@@ -48,7 +48,7 @@ export const useCaseDocuments = (caseId: string) => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [caseId])
 
   const uploadDocuments = async (data: DocumentFormData[]): Promise<boolean> => {
     if (!caseId || !data.length) return false
@@ -142,7 +142,7 @@ export const useCaseDocuments = (caseId: string) => {
   // Carregar documentos iniciais quando o componente montar
   useEffect(() => {
     fetchInitialDocuments()
-  }, [caseId])
+  }, [fetchInitialDocuments])
 
   return {
     documents,
