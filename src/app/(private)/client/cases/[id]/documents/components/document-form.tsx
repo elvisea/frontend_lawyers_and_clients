@@ -36,42 +36,6 @@ interface DocumentFormProps {
   isUploading: boolean
 }
 
-// Mapeamento de tipos de documentos
-const documentTypes = {
-  // Documentos Pessoais
-  'ID': 'Documento de Identidade',
-  'CPF': 'CPF',
-  'PASSPORT': 'Passaporte',
-  'ADDRESS_PROOF': 'Comprovante de Endereço',
-
-  // Documentos Legais
-  'CONTRACT': 'Contrato',
-  'POLICE_REPORT': 'Boletim de Ocorrência',
-  'LAWSUIT': 'Processo Judicial',
-  'POWER_OF_ATTORNEY': 'Procuração',
-
-  // Documentos Financeiros
-  'RECEIPT': 'Recibo/Comprovante',
-  'PAYMENT': 'Comprovante de Pagamento',
-  'INVOICE': 'Nota Fiscal',
-  'BANK_STATEMENT': 'Extrato Bancário',
-
-  // Documentos Médicos
-  'MEDICAL_REPORT': 'Laudo Médico',
-  'MEDICAL_EXAM': 'Exame Médico',
-  'PRESCRIPTION': 'Receita Médica',
-
-  // Evidências Digitais
-  'CHAT_LOG': 'Conversa de Chat',
-  'WHATSAPP': 'Conversa de WhatsApp',
-  'EMAIL': 'E-mail',
-  'SCREENSHOT': 'Print de Tela',
-  'PHOTO': 'Fotografia',
-  'AUDIO': 'Áudio',
-  'VIDEO': 'Vídeo',
-  'OTHER': 'Outro'
-}
-
 const formSchema = yup.object({
   type: yup.string().required('Selecione o tipo de documento'),
   customType: yup.string().when('type', {
