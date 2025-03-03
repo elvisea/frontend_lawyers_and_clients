@@ -95,4 +95,9 @@ export const errors: Errors = {
     title: "CASES_LIMIT_EXCEEDED_TITLE",
     description: "CASES_LIMIT_EXCEEDED_DESCRIPTION",
   },
+
+  LAWYER_PROFILE_NOT_FOUND: {
+    title: "LAWYER_PROFILE_NOT_FOUND_TITLE",
+    description: "LAWYER_PROFILE_NOT_FOUND_DESCRIPTION",
+  },
 };
