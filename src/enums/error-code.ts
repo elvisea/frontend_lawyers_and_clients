@@ -101,6 +101,11 @@ export enum ErrorCode {
    * Código de erro para indicar que o limite de casos do plano foi excedido.
    */
   CASES_LIMIT_EXCEEDED = 'CASES_LIMIT_EXCEEDED',
+
+  /**
+ * Código de sucesso para indicar que a criação do perfil do advogado foi concluída.
+ */
+  LAWYER_PROFILE_NOT_FOUND = "LAWYER_PROFILE_NOT_FOUND",
 }
 
 /**
