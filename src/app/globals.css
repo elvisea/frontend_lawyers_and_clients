@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* *=========== Default theme =========== */
-/* @layer base {
+@layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -65,7 +65,7 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
-} */
+}
 
 /* *=========== Green theme =========== */
 @layer base {
@@ -123,4 +123,16 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Corrigir o texto do input file no modo dark */
+  .dark input[type="file"]::file-selector-button {
+    color: hsl(var(--primary-foreground));
+  }
+}
+
+/* Remover barra de rolagem horizontal */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
 }
