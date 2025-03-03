@@ -100,4 +100,9 @@ export const errors: Errors = {
     title: "LAWYER_PROFILE_NOT_FOUND_TITLE",
     description: "LAWYER_PROFILE_NOT_FOUND_DESCRIPTION",
   },
+
+  CLIENT_PROFILE_NOT_FOUND: {
+    title: "CLIENT_PROFILE_NOT_FOUND_TITLE",
+    description: "CLIENT_PROFILE_NOT_FOUND_DESCRIPTION",
+  },
 };

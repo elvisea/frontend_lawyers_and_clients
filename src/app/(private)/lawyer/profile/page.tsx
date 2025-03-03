@@ -72,7 +72,7 @@ export default function LawyerProfilePage() {
             <h1 className="text-2xl font-semibold">Meu Perfil</h1>
           </div>
           <Button onClick={() => router.push('/lawyer/profile/edit')}>
-            <Edit className="h-4 w-4 mr-2" />
+            <Edit className="hidden sm:block h-4 w-4 sm:mr-2" />
             Editar Perfil
           </Button>
         </div>
@@ -154,7 +154,7 @@ export default function LawyerProfilePage() {
               <h3 className="text-sm font-medium mb-2">Especialidades</h3>
               <div className="flex flex-wrap gap-2">
                 {profile?.specialties.map((specialty) => (
-                  <Badge key={specialty} variant="secondary">
+                  <Badge className="px-3 py-1.5 h-7 cursor-pointer hover:bg-secondary/80" key={specialty} variant="secondary">
                     {specialty}
                   </Badge>
                 ))}
@@ -165,7 +165,7 @@ export default function LawyerProfilePage() {
               <h3 className="text-sm font-medium mb-2">Certificações</h3>
               <div className="flex flex-wrap gap-2">
                 {profile?.certificates.map((certificate) => (
-                  <Badge key={certificate} variant="secondary">
+                  <Badge className="px-3 py-1.5 h-7 cursor-pointer hover:bg-secondary/80" key={certificate} variant="secondary">
                     {certificate}
                   </Badge>
                 ))}

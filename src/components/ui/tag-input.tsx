@@ -56,7 +56,7 @@ export function TagInput({
           size="icon"
           onClick={handleAdd}
           disabled={!inputValue.trim()}
-          className="rounded-full h-10 w-10"
+          className="h-10 w-10"
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -67,11 +67,11 @@ export function TagInput({
           <Badge
             key={index}
             variant="secondary"
-            className="px-2 py-1 cursor-pointer hover:bg-secondary/80"
+            className="px-3 py-1.5 h-7 cursor-pointer hover:bg-secondary/80"
             onClick={() => handleRemove(tag)}
           >
             {tag}
-            <X className="ml-1 h-3 w-3" />
+            <X className="ml-2 h-3.5 w-3.5" />
           </Badge>
         ))}
       </div>
