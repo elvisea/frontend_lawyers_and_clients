@@ -106,6 +106,11 @@ export enum ErrorCode {
  * Código de sucesso para indicar que a criação do perfil do advogado foi concluída.
  */
   LAWYER_PROFILE_NOT_FOUND = "LAWYER_PROFILE_NOT_FOUND",
+
+  /**
+   * Código de erro para indicar que o perfil do cliente não foi encontrado.
+   */
+  CLIENT_PROFILE_NOT_FOUND = "CLIENT_PROFILE_NOT_FOUND",
 }
 
 /**

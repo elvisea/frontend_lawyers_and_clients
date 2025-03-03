@@ -8,31 +8,27 @@ import { yupResolver } from '@hookform/resolvers/yup'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { TagInput } from '@/components/ui/tag-input'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 
 import api from '@/http/api'
 import { ErrorCode } from '@/enums/error-code'
-import { useLawyerProfile } from '@/hooks/use-lawyer-profile'
+import { useClientProfile } from '@/hooks/use-client-profile'
 import { profileSchema, type ProfileFormData } from '../schema'
+import { formatDateToISO, formatDateToBR } from '@/utils/date'
 
 export default function EditProfilePage() {
   const router = useRouter()
-  const { profile, isLoading, errorCode } = useLawyerProfile()
+  const { profile, isLoading, errorCode } = useClientProfile()
 
   const form = useForm<ProfileFormData>({
     resolver: yupResolver(profileSchema),
     defaultValues: {
+      cpf: profile?.cpf || '',
+      rg: profile?.rg || '',
+      birthDate: profile?.birthDate || '',
+      occupation: profile?.occupation || '',
       phone: profile?.phone || '',
-      description: profile?.description || '',
-      yearsOfExp: profile?.yearsOfExp || 0,
-      education: profile?.education || '',
-      oab: {
-        number: profile?.oab?.number || '',
-        state: profile?.oab?.state || '',
-      },
       address: {
         street: profile?.address?.street || '',
         number: profile?.address?.number || '',
@@ -42,15 +38,18 @@ export default function EditProfilePage() {
         complement: profile?.address?.complement || '',
         neighborhood: profile?.address?.neighborhood || '',
       },
-      specialties: profile?.specialties || [],
-      certificates: profile?.certificates || [],
     }
   })
 
   const handleSubmit = async (data: ProfileFormData) => {
     try {
-      await api.put('/lawyers/profile', data)
-      router.push('/lawyer/profile')
+      const formattedData = {
+        ...data,
+        birthDate: formatDateToISO(data.birthDate)
+      }
+
+      await api.put('/clients/profile', formattedData)
+      router.push('/client/profile')
     } catch (error) {
       console.error('Erro ao atualizar perfil:', error)
       alert('Erro ao atualizar perfil. Tente novamente.')
@@ -60,14 +59,11 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (profile) {
       form.reset({
+        cpf: profile.cpf,
+        rg: profile.rg,
+        birthDate: formatDateToBR(profile.birthDate),
+        occupation: profile.occupation,
         phone: profile.phone,
-        description: profile.description,
-        yearsOfExp: profile.yearsOfExp,
-        education: profile.education,
-        oab: {
-          number: profile.oab.number,
-          state: profile.oab.state,
-        },
         address: {
           street: profile.address.street,
           number: profile.address.number,
@@ -77,8 +73,6 @@ export default function EditProfilePage() {
           complement: profile.address.complement || '',
           neighborhood: profile.address.neighborhood,
         },
-        specialties: profile.specialties,
-        certificates: profile.certificates,
       })
     }
   }, [profile, form])
@@ -94,8 +88,8 @@ export default function EditProfilePage() {
     )
   }
 
-  if (errorCode === ErrorCode.LAWYER_PROFILE_NOT_FOUND) {
-    router.push('/lawyer/profile')
+  if (errorCode === ErrorCode.CLIENT_PROFILE_NOT_FOUND) {
+    router.push('/client/profile')
     return null
   }
 
@@ -135,12 +129,75 @@ export default function EditProfilePage() {
 
         <Form {...form}>
           <form className="space-y-6">
-            {/* Informações Básicas */}
+            {/* Informações Pessoais */}
             <Card>
               <CardHeader>
-                <CardTitle>Informações Básicas</CardTitle>
+                <CardTitle>Informações Pessoais</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="cpf"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CPF</FormLabel>
+                        <FormControl>
+                          <Input placeholder="123.456.789-00" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="rg"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>RG</FormLabel>
+                        <FormControl>
+                          <Input placeholder="12.345.678-9" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="birthDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Data de Nascimento</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="DD/MM/AAAA"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="occupation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Profissão</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: Engenheiro" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={form.control}
                   name="phone"
@@ -148,94 +205,7 @@ export default function EditProfilePage() {
                     <FormItem>
                       <FormLabel>Telefone</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="+5511987654321"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Descrição Profissional</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Descreva sua experiência..."
-                          className="resize-none"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="yearsOfExp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Anos de Experiência</FormLabel>
-                        <FormControl>
-                          <Input min={0} type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="education"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Formação</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ex: Bacharel em Direito" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* OAB */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Registro OAB</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="oab.number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Número</FormLabel>
-                      <FormControl>
-                        <Input placeholder="123456" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="oab.state"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Estado</FormLabel>
-                      <FormControl>
-                        <Input placeholder="SP" maxLength={2} {...field} />
+                        <Input placeholder="11987654321" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -318,7 +288,7 @@ export default function EditProfilePage() {
                       <FormItem>
                         <FormLabel>CEP</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input placeholder="01234-567" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -355,50 +325,6 @@ export default function EditProfilePage() {
                     )}
                   />
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Especialidades e Certificações */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Especialidades e Certificações</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="specialties"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Especialidades</FormLabel>
-                      <FormControl>
-                        <TagInput
-                          value={field.value?.filter((item): item is string => Boolean(item)) ?? []}
-                          onChange={field.onChange}
-                          placeholder="Digite uma especialidade..."
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="certificates"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Certificações</FormLabel>
-                      <FormControl>
-                        <TagInput
-                          value={field.value?.filter((item): item is string => Boolean(item)) ?? []}
-                          onChange={field.onChange}
-                          placeholder="Digite uma certificação..."
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </CardContent>
             </Card>
           </form>
