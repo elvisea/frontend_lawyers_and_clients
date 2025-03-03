@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 import api from '@/http/api'
 import { CaseFeatures } from '@/types/case'
@@ -7,7 +7,7 @@ export const useCaseFeatures = (caseId: string | null | undefined) => {
   const [isLoading, setIsLoading] = useState(true)
   const [caseData, setCaseData] = useState<CaseFeatures | null>(null)
 
-  const fetchCaseFeatures = async () => {
+  const fetchCaseFeatures = useCallback(async () => {
     if (!caseId) {
       console.error('⚠️ [Case Features] ID do caso não fornecido')
       return
@@ -35,11 +35,11 @@ export const useCaseFeatures = (caseId: string | null | undefined) => {
       console.log('🏁 [Case Features] Carregamento do caso finalizado')
       setIsLoading(false)
     }
-  }
+  }, [caseId])
 
   useEffect(() => {
     fetchCaseFeatures()
-  }, [caseId])
+  }, [fetchCaseFeatures])
 
   return {
     isLoading,

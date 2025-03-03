@@ -6,7 +6,7 @@ import {
   Eye,
   FileAudio,
   FileVideo,
-  Image,
+  Image as ImageIcon,
   Mail,
   MessageSquare,
   Loader2
@@ -71,7 +71,7 @@ export function DocumentList({ documents, onDelete, isLoading }: DocumentListPro
     }
 
     if (docType.includes('Fotografia') || docType.includes('Print')) {
-      return <Image className="h-5 w-5 text-emerald-500" />
+      return <ImageIcon className="h-5 w-5 text-emerald-500" />
     }
 
     if (docType.includes('E-mail')) {
@@ -84,7 +84,7 @@ export function DocumentList({ documents, onDelete, isLoading }: DocumentListPro
 
     // Depois verificar pela extensão do arquivo
     if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension || '')) {
-      return <Image className="h-5 w-5 text-emerald-500" />
+      return <ImageIcon className="h-5 w-5 text-emerald-500" />
     }
 
     if (['pdf'].includes(extension || '')) {
