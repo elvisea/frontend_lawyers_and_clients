@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import { Upload, FileUp, Loader2 } from 'lucide-react'
 
-import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
@@ -29,58 +28,18 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import { DocumentFormData } from '@/hooks/use-case-documents'
+import { DocumentFormData, schema } from './constants'
 
 interface DocumentFormProps {
   onSubmit: (data: DocumentFormData) => Promise<void>
   isUploading: boolean
 }
 
-const formSchema = yup.object({
-  type: yup.string().required('Selecione o tipo de documento'),
-  customType: yup.string().when('type', {
-    is: 'Outro',
-    then: (schema) => schema.required('Informe o tipo de documento'),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  file: yup
-    .mixed<File>()
-    .required('Selecione um arquivo')
-    .test('fileSize', 'O arquivo deve ter no máximo 10MB', (value) => {
-      if (!value) return true
-      return (value as File).size <= 10 * 1024 * 1024
-    })
-    .test('fileType', 'Formato de arquivo não suportado', (value) => {
-      if (!value) return true
-      const acceptedFormats = [
-        'image/jpeg',
-        'image/png',
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'audio/mpeg',
-        'audio/wav',
-        'audio/ogg',
-        'video/mp4',
-        'video/quicktime',
-        'video/webm',
-      ]
-      return acceptedFormats.includes((value as File).type)
-    }),
-})
-
-interface ExtendedDocumentFormData extends DocumentFormData {
-  customType?: string;
-}
-
 export function DocumentForm({ onSubmit, isUploading }: DocumentFormProps) {
-  const [selectedType, setSelectedType] = useState<string>('')
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const form = useForm<ExtendedDocumentFormData>({
-    resolver: yupResolver(formSchema),
+  const form = useForm<DocumentFormData>({
+    resolver: yupResolver(schema),
     defaultValues: {
       type: '',
       customType: '',
@@ -91,7 +50,6 @@ export function DocumentForm({ onSubmit, isUploading }: DocumentFormProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setSelectedFile(file)
       form.setValue('file', file)
     }
   }
@@ -101,11 +59,10 @@ export function DocumentForm({ onSubmit, isUploading }: DocumentFormProps) {
   }
 
   const handleTypeChange = (value: string) => {
-    setSelectedType(value)
     form.setValue('type', value)
   }
 
-  const handleSubmit = async (data: ExtendedDocumentFormData) => {
+  const handleSubmit = async (data: DocumentFormData) => {
     // Se for tipo personalizado, use o valor do campo customType
     const finalType = data.type === 'Outro' ? data.customType! : data.type
 
@@ -120,9 +77,11 @@ export function DocumentForm({ onSubmit, isUploading }: DocumentFormProps) {
       customType: '',
       file: undefined as unknown as File,
     })
-    setSelectedType('')
-    setSelectedFile(null)
   }
+
+  const file = form.watch('file')
+  const type = form.watch('type')
+  const customType = form.watch('customType')
 
   return (
     <div className="bg-card rounded-lg border shadow-sm">
@@ -194,7 +153,7 @@ export function DocumentForm({ onSubmit, isUploading }: DocumentFormProps) {
             )}
           />
 
-          {selectedType === 'Outro' && (
+          {type === 'Outro' && (
             <FormField
               control={form.control}
               name="customType"
@@ -216,7 +175,7 @@ export function DocumentForm({ onSubmit, isUploading }: DocumentFormProps) {
           <FormField
             control={form.control}
             name="file"
-            render={({ field: { value, onChange, ...field } }) => (
+            render={() => (
               <FormItem>
                 <FormLabel>Arquivo</FormLabel>
                 <FormControl>
@@ -232,20 +191,19 @@ export function DocumentForm({ onSubmit, isUploading }: DocumentFormProps) {
                         Escolher Arquivo
                       </Button>
                       <span className="text-sm text-muted-foreground truncate max-w-[200px] sm:max-w-full">
-                        {selectedFile ? selectedFile.name : 'Nenhum arquivo selecionado'}
+                        {file ? file.name : 'Nenhum arquivo selecionado'}
                       </span>
                     </div>
                     <input
-                      {...field}
                       ref={fileInputRef}
                       type="file"
                       onChange={handleFileChange}
                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.mp3,.wav,.ogg,.mp4,.mov,.webm"
                       className="hidden"
                     />
-                    {selectedFile && (
+                    {file && (
                       <p className="text-xs text-muted-foreground">
-                        Tamanho: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                        Tamanho: {(file.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     )}
                   </div>
@@ -261,7 +219,7 @@ export function DocumentForm({ onSubmit, isUploading }: DocumentFormProps) {
           <div className="flex justify-end">
             <Button
               type="submit"
-              disabled={isUploading || !selectedFile || !selectedType || (selectedType === 'Outro' && !form.watch('customType'))}
+              disabled={isUploading || !file || !type || (type === 'Outro' && !customType)}
               className="w-full sm:w-auto"
             >
               Enviar Documento

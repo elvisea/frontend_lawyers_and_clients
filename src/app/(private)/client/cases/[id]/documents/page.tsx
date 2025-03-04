@@ -10,8 +10,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { DocumentForm } from './components/document-form'
 import { DocumentList } from './components/document-list'
 
-import { DocumentFormData, useCaseDocuments } from '@/hooks/use-case-documents'
+import { useCaseDocuments } from '@/hooks/use-case-documents'
 import { StepIndicator } from '../../new/components/step-indicator'
+import { DocumentFormData } from './components/constants'
 
 const steps = [
   {
