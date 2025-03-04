@@ -80,7 +80,19 @@ api.interceptors.response.use(
             failedQueued.push({
               onSuccess: (token: string) => {
                 console.log('   ➔ Reexecutando requisição com novo token');
-                originalRequestConfig.headers = { Authorization: `Bearer ${token}` };
+
+                // Preservar headers originais, incluindo Content-Type para FormData
+                const headers = {
+                  ...originalRequestConfig.headers,
+                  Authorization: `Bearer ${token}`
+                };
+
+                // Se for FormData, garantir que o Content-Type seja multipart/form-data
+                if (originalRequestConfig.data instanceof FormData) {
+                  delete headers['Content-Type']; // Deixar o Axios definir automaticamente
+                }
+
+                originalRequestConfig.headers = headers;
                 resolve(api(originalRequestConfig));
               },
               onFailure: (error: AxiosError) => {
@@ -103,17 +115,38 @@ api.interceptors.response.use(
 
             saveTokens(data.accessToken, data.refreshToken);
 
-            if (originalRequestConfig.data) {
+            // Não tentar fazer parse do FormData
+            if (originalRequestConfig.data && !(originalRequestConfig.data instanceof FormData)) {
               originalRequestConfig.data = JSON.parse(originalRequestConfig.data);
             }
 
-            originalRequestConfig.headers = { Authorization: `Bearer ${data.accessToken}` };
+            // Preservar headers originais, incluindo Content-Type para FormData
+            const headers = {
+              ...originalRequestConfig.headers,
+              Authorization: `Bearer ${data.accessToken}`
+            };
+
+            // Se for FormData, garantir que o Content-Type seja multipart/form-data
+            if (originalRequestConfig.data instanceof FormData) {
+              delete headers['Content-Type']; // Deixar o Axios definir automaticamente
+            }
+
+            originalRequestConfig.headers = headers;
             api.defaults.headers.common["Authorization"] = `Bearer ${data.accessToken}`;
 
             console.log(`🔄 [Auth] Reprocessando ${failedQueued.length + 1} requisições pendentes`);
             failedQueued.forEach((request) => request.onSuccess(data.accessToken));
 
             console.log(`⏩ [Auth] Reexecutando requisição original: ${requestInfo}`);
+
+            if (originalRequestConfig.data instanceof FormData) {
+              console.log('📦 [Auth] Requisição contém FormData, preservando Content-Type');
+              console.log('   ➔ Headers:', {
+                before: originalRequestConfig.headers,
+                after: headers
+              });
+            }
+
             resolve(api(originalRequestConfig));
           } catch (error: unknown) {
             console.error('❌ [Auth] Falha crítica no refresh token:', error);
