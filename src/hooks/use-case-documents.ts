@@ -4,6 +4,8 @@ import api from '@/http/api'
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
 
+import { DocumentFormData } from '@/app/(private)/client/cases/[id]/documents/components/constants'
+
 export interface Document {
   id: string
   name: string
@@ -12,11 +14,6 @@ export interface Document {
   caseId: string
   createdAt: string
   updatedAt: string
-}
-
-export interface DocumentFormData {
-  type: string
-  file: File
 }
 
 export const useCaseDocuments = (caseId: string) => {
@@ -66,8 +63,10 @@ export const useCaseDocuments = (caseId: string) => {
 
       // Adicionar cada arquivo ao FormData
       data.forEach((doc) => {
-        formData.append('files', doc.file)
-        types.push(doc.type)
+        if (doc.file) {
+          formData.append('files', doc.file)
+          types.push(doc.type)
+        }
       })
 
       // Adicionar os tipos como um array
