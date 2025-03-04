@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, use } from 'react'
 
-import { ArrowLeft, Clock, User, Phone, MessageSquare } from 'lucide-react'
+import { ArrowLeft, Clock, User, Phone, MessageSquare, AlertTriangle } from 'lucide-react'
 
 import { ptBR } from 'date-fns/locale'
 import { formatDistanceToNow } from 'date-fns'
@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 import api from '@/http/api'
 
@@ -21,6 +22,21 @@ import { Loading } from '@/components/loading'
 import { DocumentsList } from '@/components/documents-list'
 
 import { statusMap } from '@/app/(private)/client/cases/components/case-card'
+
+interface ClientDocuments {
+  rg: string | null
+  cpf: string
+}
+
+interface ClientAddress {
+  street: string
+  number: string
+  city: string
+  state: string
+  complement: string
+  neighborhood: string
+  zipCode: string
+}
 
 interface AcceptedCase {
   id: string
@@ -41,20 +57,11 @@ interface AcceptedCase {
     id: string
     name: string
     email: string
-    phone: string
-    birthDate: string
-    occupation: string
-    documents: {
-      rg: string
-      cpf: string
-    }
-    address: {
-      street: string
-      number: string
-      city: string
-      state: string
-      zipCode: string
-    }
+    phone?: string
+    birthDate?: string
+    occupation?: string
+    documents?: ClientDocuments
+    address?: ClientAddress
   }
 }
 
@@ -75,14 +82,11 @@ export default function AcceptedCasePage({ params }: AcceptedCasePageProps) {
       try {
         setIsLoading(true)
         const response = await api.get<AcceptedCase>(`/cases/${id}/accepted`)
-
-        // Delay artificial para suavizar a transição
-        await new Promise(resolve => setTimeout(resolve, 350))
-
         setCaseData(response.data)
       } catch (error) {
         console.error('❌ Erro ao carregar caso:', error)
       } finally {
+        await new Promise(resolve => setTimeout(resolve, 350))
         setIsLoading(false)
       }
     }
@@ -113,52 +117,54 @@ export default function AcceptedCasePage({ params }: AcceptedCasePageProps) {
     )
   }
 
+  const hasProfile = Boolean(caseData.client.documents && caseData.client.address)
+
   return (
-    <div className="flex justify-center px-1 sm:px-6">
+    <div className="flex justify-center">
       <div className="w-full max-w-4xl space-y-6">
-        {/* Header */}
-        <div className="flex items-center h-16">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-            className="rounded-full"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="ml-4 text-2xl font-semibold">Detalhes do Caso</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="ml-4 text-2xl font-semibold">Detalhes do Caso</h1>
+          </div>
         </div>
+
+        {/* Alerta de Perfil Incompleto */}
+        {!hasProfile && (
+          <Alert variant="destructive" className="bg-yellow-50/50 text-yellow-800 dark:bg-yellow-900/10 dark:text-yellow-400">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Perfil do Cliente Incompleto</AlertTitle>
+            <AlertDescription>
+              O cliente ainda não completou seu perfil. Algumas informações podem estar indisponíveis.
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Informações do Caso */}
         <Card>
           <CardHeader>
-            <div className="space-y-2.5">
-              <CardTitle className="line-clamp-2 text-base">{caseData.title}</CardTitle>
-              <Badge
-                variant="outline"
-                className={`${statusMap[caseData.status].color} flex items-center justify-center h-7 w-full max-w-[140px]`}
-              >
-                {statusMap[caseData.status].label}
-              </Badge>
-            </div>
+            <CardTitle className="flex items-center justify-between">
+              <span>{caseData.title}</span>
+              <Badge variant="outline" className={`${statusMap[caseData.status].color} flex items-center justify-center h-7 w-full max-w-[140px]`}>{statusMap[caseData.status].label}</Badge>
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium">Descrição</h3>
-              <p className="text-sm text-muted-foreground">{caseData.description}</p>
-            </div>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">{caseData.description}</p>
 
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium">Data de Criação</h3>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                <span>
-                  {formatDistanceToNow(new Date(caseData.createdAt), {
-                    addSuffix: true,
-                    locale: ptBR
-                  })}
-                </span>
-              </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>
+                {formatDistanceToNow(new Date(caseData.createdAt), {
+                  addSuffix: true,
+                  locale: ptBR
+                })}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -182,34 +188,55 @@ export default function AcceptedCasePage({ params }: AcceptedCasePageProps) {
                       <span className="text-muted-foreground">Nome:</span>{' '}
                       {caseData.client.name}
                     </p>
-                    <p className="text-sm">
-                      <span className="text-muted-foreground">Profissão:</span>{' '}
-                      {caseData.client.occupation}
-                    </p>
-                    <p className="text-sm">
-                      <span className="text-muted-foreground">RG:</span>{' '}
-                      {caseData.client.documents.rg}
-                    </p>
-                    <p className="text-sm">
-                      <span className="text-muted-foreground">CPF:</span>{' '}
-                      {caseData.client.documents.cpf}
-                    </p>
+                    {caseData.client.birthDate && (
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Data de Nascimento:</span>{' '}
+                        {new Date(caseData.client.birthDate).toLocaleDateString('pt-BR')}
+                      </p>
+                    )}
+                    {caseData.client.occupation && (
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Profissão:</span>{' '}
+                        {caseData.client.occupation}
+                      </p>
+                    )}
+                    {caseData.client.documents && (
+                      <>
+                        {caseData.client.documents.rg && (
+                          <p className="text-sm">
+                            <span className="text-muted-foreground">RG:</span>{' '}
+                            {caseData.client.documents.rg ? caseData.client.documents.rg : 'Não informado'}
+                          </p>
+                        )}
+                        <p className="text-sm">
+                          <span className="text-muted-foreground">CPF:</span>{' '}
+                          {caseData.client.documents.cpf}
+                        </p>
+                      </>
+                    )}
                   </div>
 
-                  <div className="space-y-2">
-                    <p className="text-sm">
-                      <span className="text-muted-foreground">Endereço:</span>{' '}
-                      {caseData.client.address.street}, {caseData.client.address.number}
-                    </p>
-                    <p className="text-sm">
-                      <span className="text-muted-foreground">Cidade/Estado:</span>{' '}
-                      {caseData.client.address.city}/{caseData.client.address.state}
-                    </p>
-                    <p className="text-sm">
-                      <span className="text-muted-foreground">CEP:</span>{' '}
-                      {caseData.client.address.zipCode}
-                    </p>
-                  </div>
+                  {caseData.client.address && (
+                    <div className="space-y-2">
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Endereço:</span>{' '}
+                        {caseData.client.address.street}, {caseData.client.address.number}
+                        {caseData.client.address.complement && ` - ${caseData.client.address.complement}`}
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Bairro:</span>{' '}
+                        {caseData.client.address.neighborhood}
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Cidade/Estado:</span>{' '}
+                        {caseData.client.address.city}/{caseData.client.address.state}
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">CEP:</span>{' '}
+                        {caseData.client.address.zipCode}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -229,18 +256,20 @@ export default function AcceptedCasePage({ params }: AcceptedCasePageProps) {
                       </a>
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <p className="text-sm">
-                      <span className="text-muted-foreground">Telefone:</span>{' '}
-                      <a
-                        href={`tel:${caseData.client.phone}`}
-                        className="text-primary hover:underline"
-                      >
-                        {caseData.client.phone}
-                      </a>
-                    </p>
-                  </div>
+                  {caseData.client.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Telefone:</span>{' '}
+                        <a
+                          href={`tel:${caseData.client.phone}`}
+                          className="text-primary hover:underline"
+                        >
+                          {caseData.client.phone}
+                        </a>
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
