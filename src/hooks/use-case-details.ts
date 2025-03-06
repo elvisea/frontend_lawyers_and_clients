@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 import api from '@/http/api'
 import { DetailedCase } from '@/types/case'
@@ -12,7 +12,7 @@ export const useCaseDetails = (caseId: string) => {
 
   const [caseData, setCaseData] = useState<DetailedCase | null>(null)
 
-  const fetchCaseDetails = async () => {
+  const fetchCaseDetails = useCallback(async () => {
     setIsLoading(true)
     setErrorCode(null)
 
@@ -50,17 +50,13 @@ export const useCaseDetails = (caseId: string) => {
       console.log('🏁 [Caso] Operação de busca de detalhes finalizada')
       setIsLoading(false)
     }
-  }
-
-  const updateCaseData = (data: DetailedCase | null) => {
-    setCaseData(data)
-  }
+  }, [caseId])
 
   useEffect(() => {
     if (caseId) {
       fetchCaseDetails()
     }
-  }, [caseId])
+  }, [fetchCaseDetails])
 
   return {
     caseData,
@@ -69,6 +65,6 @@ export const useCaseDetails = (caseId: string) => {
 
 
     refreshCase: fetchCaseDetails,
-    updateCaseData,
+    updateCaseData: setCaseData,
   }
 } 

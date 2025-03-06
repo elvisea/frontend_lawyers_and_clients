@@ -2,8 +2,17 @@ import { useState, useEffect } from 'react'
 import api from '@/http/api'
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
+import { CaseStatus } from '@/types/case'
 
 // Tipos para os dados da dashboard
+interface RecentCase {
+  id: string
+  title: string
+  clientName: string
+  status: CaseStatus
+  createdAt: string
+}
+
 interface LawyerProfile {
   isComplete: boolean
   specialties: string[]
@@ -38,7 +47,7 @@ interface DashboardData {
     email: string
   }
   casesMetrics: CasesMetrics
-  recentCases: any[] // TODO: Tipar quando implementado
+  recentCases: RecentCase[]
   lawyerProfile: LawyerProfile
   financialSummary: FinancialSummary
   recentTransactions: Transaction[]
