@@ -14,13 +14,18 @@ import {
   Clock,
   CheckCircle2,
   FileWarning,
-  Loader2
+  Loader2,
+  UserCircle,
+  ClipboardCheck,
+  Zap,
+  MessageSquare,
+  UserCog
 } from 'lucide-react'
 
 import { useClientDashboard } from '@/hooks/use-client-dashboard'
 
 import { Button } from '@/components/ui/button'
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
 
 export default function ClientDashboardPage() {
@@ -84,22 +89,74 @@ export default function ClientDashboardPage() {
 
       {/* Card de Aviso - Perfil não cadastrado */}
       {!data?.profileStatus.isComplete && (
-        <Alert className="border-yellow-600/20 bg-yellow-50/50 dark:border-yellow-400/20 dark:bg-yellow-900/10">
-          <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
-          <AlertTitle className="text-yellow-800 dark:text-yellow-300">
-            Complete suas Informações Pessoais
-          </AlertTitle>
-          <AlertDescription className="text-yellow-700 dark:text-yellow-300/90">
-            Para ter uma melhor experiência na plataforma e aumentar suas chances de encontrar o advogado ideal, complete seu perfil.
-          </AlertDescription>
-          <Button
-            variant="outline"
-            className="mt-4 border-yellow-600/50 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-600"
-            onClick={() => router.push('/client/profile/create')}
-          >
-            Completar Perfil
-          </Button>
-        </Alert>
+        <Card className="border-yellow-600/20 bg-gradient-to-br from-yellow-50/50 to-orange-50/50 dark:from-yellow-900/10 dark:to-orange-900/10">
+          <CardHeader>
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+              <div className="flex flex-1 flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+                  <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                </div>
+                <div className="space-y-1">
+                  <CardTitle className="text-xl text-yellow-800 dark:text-yellow-300">
+                    Complete suas Informações Pessoais
+                  </CardTitle>
+                  <CardDescription className="text-yellow-700/90 dark:text-yellow-400/90">
+                    Aumente suas chances de encontrar o advogado ideal
+                  </CardDescription>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => router.push('/client/profile/create')}
+                className="w-full sm:w-auto shrink-0 bg-yellow-600 text-white hover:bg-yellow-700 
+                  dark:bg-yellow-600/90 dark:text-white dark:hover:bg-yellow-500"
+              >
+                <UserCircle className="h-4 w-4 mr-2" />
+                Completar Perfil Agora
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-2">
+              {[
+                {
+                  title: 'Avaliação Precisa',
+                  description: 'Advogados poderão avaliar melhor seu caso',
+                  icon: ClipboardCheck
+                },
+                {
+                  title: 'Processo Ágil',
+                  description: 'Agilize a análise do seu caso',
+                  icon: Zap
+                },
+                {
+                  title: 'Comunicação',
+                  description: 'Facilite o contato com profissionais',
+                  icon: MessageSquare
+                },
+                {
+                  title: 'Atendimento',
+                  description: 'Receba um serviço mais personalizado',
+                  icon: UserCog
+                }
+              ].map((item) => (
+                <div key={item.title} className="flex gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-yellow-100 dark:bg-yellow-900/20">
+                    <item.icon className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                      {item.title}
+                    </h4>
+                    <p className="text-sm text-yellow-700/75 dark:text-yellow-400/75">
+                      {item.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Métricas dos Casos */}
