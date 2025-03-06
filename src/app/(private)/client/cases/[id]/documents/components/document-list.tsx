@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import {
   FileText,
   Trash2,
@@ -25,26 +27,17 @@ import {
   CardTitle
 } from '@/components/ui/card'
 
-import { Document } from '@/hooks/use-case-documents'
+import { CaseDocument } from '@/types/case'
 
 interface DocumentListProps {
-  documents: Document[]
+  documents: CaseDocument[]
   onDelete: (id: string) => Promise<void>
-  isLoading: boolean
+
 }
 
-export function DocumentList({ documents, onDelete, isLoading }: DocumentListProps) {
-  if (isLoading) {
-    return (
-      <Card className="w-full">
-        <CardContent className="pt-6">
-          <div className="flex justify-center items-center h-16">
-            <p className="text-muted-foreground">Carregando documentos...</p>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
+export function DocumentList({ documents, onDelete }: DocumentListProps) {
+  // Adicionar estado para rastrear qual documento está sendo removido
+  const [removingDocId, setRemovingDocId] = useState<string | null>(null)
 
   if (documents.length === 0) {
     return (
@@ -56,6 +49,16 @@ export function DocumentList({ documents, onDelete, isLoading }: DocumentListPro
         </CardContent>
       </Card>
     )
+  }
+
+  // Função para lidar com a exclusão de documentos
+  const handleDelete = async (id: string) => {
+    setRemovingDocId(id)
+    try {
+      await onDelete(id)
+    } finally {
+      setRemovingDocId(null)
+    }
   }
 
   const getFileIcon = (fileName: string, docType: string) => {
@@ -151,10 +154,15 @@ export function DocumentList({ documents, onDelete, isLoading }: DocumentListPro
                     variant="destructive"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={() => onDelete(doc.id)}
+                    onClick={() => handleDelete(doc.id)}
+                    disabled={removingDocId === doc.id}
                     aria-label="Excluir documento"
                   >
-                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                    {removingDocId === doc.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </div>

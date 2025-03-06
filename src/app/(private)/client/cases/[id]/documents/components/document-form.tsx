@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { Upload, FileUp, Loader2 } from 'lucide-react'
 
 import { useForm } from 'react-hook-form'
@@ -71,17 +71,37 @@ export function DocumentForm({ onSubmit, isUploading }: DocumentFormProps) {
       file: data.file
     })
 
-    // Reset do formulário após envio bem-sucedido
+    // Reset completo do formulário
     form.reset({
       type: '',
       customType: '',
       file: undefined as unknown as File,
     })
+
+    // Limpar o input de arquivo
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   const file = form.watch('file')
   const type = form.watch('type')
   const customType = form.watch('customType')
+
+  // Resetar o formulário quando o upload for concluído
+  useEffect(() => {
+    if (!isUploading && form.formState.isSubmitSuccessful) {
+      form.reset({
+        type: '',
+        customType: '',
+        file: undefined as unknown as File,
+      })
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }, [isUploading, form])
 
   return (
     <div className="bg-card rounded-lg border shadow-sm">

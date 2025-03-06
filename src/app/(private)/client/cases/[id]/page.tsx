@@ -1,7 +1,7 @@
 'use client'
 
+import { use } from 'react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, use } from 'react'
 
 import { ArrowLeft, Clock, Edit, User, Loader2 } from 'lucide-react'
 
@@ -16,12 +16,11 @@ import {
 } from '@/components/ui/card'
 
 import { Badge } from '@/components/ui/badge'
+
+import { useCaseDetails } from '@/hooks/use-case-details'
 import { Button } from '@/components/ui/button'
 
 import { statusMap } from '../components/case-card'
-
-import api from '@/http/api'
-import { DetailedCase } from '@/types/case'
 import { DocumentsList } from '@/components/documents-list'
 
 interface CaseDetailsProps {
@@ -30,37 +29,16 @@ interface CaseDetailsProps {
 
 export default function CaseDetails({ params }: CaseDetailsProps) {
   const router = useRouter()
-  const [caseData, setCaseData] = useState<DetailedCase | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-
   const { id } = use(params)
 
-  useEffect(() => {
-    const fetchCase = async () => {
-      try {
-        setIsLoading(true)
-        const response = await api.get<DetailedCase>(`/cases/client/${id}`)
-
-        // Delay artificial para suavizar a transição
-        await new Promise(resolve => setTimeout(resolve, 350))
-
-        setCaseData(response.data)
-      } catch (error) {
-        console.error('Erro ao carregar caso:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchCase()
-  }, [id])
+  const { caseData, isLoading } = useCaseDetails(id)
 
   const handleBack = () => {
     router.push('/client/cases')
   }
 
   const handleEdit = () => {
-    console.log("editar id", id)
+    router.push(`/client/cases/${id}/edit`)
   }
 
   if (isLoading) {
@@ -87,18 +65,19 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-4xl space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-            className="rounded-full"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-semibold">Detalhes do Caso</h1>
+          </div>
           <Button onClick={handleEdit}>
-            <Edit className="h-4 w-4 mr-2" />
+            <Edit className="hidden sm:block h-4 w-4 sm:mr-2" />
             Editar Caso
           </Button>
         </div>
