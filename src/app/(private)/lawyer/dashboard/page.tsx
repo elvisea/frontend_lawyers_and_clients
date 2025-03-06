@@ -1,8 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-
 import {
   LayoutGrid,
   FolderOpen,
@@ -11,15 +9,16 @@ import {
   InboxIcon,
   UserCircle,
   ClipboardList,
-  TrendingUp,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Loader2,
+
+  TrendingUp
 } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-
 import {
   Card,
   CardContent,
@@ -28,110 +27,103 @@ import {
   CardTitle
 } from '@/components/ui/card'
 
-import { Loading } from '@/components/loading'
-import { PageHeader, PageHeaderHeading, PageHeaderDescription } from '@/components/page-header'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
-import { DashboardStats } from '@/types/dashboard'
-import { useLawyerProfile } from '@/hooks/use-lawyer-profile'
+import { useLawyerDashboard } from '@/hooks/use-lawyer-dashboard'
 
 export default function LawyerDashboardPage() {
   const router = useRouter()
-  const { profile, isLoading: isLoadingProfile } = useLawyerProfile()
-
-  const [isLoading, setIsLoading] = useState(true)
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        setIsLoading(true)
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        setStats({
-          availableCases: 15,
-          acceptedCases: 8,
-          totalSpent: 2450.00,
-          spentByCases: 1800.00,
-          spentBySubscription: 650.00,
-          recentPayments: [
-            {
-              id: '1',
-              amount: 300.00,
-              date: '2024-03-15T10:00:00Z',
-              status: 'COMPLETED',
-              type: 'CASE'
-            },
-            {
-              id: '2',
-              amount: 150.00,
-              date: '2024-03-14T15:30:00Z',
-              status: 'PENDING',
-              type: 'SUBSCRIPTION'
-            }
-          ],
-          casesByStatus: {
-            open: 15,
-            inProgress: 5,
-            closed: 3
-          }
-        })
-      } catch (error) {
-        console.error('Erro ao carregar estatísticas:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchStats()
-  }, [])
+  const { data, isLoading } = useLawyerDashboard()
 
   if (isLoading) {
-    return <Loading />
+    return (
+      <div className="flex items-center justify-center flex-1 h-full">
+        <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
 
   return (
     <div className="space-y-6 px-2 sm:px-8">
-      <PageHeader>
-        <PageHeaderHeading>Olá, Advogado</PageHeaderHeading>
-        <PageHeaderDescription>
-          Bem-vindo ao seu painel de controle
-        </PageHeaderDescription>
-      </PageHeader>
+      {/* Header */}
+      <Card className="border-none shadow-none bg-transparent">
+        <CardHeader>
+          <CardTitle className="text-3xl">Olá, {data?.profile.name}</CardTitle>
+          <CardDescription className="text-lg">
+            Bem-vindo ao seu painel de controle
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       {/* Card de Aviso - Perfil não cadastrado */}
-      {!isLoadingProfile && !profile && (
-        <Card className="border-yellow-600/20 bg-yellow-50/50 dark:border-yellow-400/20 dark:bg-yellow-900/10">
+      {!data?.lawyerProfile.isComplete && (
+        <Card className="border-yellow-600/20 bg-gradient-to-br from-yellow-50/50 to-orange-50/50 dark:from-yellow-900/10 dark:to-orange-900/10">
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
-              <CardTitle className="text-yellow-800 dark:text-yellow-300">
-                Complete seu Perfil Profissional
-              </CardTitle>
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+              <div className="flex flex-1 flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+                  <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                </div>
+                <div className="space-y-1">
+                  <CardTitle className="text-xl text-yellow-800 dark:text-yellow-300">
+                    Complete seu Perfil Profissional
+                  </CardTitle>
+                  <CardDescription className="text-yellow-700/90 dark:text-yellow-400/90">
+                    Aumente suas chances de conseguir casos na plataforma
+                  </CardDescription>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => router.push('/lawyer/profile/create')}
+                className="w-full sm:w-auto shrink-0 bg-yellow-600 text-white hover:bg-yellow-700 
+                  dark:bg-yellow-600/90 dark:text-white dark:hover:bg-yellow-500"
+              >
+                <UserCircle className="h-4 w-4 mr-2" />
+                Completar Perfil Agora
+              </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <p className="text-yellow-700 dark:text-yellow-300/90">
-                Para começar a receber casos e ter acesso completo à plataforma, é necessário completar seu perfil profissional.
-              </p>
-              <p className="text-yellow-700 dark:text-yellow-300/90">
-                Com seu perfil completo você poderá:
-              </p>
-              <ul className="list-disc list-inside text-yellow-700 dark:text-yellow-300/90 ml-1 space-y-1">
-                <li>Visualizar e aceitar casos disponíveis</li>
-                <li>Assinar planos e acessar recursos premium</li>
-                <li>Destacar suas especialidades e experiência</li>
-                <li>Aumentar sua visibilidade na plataforma</li>
-              </ul>
+          <CardContent>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-2">
+              {[
+                {
+                  title: 'Visualizar Casos',
+                  description: 'Acesse casos disponíveis para aceitar',
+                  icon: FolderOpen
+                },
+                {
+                  title: 'Recursos Premium',
+                  description: 'Desbloqueie funcionalidades exclusivas',
+                  icon: LayoutGrid
+                },
+                {
+                  title: 'Especialidades',
+                  description: 'Destaque suas áreas de atuação',
+                  icon: UserCircle
+                },
+                {
+                  title: 'Visibilidade',
+                  description: 'Aumente sua presença na plataforma',
+                  icon: TrendingUp
+                }
+              ].map((item) => (
+                <div key={item.title} className="flex gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-yellow-100 dark:bg-yellow-900/20">
+                    <item.icon className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                      {item.title}
+                    </h4>
+                    <p className="text-sm text-yellow-700/75 dark:text-yellow-400/75">
+                      {item.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <Button
-              variant="outline"
-              className="border-yellow-600/50 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-600 
-                dark:border-yellow-400/50 dark:text-yellow-300 dark:hover:bg-yellow-400/10 
-                dark:hover:border-yellow-400"
-              onClick={() => router.push('/lawyer/profile/create')}
-            >
-              Completar Perfil Agora
-            </Button>
           </CardContent>
         </Card>
       )}
@@ -148,13 +140,13 @@ export default function LawyerDashboardPage() {
               label: 'Casos Disponíveis',
               href: '/lawyer/cases',
               icon: FolderOpen,
-              description: `${stats?.availableCases} casos aguardando`,
+              description: `${data?.casesMetrics.available} casos aguardando`,
             },
             {
-              label: 'Casos Aceitos',
+              label: 'Casos em Andamento',
               href: '/lawyer/accepted-cases',
               icon: InboxIcon,
-              description: `${stats?.acceptedCases} casos ativos`,
+              description: `${data?.casesMetrics.inProgress} casos ativos`,
             },
             {
               label: 'Assinatura',
@@ -200,42 +192,67 @@ export default function LawyerDashboardPage() {
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
-          <Card>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Card className="relative overflow-hidden">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Em Andamento</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium">Disponíveis</CardTitle>
+                <FolderOpen className="h-5 w-5 text-yellow-500" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-2xl font-bold">{stats?.casesByStatus.inProgress}</span>
+              <div className="mt-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold">{data?.casesMetrics.available}</span>
+                  <span className="text-sm text-muted-foreground">casos</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Aguardando aceitação
+                </p>
               </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-500/20 to-yellow-500/40" />
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="relative overflow-hidden">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Concluídos</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium">Em Andamento</CardTitle>
+                <Clock className="h-5 w-5 text-blue-500" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                <span className="text-2xl font-bold">{stats?.casesByStatus.closed}</span>
+              <div className="mt-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold">{data?.casesMetrics.inProgress}</span>
+                  <span className="text-sm text-muted-foreground">casos</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Em processamento
+                </p>
               </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500/20 to-blue-500/40" />
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="relative overflow-hidden">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Taxa de Conclusão</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium">Concluídos</CardTitle>
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                <span className="text-2xl font-bold">
-                  {Math.round((stats?.casesByStatus.closed || 0) / (stats?.acceptedCases || 1) * 100)}%
-                </span>
+              <div className="mt-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold">{data?.casesMetrics.closed}</span>
+                  <span className="text-sm text-muted-foreground">casos</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Finalizados com sucesso
+                </p>
               </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500/20 to-green-500/40" />
             </CardContent>
           </Card>
         </div>
@@ -260,31 +277,35 @@ export default function LawyerDashboardPage() {
               <CardTitle className="text-base">Últimas Transações</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {stats?.recentPayments.map(payment => (
+              {data?.recentTransactions.map(transaction => (
                 <div
-                  key={payment.id}
+                  key={transaction.id}
                   className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border p-3"
                 >
                   <div className="flex items-center gap-3">
-                    {payment.type === 'CASE' ? (
+                    {transaction.type === 'CASE' ? (
                       <ClipboardList className="h-4 w-4 text-primary" />
                     ) : (
                       <LayoutGrid className="h-4 w-4 text-primary" />
                     )}
                     <div>
                       <p className="font-medium">
-                        {payment.type === 'CASE' ? 'Compra de Caso' : 'Assinatura'}
+                        {transaction.type === 'CASE' ? 'Compra de Caso' : 'Assinatura'}
+                        {transaction.reference && ` - ${transaction.reference}`}
                       </p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
-                        {new Date(payment.date).toLocaleDateString('pt-BR')}
+                        {formatDistanceToNow(new Date(transaction.createdAt), {
+                          addSuffix: true,
+                          locale: ptBR
+                        })}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between sm:justify-end gap-3 mt-2 sm:mt-0">
-                    <p className="font-medium">R$ {payment.amount.toFixed(2)}</p>
-                    <Badge variant={payment.status === 'COMPLETED' ? 'default' : 'secondary'}>
-                      {payment.status === 'COMPLETED' ? 'Pago' : 'Pendente'}
+                    <p className="font-medium">R$ {transaction.amount.toFixed(2)}</p>
+                    <Badge variant={transaction.status === 'COMPLETED' ? 'default' : 'secondary'}>
+                      {transaction.status === 'COMPLETED' ? 'Pago' : 'Pendente'}
                     </Badge>
                   </div>
                 </div>
@@ -294,24 +315,24 @@ export default function LawyerDashboardPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Total Investido</CardTitle>
+              <CardTitle className="text-base">Resumo Financeiro</CardTitle>
               <CardDescription>detalhamento de gastos</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Casos</span>
-                  <span className="font-medium">R$ {stats?.spentByCases.toFixed(2)}</span>
+                  <span className="font-medium">R$ {data?.financialSummary.casesAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Assinaturas</span>
-                  <span className="font-medium">R$ {stats?.spentBySubscription.toFixed(2)}</span>
+                  <span className="font-medium">R$ {data?.financialSummary.subscriptionsAmount.toFixed(2)}</span>
                 </div>
                 <Separator className="my-2" />
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Total</span>
                   <span className="text-2xl font-bold text-primary">
-                    R$ {stats?.totalSpent.toFixed(2)}
+                    R$ {data?.financialSummary.totalAmount.toFixed(2)}
                   </span>
                 </div>
               </div>
