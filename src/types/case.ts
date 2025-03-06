@@ -47,9 +47,11 @@ export type Client = {
 
 export type CaseDocument = {
   id: string
+  url: string
   name: string
   type: string
-  url: string
+  updatedAt: Date
+  createdAt: Date
 }
 
 export type CaseBase = {
