@@ -41,11 +41,7 @@ export default function ForgotPasswordPage() {
   })
 
   const onSubmit = async ({ email }: Form) => {
-    try {
-      await requestPasswordReset({ email })
-    } catch (error) {
-      // Erro já tratado no hook
-    }
+    await requestPasswordReset({ email })
   }
 
   return (

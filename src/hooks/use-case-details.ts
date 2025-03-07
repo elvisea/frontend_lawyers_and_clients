@@ -56,7 +56,7 @@ export const useCaseDetails = (caseId: string) => {
     if (caseId) {
       fetchCaseDetails()
     }
-  }, [fetchCaseDetails])
+  }, [fetchCaseDetails, caseId])
 
   return {
     caseData,
