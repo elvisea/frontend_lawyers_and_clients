@@ -1,42 +1,57 @@
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
-import { validateToken } from '../models'
 
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
 
+import api from '@/http/api'
+
 export const useConfirmTokenViewModel = (email: string | null) => {
   const router = useRouter()
-
-  const [isPending, setIsPending] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
 
-  const submitToken = async (token: string) => {
-    if (!email) {
-      return router.push("/auth/sign-up")
-    }
-
-    setIsPending(true)
-    setErrorCode(null)
+  const submitToken = async (code: string) => {
+    if (!email) return
 
     try {
-      const response = await validateToken(token, email)
+      console.log('🔄 [Verificação] Iniciando verificação do código...')
+      setIsLoading(true)
+      setErrorCode(null)
 
-      if (response.status === 204) {
-        router.push("/auth/sign-in")
-      }
+      await api.post('password-reset/verify', {
+        email,
+        code
+      })
+
+      console.log('✅ [Verificação] Código verificado com sucesso!')
+
+      // Redireciona para a página de redefinição de senha
+      router.push(`/auth/reset-password?email=${encodeURIComponent(email)}&code=${code}`)
+
     } catch (error) {
+      console.error('❌ [Verificação] Erro ao verificar código:', error)
       if (error instanceof AppError) {
         setErrorCode(error.errorCode)
       } else {
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
+
+      setErrorCode(ErrorCode.UNKNOWN_ERROR)
+
     } finally {
-      setIsPending(false)
+
+      // Delay artificial para suavizar a transição de 350ms
+      setTimeout(() => {
+        setIsLoading(false)
+        console.log('🏁 [Verificação] Operação finalizada')
+      }, 350)
     }
   }
 
-  return { isPending, errorCode, submitToken }
+  return {
+    isLoading,
+    errorCode,
+    submitToken
+  }
 }
