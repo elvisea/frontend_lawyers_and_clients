@@ -6,3 +6,5 @@ export const schema = yup.object({
     .email('Please, provide a valid e-mail address.')
     .required('E-mail is required.'),
 });
+
+export type Form = yup.InferType<typeof schema>;

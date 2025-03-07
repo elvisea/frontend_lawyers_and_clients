@@ -1,38 +1,54 @@
 'use client'
 
-import React, { useEffect } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
-import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
+import {
+  InfoIcon,
+  AlertTriangle,
+  ArrowLeft,
+  Loader2,
+  KeyRound
+} from 'lucide-react'
+
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+
 import { ErrorMessage } from '@/components/ErrorMessage'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 import { Form } from './types'
 import { schema } from './constants'
-
 import { useConfirmTokenViewModel } from './view-models'
 
 export default function ConfirmTokenPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
   const email = searchParams.get('email')
 
   const { register, handleSubmit, formState: { errors } } = useForm<Form>({
     resolver: yupResolver(schema),
   })
 
-  const { isPending, errorCode, submitToken } = useConfirmTokenViewModel(email)
+  const { isLoading, errorCode, submitToken } = useConfirmTokenViewModel(email)
 
   useEffect(() => {
     if (!email) {
-      router.push("/auth/sign-up")
+      router.replace('/auth/forgot-password')
     }
   }, [email, router])
 
@@ -40,30 +56,112 @@ export default function ConfirmTokenPage() {
     submitToken(token)
   }
 
+  if (!email) return null
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="token">Code</Label>
-        <Input {...register("token")} id="token" type="text" maxLength={6} />
+    <Card className="w-full">
+      <CardHeader>
+        <div className="flex items-start gap-4">
+          <div className="rounded-full bg-primary/10 p-2">
+            <KeyRound className="h-6 w-6 text-primary" />
+          </div>
+          <div className="space-y-1">
+            <CardTitle className="text-2xl">Código de recuperação</CardTitle>
+            <CardDescription>
+              Digite o código de 6 dígitos enviado para {email}
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
 
-        {errors.token?.message && <ErrorMessage message={errors.token.message} />}
-      </div>
+      <CardContent className="space-y-6">
+        <Alert>
+          <InfoIcon className="h-4 w-4" />
+          <AlertDescription>
+            Enviamos um código de 6 dígitos para seu email.
+            Use-o para confirmar sua identidade e redefinir sua senha.
+          </AlertDescription>
+        </Alert>
 
-      <Button className="w-full" type="submit" disabled={isPending}>
-        {isPending ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          'Validate code'
-        )}
-      </Button>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="token">Código de verificação</Label>
+            <Input
+              {...register("token")}
+              id="token"
+              type="text"
+              placeholder="000000"
+              maxLength={6}
+              className="text-center text-lg tracking-widest"
+              autoComplete="one-time-code"
+              autoFocus
+            />
+            {errors.token?.message && (
+              <ErrorMessage message={errors.token.message} />
+            )}
+          </div>
 
-      <Button className="w-full" variant="link" type="button" size="sm" disabled={isPending}>
-        Send new code
-      </Button>
+          {errorCode && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Código inválido ou expirado. Verifique o código e tente novamente.
+              </AlertDescription>
+            </Alert>
+          )}
 
-      {/* Temporario */}
-      {errorCode && <ErrorMessage message={`Código: ${errorCode}`} className='text-center mt-2' />}
+          <Alert variant="default" className="bg-muted/50">
+            <InfoIcon className="h-4 w-4" />
+            <AlertTitle>Não recebeu o código?</AlertTitle>
+            <AlertDescription>
+              <ul className="mt-2 space-y-1.5">
+                <li>Verifique sua caixa de spam ou lixo eletrônico</li>
+                <li>O código expira em 15 minutos</li>
+                <li>Certifique-se de digitar o código mais recente</li>
+                <li>Você pode solicitar um novo código abaixo</li>
+              </ul>
+            </AlertDescription>
+          </Alert>
 
-    </form>
+          <div className="space-y-3">
+            <Button
+              disabled={isLoading}
+              type="submit"
+              className="w-full"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verificando...
+                </>
+              ) : (
+                'Verificar código'
+              )}
+            </Button>
+
+            <Button
+              variant="outline"
+              type="button"
+              className="w-full"
+              disabled={isLoading}
+              onClick={() => router.push('/auth/forgot-password')}
+            >
+              Solicitar novo código
+            </Button>
+
+            <Button
+              variant="link"
+              asChild
+              className="w-full"
+            >
+              <Link href="/auth/sign-in" className="flex items-center justify-center">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Voltar para login
+              </Link>
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
