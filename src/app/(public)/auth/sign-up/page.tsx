@@ -87,7 +87,7 @@ export default function SignUpPage() {
                 onValueChange={(value) => setUserType(value as UserType)}
                 className="grid grid-cols-2 gap-4"
               >
-                <div>
+                <div className="h-full">
                   <RadioGroupItem
                     value={UserType.CLIENT}
                     id="client"
@@ -95,19 +95,19 @@ export default function SignUpPage() {
                   />
                   <Label
                     htmlFor="client"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                    className="flex h-full flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                   >
                     <User className="mb-2 h-6 w-6" />
                     <div className="space-y-1 text-center">
                       <p className="text-sm font-medium leading-none">Não</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground sm:min-h-[40px] flex items-center justify-center">
                         Preciso de ajuda jurídica
                       </p>
                     </div>
                   </Label>
                 </div>
 
-                <div>
+                <div className="h-full">
                   <RadioGroupItem
                     value={UserType.LAWYER}
                     id="lawyer"
@@ -115,12 +115,12 @@ export default function SignUpPage() {
                   />
                   <Label
                     htmlFor="lawyer"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                    className="flex h-full flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                   >
                     <Scale className="mb-2 h-6 w-6" />
                     <div className="space-y-1 text-center">
                       <p className="text-sm font-medium leading-none">Sim</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground sm:min-h-[40px] flex items-center justify-center">
                         Sou advogado(a)
                       </p>
                     </div>
