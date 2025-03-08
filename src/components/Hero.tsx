@@ -1,7 +1,4 @@
-'use client'
-
 import Link from "next/link";
-import { usePathname } from 'next/navigation'
 
 import { Button } from "./ui/button";
 
@@ -15,17 +12,6 @@ type Props = {
 
 export const Hero = ({ resource }: Props) => {
   const item = hero[resource]
-  const pathname = usePathname()
-
-  const getSignUpPath = () => {
-    if (pathname.startsWith('/landing/clients')) {
-      return '/auth/sign-up?type=CLIENT'
-    }
-    if (pathname.startsWith('/landing/lawyers')) {
-      return '/auth/sign-up?type=LAWYER'
-    }
-    return '/landing/clients'
-  }
 
   return (
     <section className="min-h-[calc(100vh-3.5rem)] container flex flex-col items-center justify-center">
@@ -55,7 +41,7 @@ export const Hero = ({ resource }: Props) => {
             size="lg"
             asChild
           >
-            <Link href={getSignUpPath()}>
+            <Link href={'/auth/sign-up'}>
               {item.button}
             </Link>
           </Button>

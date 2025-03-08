@@ -1,6 +1,12 @@
+'use client'
+
+import { ModeToggle } from "@/components/mode-toggle";
+
 type AuthLayoutProps = {
   children: React.ReactNode;
 }
+
+const appName = process.env.APP_NAME || 'AdvoGo'
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
@@ -8,8 +14,9 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       {/* Header */}
       <header className="flex h-16 items-center border-b px-4">
         <div className="mx-auto w-full max-w-3xl">
-          <h1 className="text-xl font-semibold">JusLaw</h1>
+          <h1 className="text-xl font-semibold">{appName}</h1>
         </div>
+        <ModeToggle />
       </header>
 
       {/* Main Content */}
@@ -23,7 +30,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       <footer className="py-4 border-t">
         <div className="mx-auto w-full max-w-3xl px-4">
           <p className="text-sm text-muted-foreground text-center">
-            © {new Date().getFullYear()} JusLaw. Todos os direitos reservados.
+            © {new Date().getFullYear()} {appName}. Todos os direitos reservados.
           </p>
         </div>
       </footer>
