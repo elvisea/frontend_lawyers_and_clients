@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from "react";
-import { useRouter, usePathname } from 'next/navigation'
-import { Menu } from "lucide-react";
 
 import Link from "next/link";
+import { useRouter } from 'next/navigation'
+
+import { Menu } from "lucide-react";
+
 import { buttonVariants } from "./ui/button";
 
 import {
@@ -60,17 +62,6 @@ const routes = [
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const router = useRouter();
-  const pathname = usePathname();
-
-  const getSignUpPath = () => {
-    if (pathname.startsWith('/landing/clients')) {
-      return '/auth/sign-up?type=CLIENT';
-    }
-    if (pathname.startsWith('/landing/lawyers')) {
-      return '/auth/sign-up?type=LAWYER';
-    }
-    return '/landing/clients'; // fallback para landing de clientes
-  };
 
   const handleNavigation = (href: string, isExternal: boolean) => {
     setIsOpen(false)
@@ -126,7 +117,7 @@ export const Navbar = () => {
                     Entrar
                   </Link>
                   <Link
-                    href={getSignUpPath()}
+                    href={'/auth/sign-up'}
                     className={buttonVariants({ variant: "default" })}
                   >
                     Criar Conta
@@ -159,7 +150,7 @@ export const Navbar = () => {
               Entrar
             </Link>
             <Link
-              href={getSignUpPath()}
+              href={'/auth/sign-up'}
               className={buttonVariants({ variant: "default" })}
             >
               Criar Conta

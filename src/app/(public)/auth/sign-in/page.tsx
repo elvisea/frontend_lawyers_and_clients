@@ -2,9 +2,8 @@
 
 import React, { useState, useTransition } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 
-import { Loader2 } from 'lucide-react'
+import { Loader2, LogIn } from 'lucide-react'
 
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -12,14 +11,20 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Form } from './types'
 import { schema } from './constants'
 
-import gitHubIcon from '@/assets/github-icon.svg'
-
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 
 import { ErrorMessage } from '@/components/ErrorMessage'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 import { useAuth } from '@/contexts/auth-context'
 
@@ -30,7 +35,9 @@ export default function SignInPage() {
   const [isPending, startTransition] = useTransition()
   const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
 
-  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver<Form>(schema) })
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver<Form>(schema)
+  })
 
   const { login } = useAuth()
 
@@ -63,58 +70,99 @@ export default function SignInPage() {
     })
   }
 
-  const handleSocialLogin = () => {
-    console.log('🌐 [Auth] Iniciando autenticação social via GitHub')
-    console.log('⏳ [Auth] Redirecionando para provedor OAuth...')
-  }
-
   return (
-    <React.Fragment>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">E-mail</Label>
-          <Input {...register("email")} name="email" type="email" id="email" />
-          {errors.email?.message && <ErrorMessage message={errors.email.message} />}
+    <Card className="w-full">
+      <CardHeader>
+        <div className="flex items-start gap-4">
+          <div className="rounded-full bg-primary/10 p-2">
+            <LogIn className="h-6 w-6 text-primary" />
+          </div>
+          <div className="space-y-1">
+            <CardTitle className="text-2xl">Bem-vindo de volta</CardTitle>
+            <CardDescription>
+              Faça login para acessar sua conta
+            </CardDescription>
+          </div>
         </div>
+      </CardHeader>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input {...register("password")} name="password" type="password" id="password" />
-          {errors.password?.message && <ErrorMessage message={errors.password.message} />}
-        </div>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <Input
+                {...register("email")}
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                autoComplete="email"
+                autoFocus
+              />
+              {errors.email?.message && (
+                <ErrorMessage message={errors.email.message} />
+              )}
+            </div>
 
-        <Button className="w-full" type="submit" disabled={isPending}>
-          {isPending ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            'Sign in with e-mail'
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                {...register("password")}
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
+              {errors.password?.message && (
+                <ErrorMessage message={errors.password.message} />
+              )}
+            </div>
+          </div>
+
+          {errorCode && (
+            <Alert variant="destructive">
+              <AlertDescription>
+                Email ou senha incorretos. Verifique suas credenciais e tente novamente.
+              </AlertDescription>
+            </Alert>
           )}
-        </Button>
 
-        <Button className="w-full" variant="link" size="sm" asChild>
-          <Link href="/auth/sign-up">Create new account</Link>
-        </Button>
+          <div className="space-y-3">
+            <Button
+              disabled={isPending}
+              type="submit"
+              className="w-full"
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Entrando...
+                </>
+              ) : (
+                'Entrar'
+              )}
+            </Button>
 
-        <Link
-          href="/auth/forgot-password"
-          className="text-xs font-medium text-foreground hover:underline text-center mt-8 sm:mt-6 md:mt-4 block"
-        >
-          Forgot your password?
-        </Link>
+            <Button
+              variant="outline"
+              asChild
+              className="w-full"
+            >
+              <Link href="/auth/sign-up">Criar nova conta</Link>
+            </Button>
 
-        <Separator />
-
-        <Button type="button" onClick={handleSocialLogin} className="w-full" variant="outline">
-          <Image src={gitHubIcon} alt="GitHub" className="mr-2 size-4 dark:invert" />
-          Sign in with GitHub
-        </Button>
-
-        {/* Temporario */}
-        {errorCode && <ErrorMessage message={`Código: ${errorCode}`} className='text-center mt-2' />}
-
-      </form>
-
-    </React.Fragment>
+            <Button
+              variant="link"
+              asChild
+              className="w-full"
+            >
+              <Link href="/auth/forgot-password">
+                Esqueceu sua senha?
+              </Link>
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   )
 }

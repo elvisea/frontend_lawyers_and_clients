@@ -3,24 +3,24 @@ import * as yup from 'yup';
 export const schema = yup.object({
   name: yup
     .string()
-    .required('Please, enter your full name.')
-    .test('full-name', 'Please, enter your full name', (value) => value?.split(' ').length > 1),
+    .required('Por favor, digite seu nome completo.')
+    .test('full-name', 'Digite seu nome completo com sobrenome', (value) => value?.split(' ').length > 1),
 
   email: yup
     .string()
-    .email('Please, provide a valid e-mail address.')
-    .required('Please, provide your email address.'),
+    .email('Digite um endereço de e-mail válido.')
+    .required('O e-mail é obrigatório.'),
 
   password: yup
     .string()
-    .min(6, 'Password should have at least 6 characters.')
-    .required('Please, enter your password.'),
+    .min(6, 'A senha deve ter pelo menos 6 caracteres.')
+    .required('A senha é obrigatória.'),
 
   confirmation: yup
     .string()
-    .min(6, 'Password should have at least 6 characters.')
-    .required('Please, confirm your password.')
-    .oneOf([yup.ref('password')], 'Password confirmation does not match.')
+    .min(6, 'A senha deve ter pelo menos 6 caracteres.')
+    .required('A confirmação de senha é obrigatória.')
+    .oneOf([yup.ref('password')], 'As senhas não conferem.')
 });
 
 export const headers = {
