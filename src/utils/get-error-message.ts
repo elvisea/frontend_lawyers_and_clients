@@ -3,7 +3,7 @@ import { ErrorCode } from '@/enums/error-code'
 export const getErrorMessage = (errorCode: ErrorCode): string => {
   const errorMessages: Record<ErrorCode, string> = {
     [ErrorCode.INVALID_CREDENTIALS]: 'As credenciais fornecidas são inválidas. Por favor, verifique seus dados e tente novamente.',
-    [ErrorCode.USER_NOT_FOUND]: 'Não foi possível encontrar o usuário especificado.',
+    [ErrorCode.USER_NOT_FOUND]: 'Não foi possível encontrar o usuário especificado. Por favor, verifique se o cliente ainda existe.',
     [ErrorCode.USER_ALREADY_EXISTS]: 'Já existe uma conta cadastrada com este email. Por favor, use outro email ou faça login.',
     [ErrorCode.UNKNOWN_ERROR]: 'Ops! Algo deu errado. Por favor, tente novamente em alguns instantes.',
     [ErrorCode.TOKEN_EXPIRED]: 'O link de acesso expirou. Por favor, solicite um novo link.',
@@ -22,7 +22,8 @@ export const getErrorMessage = (errorCode: ErrorCode): string => {
     [ErrorCode.INVALID_FILE_SIZE]: 'O arquivo é muito grande. Por favor, use um arquivo menor que 10MB.',
     [ErrorCode.CASES_LIMIT_EXCEEDED]: 'Você atingiu o limite de casos para seu plano atual. Considere fazer um upgrade.',
     [ErrorCode.LAWYER_PROFILE_NOT_FOUND]: 'Perfil de advogado não encontrado. Por favor, complete seu cadastro.',
-    [ErrorCode.CLIENT_PROFILE_NOT_FOUND]: 'Perfil de cliente não encontrado. Por favor, complete seu cadastro.'
+    [ErrorCode.CLIENT_PROFILE_NOT_FOUND]: 'Perfil de cliente não encontrado. Por favor, complete seu cadastro.',
+    [ErrorCode.INVALID_USER_TYPE]: 'Este usuário não é um cliente. Apenas clientes podem ter casos registrados.'
   }
 
   return errorMessages[errorCode] || 'Ocorreu um erro inesperado. Por favor, tente novamente.'

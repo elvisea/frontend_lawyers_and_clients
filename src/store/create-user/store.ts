@@ -38,7 +38,7 @@ export const useCreateUserStore = create<CreateUserStore>((set) => ({
       })
 
       // Redireciona após sucesso
-      window.location.href = `/users/new/success`
+      window.location.href = `/users/${response.data.id}/success`
 
     } catch (error) {
       if (error instanceof AppError) {
