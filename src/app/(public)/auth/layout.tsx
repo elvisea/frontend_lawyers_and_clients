@@ -6,7 +6,7 @@ type AuthLayoutProps = {
   children: React.ReactNode;
 }
 
-const appName = process.env.APP_NAME || 'AdvoGo'
+const appName = process.env.APP_NAME || 'App_Name'
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
