@@ -1,14 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 
 import {
   CheckCircle2,
   ArrowRight,
   Users,
-  FileText,
   Mail,
+  FileText,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -25,14 +25,19 @@ import {
 
 import { Loading } from '@/components/loading'
 
-export default function NewUserSuccess() {
+interface NewUserSuccessProps {
+  params: Promise<{ userId: string }>
+}
+
+export default function NewUserSuccess({ params }: NewUserSuccessProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
+  const { userId } = use(params)
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 500)
+    }, 1000)
 
     return () => clearTimeout(timer)
   }, [])
@@ -115,7 +120,7 @@ export default function NewUserSuccess() {
             variant="outline"
             size="lg"
             className="w-full"
-            onClick={() => router.push('/cases/new')}
+            onClick={() => router.push(`/users/${userId}/cases/new`)}
           >
             Adicionar Caso
             <FileText className="ml-2 h-4 w-4" />

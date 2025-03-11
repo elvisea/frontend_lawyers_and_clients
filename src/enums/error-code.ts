@@ -111,6 +111,11 @@ export enum ErrorCode {
    * Código de erro para indicar que o perfil do cliente não foi encontrado.
    */
   CLIENT_PROFILE_NOT_FOUND = "CLIENT_PROFILE_NOT_FOUND",
+
+  /**
+   * Código de erro para indicar que o tipo de usuário é inválido.
+   */
+  INVALID_USER_TYPE = "INVALID_USER_TYPE",
 }
 
 /**
