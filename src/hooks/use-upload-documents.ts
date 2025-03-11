@@ -63,7 +63,7 @@ export const useUploadDocuments = (caseId: string) => {
 
       // Enviar requisição
       console.log('🔄 [Documentos] Enviando requisição para o servidor...')
-      const response = await api.post<CaseDocument[]>(`/cases/${caseId}/documents`, formData, {
+      const response = await api.post<CaseDocument[]>(`/documents/case/${caseId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

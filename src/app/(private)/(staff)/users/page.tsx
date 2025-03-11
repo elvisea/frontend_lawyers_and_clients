@@ -1,0 +1,239 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { Plus, Users, Search, Mail, UserCircle } from 'lucide-react'
+
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Loading } from '@/components/loading'
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
+
+import { useGetUsers } from '@/hooks/use-get-users'
+import { UserType } from '@/enums/type'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+
+const ITEMS_PER_PAGE = 10
+
+export default function UsersPage() {
+  const router = useRouter()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedType, setSelectedType] = useState<UserType | null>(null)
+
+  const { data, isLoading } = useGetUsers({
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+    type: selectedType || undefined
+  })
+
+  // Reset da página quando o filtro mudar
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedType])
+
+  const handleUserClick = (userId: string) => {
+    router.push(`/staff/users/${userId}`)
+  }
+
+  const handleCreateUser = () => {
+    router.push('/staff/users/new')
+  }
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > (data?.meta.total.pages || 1)) return
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  if (isLoading) {
+    return <Loading size="lg" />
+  }
+
+  return (
+    <div className="space-y-6 min-h-full max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Users className="h-6 w-6" />
+          <div>
+            <h1 className="text-2xl font-semibold">Usuários</h1>
+            {data && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Total de {data.meta.total.items} usuário{data.meta.total.items === 1 ? '' : 's'}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <Button onClick={handleCreateUser}>
+          <Plus className="h-4 w-4 mr-2" />
+          <span className="hidden sm:inline">Novo Usuário</span>
+          <span className="sm:hidden">Novo</span>
+        </Button>
+      </div>
+
+      {/* Filtros */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar usuários..."
+            className="pl-9 w-full"
+          />
+        </div>
+
+        <Select
+          value={selectedType || "all"}
+          onValueChange={(value) => setSelectedType(value === "all" ? null : value as UserType)}
+        >
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="Tipo de usuário" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os usuários</SelectItem>
+            <SelectItem value={UserType.CLIENT}>Cliente</SelectItem>
+            <SelectItem value={UserType.LAWYER}>Advogado</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Lista de Usuários */}
+      <div className="space-y-4 min-h-[300px]">
+        {data?.data.map((user) => (
+          <div
+            key={user.id}
+            onClick={() => handleUserClick(user.id)}
+            className="group cursor-pointer bg-card hover:bg-accent/50 border rounded-lg p-4 transition-colors"
+          >
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex items-center gap-4 sm:flex-1">
+                <UserCircle className="h-10 w-10 text-muted-foreground shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-medium group-hover:text-primary transition-colors">
+                    {user.name}
+                  </h3>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Mail className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{user.email}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pt-2 sm:pt-0 border-t sm:border-t-0">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.type === UserType.CLIENT
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'bg-purple-100 text-purple-700'
+                  }`}>
+                  {user.type === UserType.CLIENT ? 'Cliente' : 'Advogado'}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(user.createdAt), {
+                    addSuffix: true,
+                    locale: ptBR
+                  })}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {data?.data.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+            <Users className="h-12 w-12 mb-4" />
+            <p>Nenhum usuário encontrado</p>
+          </div>
+        )}
+      </div>
+
+      {/* Paginação */}
+      {data && data.meta.total.pages > 1 && (
+        <div className="flex justify-center mt-6">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    if (currentPage > 1) {
+                      handlePageChange(currentPage - 1)
+                    }
+                  }}
+                  className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+
+              {Array.from({ length: data.meta.total.pages }).map((_, index) => {
+                const page = index + 1
+
+                if (
+                  page === 1 ||
+                  page === data.meta.total.pages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          handlePageChange(page)
+                        }}
+                        isActive={page === currentPage}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                }
+
+                if (
+                  (page === currentPage - 2 && currentPage > 3) ||
+                  (page === currentPage + 2 && currentPage < data.meta.total.pages - 2)
+                ) {
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )
+                }
+
+                return null
+              })}
+
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    if (currentPage < data.meta.total.pages) {
+                      handlePageChange(currentPage + 1)
+                    }
+                  }}
+                  className={currentPage >= data.meta.total.pages ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
+    </div>
+  )
+}

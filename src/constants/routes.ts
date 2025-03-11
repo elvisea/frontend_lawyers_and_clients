@@ -7,7 +7,8 @@ import {
   FolderOpen,
   ClipboardList,
   UserCircle,
-  Cog
+  Cog,
+  Users
 } from 'lucide-react'
 
 export type Route = {
@@ -37,6 +38,18 @@ export const routes: Record<UserType, Record<string, Route>> = {
       href: '/admin/settings',
       label: 'Configurações',
       icon: Cog
+    },
+  },
+  [UserType.STAFF]: {
+    dashboard: {
+      href: '/dashboard',
+      label: 'Dashboard',
+      icon: LayoutGrid,
+    },
+    users: {
+      href: '/users',
+      label: 'Usuários',
+      icon: Users
     },
   },
   [UserType.CLIENT]: {

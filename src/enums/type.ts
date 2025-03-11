@@ -1,7 +1,8 @@
 export enum UserType {
   ADMIN = 'ADMIN',
   CLIENT = 'CLIENT',
-  LAWYER = 'LAWYER'
+  LAWYER = 'LAWYER',
+  STAFF = 'STAFF'
 }
 
 export enum RouteType {
