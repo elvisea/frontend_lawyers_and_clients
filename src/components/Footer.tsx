@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { LogoIcon } from "./Icons";
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME || 'App_Name'
+
 export const Footer = () => {
   return (
     <footer id="footer">
@@ -14,7 +16,7 @@ export const Footer = () => {
             className="font-bold text-xl flex"
           >
             <LogoIcon />
-            Lex Omni
+            {appName}
           </Link>
 
         </div>
@@ -154,14 +156,15 @@ export const Footer = () => {
 
       <section className="container pb-14 text-center">
         <h3>
-          &copy; 2024 Landing page cloned by{" "}
+          © {new Date().getFullYear()} {appName}. Todos os direitos reservados. {" "}
+          <br />
           <a
             rel="noreferrer noopener"
             target="_blank"
             href="https://www.linkedin.com/in/elvis-e-amancio/"
             className="text-primary transition-all border-primary hover:border-b-2"
           >
-            Elvis E. A.
+            Developed by Elvis E. A.
           </a>
         </h3>
       </section>
