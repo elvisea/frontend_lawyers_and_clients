@@ -1,20 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Users, Search, Mail, UserCircle } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Loading } from '@/components/loading'
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 
 import {
   Pagination,
@@ -36,18 +28,12 @@ const ITEMS_PER_PAGE = 10
 export default function UsersPage() {
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
-  const [selectedType, setSelectedType] = useState<UserType | null>(null)
 
   const { data, isLoading } = useGetUsers({
     page: currentPage,
     limit: ITEMS_PER_PAGE,
-    type: selectedType || undefined
+    type: UserType.CLIENT
   })
-
-  // Reset da página quando o filtro mudar
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [selectedType])
 
   const handleUserClick = (userId: string) => {
     router.push(`/users/${userId}`)
@@ -74,10 +60,10 @@ export default function UsersPage() {
         <div className="flex items-center gap-4">
           <Users className="h-6 w-6" />
           <div>
-            <h1 className="text-2xl font-semibold">Usuários</h1>
+            <h1 className="text-2xl font-semibold">Clientes</h1>
             {data && (
               <p className="text-sm text-muted-foreground mt-1">
-                Total de {data.meta.total.items} usuário{data.meta.total.items === 1 ? '' : 's'}
+                Total de {data.meta.total.items} cliente{data.meta.total.items === 1 ? '' : 's'}
               </p>
             )}
           </div>
@@ -85,37 +71,21 @@ export default function UsersPage() {
 
         <Button onClick={handleCreateUser}>
           <Plus className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Novo Usuário</span>
+          <span className="hidden sm:inline">Novo Cliente</span>
           <span className="sm:hidden">Novo</span>
         </Button>
       </div>
 
-      {/* Filtros */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar usuários..."
-            className="pl-9 w-full"
-          />
-        </div>
-
-        <Select
-          value={selectedType || "all"}
-          onValueChange={(value) => setSelectedType(value === "all" ? null : value as UserType)}
-        >
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Tipo de usuário" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os usuários</SelectItem>
-            <SelectItem value={UserType.CLIENT}>Cliente</SelectItem>
-            <SelectItem value={UserType.LAWYER}>Advogado</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Busca */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar clientes..."
+          className="pl-9 w-full"
+        />
       </div>
 
-      {/* Lista de Usuários */}
+      {/* Lista de Clientes */}
       <div className="space-y-4 min-h-[300px]">
         {data?.data.map((user) => (
           <div
@@ -137,12 +107,6 @@ export default function UsersPage() {
                 </div>
               </div>
               <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pt-2 sm:pt-0 border-t sm:border-t-0">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.type === UserType.CLIENT
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-purple-100 text-purple-700'
-                  }`}>
-                  {user.type === UserType.CLIENT ? 'Cliente' : 'Advogado'}
-                </span>
                 <span className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(user.createdAt), {
                     addSuffix: true,
@@ -155,9 +119,14 @@ export default function UsersPage() {
         ))}
 
         {data?.data.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-            <Users className="h-12 w-12 mb-4" />
-            <p>Nenhum usuário encontrado</p>
+          <div className="flex flex-col items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <Users className="h-12 w-12 mb-4 mx-auto text-muted-foreground" />
+              <p className="text-muted-foreground">Nenhum cliente encontrado</p>
+              <p className="text-sm text-muted-foreground/60 mt-1">
+                Tente ajustar sua busca ou adicione um novo cliente
+              </p>
+            </div>
           </div>
         )}
       </div>
