@@ -37,8 +37,6 @@ export const useResetPassword = () => {
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
 
-      setErrorCode(ErrorCode.UNKNOWN_ERROR)
-
     } finally {
       // Delay artificial para suavizar a transição
       setTimeout(() => {
