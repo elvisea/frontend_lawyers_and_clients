@@ -59,6 +59,8 @@ const routes = [
   },
 ];
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME || 'App_Name'
+
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const router = useRouter();
@@ -79,7 +81,7 @@ export const Navbar = () => {
           <NavigationMenuItem className="font-bold flex">
             <Link href="/" className="ml-2 font-bold text-xl flex">
               <LogoIcon />
-              Lex Omni
+              {appName}
             </Link>
           </NavigationMenuItem>
 
@@ -97,7 +99,7 @@ export const Navbar = () => {
               <SheetContent side={"left"}>
                 <SheetHeader>
                   <SheetTitle className="font-bold text-xl">
-                    Lex Omni
+                    {appName}
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col justify-center items-center gap-2 mt-4">

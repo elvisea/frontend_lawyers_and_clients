@@ -35,10 +35,7 @@ export const useSubscriptionPaymentMonitor = (txid: string | null | undefined) =
       return;
     }
 
-    // const url = 'https://lawyers-and-clients-api.bytefulcode.tech/payments';
-    // const url = 'http://localhost:3334/payments';
-
-    const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
+    const url = 'https://lawyers-and-clients-api.bytefulcode.tech/payments';
 
     if (!url) {
       console.error('❌ [WebSocket] URL do WebSocket não configurada');

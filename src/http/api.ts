@@ -9,13 +9,7 @@ type PromiseType = {
 type APIInstanceProps = AxiosInstance & {};
 
 const api = axios.create({
-  // baseURL: 'https://lawyers-and-clients-api.bytefulcode.tech',
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  // baseURL: 'http://localhost:3334',
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: 'https://lawyers-and-clients-api.bytefulcode.tech',
 }) as APIInstanceProps;
 
 let isRefreshing = false;
