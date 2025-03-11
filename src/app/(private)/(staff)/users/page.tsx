@@ -50,11 +50,11 @@ export default function UsersPage() {
   }, [selectedType])
 
   const handleUserClick = (userId: string) => {
-    router.push(`/staff/users/${userId}`)
+    router.push(`/users/${userId}`)
   }
 
   const handleCreateUser = () => {
-    router.push('/staff/users/new')
+    router.push('/users/new')
   }
 
   const handlePageChange = (page: number) => {
