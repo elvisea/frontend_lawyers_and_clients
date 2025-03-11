@@ -9,7 +9,7 @@ export const useDocumentDownload = () => {
       setIsDownloading(prev => ({ ...prev, [documentId]: true }))
       console.log(`🔄 [Document] Iniciando acesso ao documento: ${documentId}`)
 
-      const response = await api.get(`/documents/lawyer/${documentId}/download-url`)
+      const response = await api.get(`/documents/${documentId}/url`)
 
       console.log(`✅ [Document] URL do documento obtida com sucesso:`, response.data)
 
