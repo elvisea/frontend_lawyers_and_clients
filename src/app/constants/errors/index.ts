@@ -105,4 +105,9 @@ export const errors: Errors = {
     title: "CLIENT_PROFILE_NOT_FOUND_TITLE",
     description: "CLIENT_PROFILE_NOT_FOUND_DESCRIPTION",
   },
+
+  INVALID_USER_TYPE: {
+    title: "INVALID_USER_TYPE_TITLE",
+    description: "INVALID_USER_TYPE_DESCRIPTION",
+  },
 };
