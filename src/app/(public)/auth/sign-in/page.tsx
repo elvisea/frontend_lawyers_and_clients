@@ -64,8 +64,6 @@ export default function SignInPage() {
           console.error('   ➔ Erro desconhecido:', error)
           setErrorCode(ErrorCode.UNKNOWN_ERROR)
         }
-
-        console.log('📋 [Auth] Detalhes completos do erro:', error)
       }
     })
   }

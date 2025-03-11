@@ -38,7 +38,6 @@ export const useForgotPassword = () => {
       } else {
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
-      setErrorCode(ErrorCode.UNKNOWN_ERROR)
 
     } finally {
       setIsLoading(false)
