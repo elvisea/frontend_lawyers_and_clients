@@ -56,7 +56,6 @@ export function CasesList() {
         } else {
           setErrorCode(ErrorCode.UNKNOWN_ERROR)
         }
-        console.error('Erro ao carregar casos:', error)
       } finally {
         setIsLoading(false)
       }
