@@ -7,25 +7,25 @@ import "@/app/index.css";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 
-import { AboutCompany } from "@/components/AboutCompany";
-import { Process } from "@/components/Process";
-import { Features } from "@/components/features";
-import { Services } from "@/components/Services";
-import { Cta } from "@/components/Cta";
-import { Testimonials } from "@/components/Testimonials";
-import { FAQ } from "@/components/faq";
-import { Footer } from "@/components/Footer";
-import { Newsletter } from "@/components/Newsletter";
+// import { AboutCompany } from "@/components/AboutCompany";
+// import { Process } from "@/components/Process";
+// import { Features } from "@/components/features";
+// import { Services } from "@/components/Services";
+// import { Cta } from "@/components/Cta";
+// import { Testimonials } from "@/components/Testimonials";
+// import { FAQ } from "@/components/faq";
+// import { Footer } from "@/components/Footer";
+// import { Newsletter } from "@/components/Newsletter";
 
-import { Team } from "@/components/Team";
-import { ScrollToTop } from "@/components/ScrollToTop";
+// import { Team } from "@/components/Team";
+// import { ScrollToTop } from "@/components/ScrollToTop";
 
 export default function Clients() {
   return (
     <React.Fragment>
       <Navbar />
       <Hero resource="clients" />
-      <Cta />
+      {/* <Cta />
       <Process />
 
       <Features resource="clients" />
@@ -38,7 +38,7 @@ export default function Clients() {
       <Newsletter />
       <FAQ resource="clients" />
       <Footer />
-      <ScrollToTop />
+      <ScrollToTop /> */}
     </React.Fragment>
   )
 }

@@ -37,26 +37,26 @@ const routes = [
     label: "Advogados",
     isExternal: false
   },
-  {
-    href: "#features",
-    label: "Recursos",
-    isExternal: true
-  },
-  {
-    href: "#services",
-    label: "Serviços",
-    isExternal: true
-  },
-  {
-    href: "#testimonials",
-    label: "Depoimentos",
-    isExternal: true
-  },
-  {
-    href: "#faq",
-    label: "Dúvidas",
-    isExternal: true
-  },
+  // {
+  //   href: "#features",
+  //   label: "Recursos",
+  //   isExternal: true
+  // },
+  // {
+  //   href: "#services",
+  //   label: "Serviços",
+  //   isExternal: true
+  // },
+  // {
+  //   href: "#testimonials",
+  //   label: "Depoimentos",
+  //   isExternal: true
+  // },
+  // {
+  //   href: "#faq",
+  //   label: "Dúvidas",
+  //   isExternal: true
+  // },
 ];
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME || 'App_Name'
