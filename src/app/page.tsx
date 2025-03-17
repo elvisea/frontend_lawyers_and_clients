@@ -6,6 +6,7 @@ import "./index.css";
 
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
+import { WhatsAppButton } from "@/components/whats-app-button";
 // import { Sponsors } from "@/components/Sponsors";
 // import { About } from "@/components/About";
 // import { HowItWorks } from "@/components/HowItWorks";
@@ -25,6 +26,7 @@ export default function Home() {
     <React.Fragment>
       <Navbar />
       <Hero resource="clients" />
+      <WhatsAppButton />
       {/* <Sponsors />
       <About />
       <HowItWorks resource="clients" />
