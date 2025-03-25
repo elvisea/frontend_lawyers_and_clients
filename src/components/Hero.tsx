@@ -42,7 +42,7 @@ export const Hero = ({ resource }: Props) => {
             asChild
           >
             <Link href={'/auth/sign-up'}>
-              {item.button}
+              "{item.button}"
             </Link>
           </Button>
         </div>

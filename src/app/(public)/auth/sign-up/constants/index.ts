@@ -13,12 +13,16 @@ export const schema = yup.object({
 
   password: yup
     .string()
-    .min(6, 'A senha deve ter pelo menos 6 caracteres.')
-    .required('A senha é obrigatória.'),
+    .min(8, 'A senha deve ter no mínimo 8 caracteres')
+    .required('A senha é obrigatória')
+    .max(30, 'A senha deve ter no máximo 30 caracteres')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      'A senha deve conter pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial'
+    ),
 
   confirmation: yup
     .string()
-    .min(6, 'A senha deve ter pelo menos 6 caracteres.')
     .required('A confirmação de senha é obrigatória.')
     .oneOf([yup.ref('password')], 'As senhas não conferem.')
 });
