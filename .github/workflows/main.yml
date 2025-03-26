@@ -20,6 +20,7 @@ env:
   NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
   NEXT_PUBLIC_SITE_NAME: ${{ secrets.NEXT_PUBLIC_SITE_NAME }}
   NEXT_PUBLIC_SITE_DESCRIPTION: ${{ secrets.NEXT_PUBLIC_SITE_DESCRIPTION }}
+  NEXT_PUBLIC_PHONE_NUMBER: ${{ secrets.NEXT_PUBLIC_PHONE_NUMBER }}
 jobs:
   build:
     name: Build Docker Image
@@ -55,6 +56,7 @@ jobs:
             --build-arg NEXT_PUBLIC_SITE_DESCRIPTION=${{ secrets.NEXT_PUBLIC_SITE_DESCRIPTION }} \
             --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
             --build-arg NEXT_PUBLIC_WEBSOCKET_URL=${{ secrets.NEXT_PUBLIC_WEBSOCKET_URL }} \
+            --build-arg NEXT_PUBLIC_PHONE_NUMBER=${{ secrets.NEXT_PUBLIC_PHONE_NUMBER }} \
             -t ${{ env.IMAGE_NAME }}:latest .
 
       - name: Push Docker Image to Docker Hub
@@ -90,6 +92,7 @@ jobs:
           echo "NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}" >> .env
           echo "NEXT_PUBLIC_SITE_NAME=${{ secrets.NEXT_PUBLIC_SITE_NAME }}" >> .env
           echo "NEXT_PUBLIC_SITE_DESCRIPTION=${{ secrets.NEXT_PUBLIC_SITE_DESCRIPTION }}" >> .env
+          echo "NEXT_PUBLIC_PHONE_NUMBER=${{ secrets.NEXT_PUBLIC_PHONE_NUMBER }}" >> .env
           
           # Transfira os arquivos necessários para o servidor
           scp -i ~/.ssh/deploy_key -P ${{ secrets.REMOTE_PORT }} docker-compose.yml Dockerfile .env ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}

@@ -15,7 +15,7 @@ import { WhatsAppButton } from "@/components/whats-app-button";
 // import { Cta } from "@/components/Cta";
 // import { Testimonials } from "@/components/Testimonials";
 // import { FAQ } from "@/components/faq";
-// import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/Footer";
 // import { Newsletter } from "@/components/Newsletter";
 // import { Pricing } from "@/components/Pricing";
 // import { ScrollToTop } from "@/components/ScrollToTop";
@@ -26,7 +26,6 @@ export default function Home() {
     <React.Fragment>
       <Navbar />
       <Hero resource="clients" />
-      <WhatsAppButton />
       {/* <Sponsors />
       <About />
       <HowItWorks resource="clients" />
@@ -38,8 +37,9 @@ export default function Home() {
       <Pricing />
       <Newsletter />
       <FAQ resource="clients" />
-      <Footer />
       <ScrollToTop /> */}
+      <Footer />
+      <WhatsAppButton resource="default" />
     </React.Fragment>
   )
 }

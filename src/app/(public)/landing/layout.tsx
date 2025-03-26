@@ -10,7 +10,6 @@ export default function LandingLayout({ children }: LandingLayoutProps) {
   return (
     <RouteGuard type={RouteType.PUBLIC}>
       {children}
-      <WhatsAppButton />
     </RouteGuard>
   )
 }
