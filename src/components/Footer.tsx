@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { LogoIcon } from "./Icons";
+import { env } from "@/env";
 
-const appName = process.env.NEXT_PUBLIC_APP_NAME || 'App_Name'
+const appName = env.NEXT_PUBLIC_SITE_NAME
 
 export const Footer = () => {
   return (
