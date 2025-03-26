@@ -1,6 +1,5 @@
 import { RouteType } from '@/enums/type';
 import { RouteGuard } from '@/contexts/route-guard';
-import { WhatsAppButton } from "@/components/whats-app-button"
 
 type LandingLayoutProps = {
   children: React.ReactNode;
