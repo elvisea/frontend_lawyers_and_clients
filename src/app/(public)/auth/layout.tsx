@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 
+import { env } from "@/env";
+
 import { LogoIcon } from "@/components/Icons";
 import { ModeToggle } from "@/components/mode-toggle";
-import { env } from "@/env";
 
 type AuthLayoutProps = {
   children: React.ReactNode;
@@ -39,10 +40,10 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           <a
             rel="noreferrer noopener"
             target="_blank"
-            href="https://www.linkedin.com/in/elvis-e-amancio/"
+            href="https://landing.bytefulcode.tech/"
             className="text-primary transition-all border-primary hover:border-b-2"
           >
-            Developed by Elvis E. A.
+            Um produto desenvolvido por{" "} BytefulCode
           </a>
         </h3>
       </footer>

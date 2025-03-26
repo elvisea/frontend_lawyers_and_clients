@@ -3,14 +3,15 @@
 import { MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const PHONE_NUMBER = "5541992190528"
+import { whatsAppClick } from "@/utils/whatsapp-click"
 
-export function WhatsAppButton() {
+type Props = {
+  resource: 'clients' | 'lawyers' | 'default'
+}
+
+export function WhatsAppButton({ resource }: Props) {
   const handleWhatsAppClick = () => {
-    const message = encodeURIComponent(
-      "Olá! Gostaria de obter mais informações sobre os serviços jurídicos oferecidos pela plataforma. Podem me ajudar?"
-    )
-    window.open(`https://wa.me/${PHONE_NUMBER}?text=${message}`, '_blank')
+    whatsAppClick(resource)
   }
 
   return (

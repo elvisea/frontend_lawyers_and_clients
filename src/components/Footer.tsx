@@ -159,13 +159,14 @@ export const Footer = () => {
         <h3>
           © {new Date().getFullYear()} {appName}. Todos os direitos reservados. {" "}
           <br />
+          Um produto desenvolvido por{" "}
           <a
             rel="noreferrer noopener"
             target="_blank"
-            href="https://www.linkedin.com/in/elvis-e-amancio/"
+            href="https://landing.bytefulcode.tech/"
             className="text-primary transition-all border-primary hover:border-b-2"
           >
-            Developed by Elvis E. A.
+            BytefulCode
           </a>
         </h3>
       </section>

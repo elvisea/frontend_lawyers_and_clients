@@ -5,6 +5,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+import { whatsAppClick } from "@/utils/whatsapp-click";
+
 import { faq } from "./constants";
 import { Item, Props } from "./types";
 
@@ -47,13 +49,12 @@ export const FAQ = ({ resource }: Props) => {
 
       <h3 className="font-medium mt-4">
         Ainda tem dúvidas?{" "}
-        <a
-          rel="noreferrer noopener"
-          href="#"
+        <button
+          onClick={() => whatsAppClick(resource)}
           className="text-primary transition-all border-primary hover:border-b-2"
         >
           Entre em contato
-        </a>
+        </button>
       </h3>
     </section>
   );

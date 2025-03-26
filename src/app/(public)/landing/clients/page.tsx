@@ -6,15 +6,15 @@ import "@/app/index.css";
 
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-
+import { WhatsAppButton } from "@/components/whats-app-button";
 // import { AboutCompany } from "@/components/AboutCompany";
-// import { Process } from "@/components/Process";
+import { Process } from "@/components/Process";
 // import { Features } from "@/components/features";
 // import { Services } from "@/components/Services";
 // import { Cta } from "@/components/Cta";
 // import { Testimonials } from "@/components/Testimonials";
-// import { FAQ } from "@/components/faq";
-// import { Footer } from "@/components/Footer";
+import { FAQ } from "@/components/faq";
+import { Footer } from "@/components/Footer";
 // import { Newsletter } from "@/components/Newsletter";
 
 // import { Team } from "@/components/Team";
@@ -25,20 +25,22 @@ export default function Clients() {
     <React.Fragment>
       <Navbar />
       <Hero resource="clients" />
-      {/* <Cta />
+
       <Process />
+      {/* <Cta /> */}
 
-      <Features resource="clients" />
+      {/* <Features resource="clients" /> */}
 
-      <AboutCompany />
-      <Services />
-      <Testimonials />
-      <Team />
+      {/* <AboutCompany /> */}
+      {/* <Services /> */}
+      {/* <Testimonials /> */}
+      {/* <Team /> */}
 
-      <Newsletter />
+      {/* <Newsletter /> */}
+      {/* <ScrollToTop /> */}
       <FAQ resource="clients" />
       <Footer />
-      <ScrollToTop /> */}
+      <WhatsAppButton resource="clients" />
     </React.Fragment>
   )
 }

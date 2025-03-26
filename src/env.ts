@@ -14,6 +14,11 @@ const envSchema = yup.object({
     .string()
     .required('Descrição do site é obrigatória')
     .min(10, 'Descrição muito curta'),
+
+  NEXT_PUBLIC_PHONE_NUMBER: yup
+    .string()
+    .required('Número de telefone é obrigatório')
+    .min(11, 'Número de telefone deve ter no mínimo 11 caracteres'),
 }).required()
 
 type EnvSchema = yup.InferType<typeof envSchema>
@@ -24,6 +29,7 @@ function validateEnv(): EnvSchema {
       NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
       NEXT_PUBLIC_SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME,
       NEXT_PUBLIC_SITE_DESCRIPTION: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
+      NEXT_PUBLIC_PHONE_NUMBER: process.env.NEXT_PUBLIC_PHONE_NUMBER,
     })
   } catch (error) {
     if (error instanceof yup.ValidationError) {
