@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next'
-import { env } from '@/env'
-
-const { NEXT_PUBLIC_SITE_URL } = env
 
 export default function robots(): MetadataRoute.Robots {
+  // Valor padrão caso a variável de ambiente não esteja disponível
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
   return {
     rules: {
       userAgent: '*',
@@ -29,6 +29,6 @@ export default function robots(): MetadataRoute.Robots {
         '/dashboard/',
       ]
     },
-    sitemap: `${NEXT_PUBLIC_SITE_URL}/sitemap.xml`,
+    sitemap: `${siteUrl}/sitemap.xml`,
   }
 } 

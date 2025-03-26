@@ -13,6 +13,13 @@ RUN npm install
 # Copia todos os arquivos do projeto
 COPY . .
 
+# Define as variáveis de ambiente necessárias para o build
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_SITE_NAME
+ARG NEXT_PUBLIC_SITE_DESCRIPTION
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_WEBSOCKET_URL
+
 # Compila a aplicação Next.js
 RUN npm run build
 
