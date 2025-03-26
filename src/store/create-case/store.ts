@@ -4,6 +4,8 @@ import api from '@/http/api'
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
 import Logger from '@/utils/logger'
+import { logAnalyticsEvent } from '@/lib/firebase-client'
+import { CASE_EVENTS } from '@/constants/analytics'
 
 type CreateCaseData = {
   title: string
@@ -52,6 +54,12 @@ export const useCreateCaseStore = create<CreateCaseStore>((set) => ({
         sensitive: true
       })
 
+      logAnalyticsEvent(CASE_EVENTS.CREATED, {
+        type: 'internal',
+        area: 'internal',
+        hasDocuments: false
+      })
+
       return response.data
 
     } catch (error) {
@@ -62,6 +70,11 @@ export const useCreateCaseStore = create<CreateCaseStore>((set) => ({
         Logger.error('Erro desconhecido ao criar caso', { prefix: 'Case' })
         set({ errorCode: ErrorCode.UNKNOWN_ERROR })
       }
+      logAnalyticsEvent(CASE_EVENTS.CREATION_ERROR, {
+        error: error instanceof Error ? error.message : 'unknown_error',
+        type: 'internal',
+        area: 'internal'
+      })
       return null
 
     } finally {

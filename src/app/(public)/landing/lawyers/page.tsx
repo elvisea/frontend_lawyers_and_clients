@@ -2,6 +2,9 @@
 
 import React from "react";
 
+import { usePageTracking } from '@/hooks/use-page-tracking'
+import { useLandingTracking } from '@/hooks/use-landing-tracking'
+
 import "@/app/index.css";
 
 import { Navbar } from "@/components/Navbar";
@@ -10,18 +13,16 @@ import { WhatsAppButton } from "@/components/whats-app-button";
 // import { Sponsors } from "@/components/Sponsors";
 // import { About } from "@/components/About";
 // import { HowItWorks } from "@/components/HowItWorks";
-// import { Features } from "@/components/features";
-// import { Services } from "@/components/Services";
 // import { Cta } from "@/components/Cta";
-// import { Testimonials } from "@/components/Testimonials";
-// import { FAQ } from "@/components/faq";
-// import { Footer } from "@/components/Footer";
 // import { Newsletter } from "@/components/Newsletter";
 // import { Pricing } from "@/components/Pricing";
 // import { ScrollToTop } from "@/components/ScrollToTop";
 // import { Team } from "@/components/Team";
 
-export default function Lawyers() {
+export default function LawyersLanding() {
+  usePageTracking()
+  useLandingTracking('lawyers')
+
   return (
     <React.Fragment>
       <Navbar />

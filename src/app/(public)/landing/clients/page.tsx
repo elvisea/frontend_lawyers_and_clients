@@ -1,6 +1,8 @@
 'use client'
 
 import React from "react";
+import { usePageTracking } from '@/hooks/use-page-tracking'
+import { useLandingTracking } from '@/hooks/use-landing-tracking'
 
 import "@/app/index.css";
 
@@ -20,7 +22,10 @@ import { Footer } from "@/components/Footer";
 // import { Team } from "@/components/Team";
 // import { ScrollToTop } from "@/components/ScrollToTop";
 
-export default function Clients() {
+export default function ClientsLanding() {
+  usePageTracking()
+  useLandingTracking('clients')
+
   return (
     <React.Fragment>
       <Navbar />

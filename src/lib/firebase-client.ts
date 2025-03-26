@@ -1,6 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { Analytics, getAnalytics, isSupported } from "firebase/analytics";
+import { Analytics, getAnalytics, isSupported, logEvent } from "firebase/analytics";
+
+import Logger from '@/utils/logger';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -27,10 +29,25 @@ if (typeof window !== 'undefined') {
   isSupported().then(supported => {
     if (supported) {
       analytics = getAnalytics(app);
+      Logger.info('Firebase Analytics inicializado com sucesso', { prefix: 'Firebase' });
     }
   }).catch(err => {
-    console.error('Erro ao verificar suporte do Analytics:', err);
+    Logger.error(`Erro ao verificar suporte do Analytics: ${err instanceof Error ? err.message : 'Erro desconhecido'}`, { prefix: 'Firebase' });
   });
 }
+
+// Função para log de eventos
+export const logAnalyticsEvent = (eventName: string, eventParams?: { [key: string]: any }) => {
+  if (analytics) {
+    try {
+      logEvent(analytics, eventName, eventParams);
+      Logger.info(`Evento registrado: ${eventName} - Parâmetros: ${JSON.stringify(eventParams)}`, { prefix: 'Firebase' });
+    } catch (error) {
+      Logger.error(`Erro ao registrar evento ${eventName}: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, { prefix: 'Firebase' });
+    }
+  } else {
+    Logger.warn(`Analytics não disponível para registrar evento: ${eventName}`, { prefix: 'Firebase' });
+  }
+};
 
 export { app, analytics };
