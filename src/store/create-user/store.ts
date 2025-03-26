@@ -2,6 +2,7 @@ import { create } from 'zustand'
 
 import api from '@/http/api'
 import { AppError } from '@/errors/app-error'
+import Logger from '@/utils/logger'
 
 import { UserType } from '@/enums/type'
 import { ErrorCode } from '@/enums/error-code'
@@ -14,11 +15,10 @@ export const useCreateUserStore = create<CreateUserStore>((set) => ({
 
   createUser: async (type: UserType, data: CreateUserData) => {
     try {
-      console.log('🔄 [Usuário] Iniciando criação de usuário...')
-      console.log('📝 [Usuário] Dados:', {
-        nome: data.name,
-        email: data.email,
-        tipo: type
+      Logger.info('Iniciando criação de usuário', { prefix: 'User' })
+      Logger.info(`Criando usuário do tipo ${type}`, {
+        prefix: 'User',
+        sensitive: true
       })
 
       set({ isLoading: true, errorCode: null })
@@ -28,13 +28,10 @@ export const useCreateUserStore = create<CreateUserStore>((set) => ({
         type
       })
 
-      console.log('✅ [Usuário] Usuário criado com sucesso!')
-
-      console.log('📊 [Usuário] Dados:', {
-        id: response.data.id,
-        nome: response.data.name,
-        email: response.data.email,
-        tipo: response.data.type
+      Logger.info('Usuário criado com sucesso', { prefix: 'User' })
+      Logger.info(`Usuário criado - ID: ${response.data.id}`, {
+        prefix: 'User',
+        sensitive: true
       })
 
       // Redireciona após sucesso
@@ -42,8 +39,10 @@ export const useCreateUserStore = create<CreateUserStore>((set) => ({
 
     } catch (error) {
       if (error instanceof AppError) {
+        Logger.error(`Erro ao criar usuário: ${error.message}`, { prefix: 'User' })
         set({ errorCode: error.errorCode })
       } else {
+        Logger.error('Erro desconhecido ao criar usuário', { prefix: 'User' })
         set({ errorCode: ErrorCode.UNKNOWN_ERROR })
       }
 
@@ -53,6 +52,7 @@ export const useCreateUserStore = create<CreateUserStore>((set) => ({
   },
 
   reset: () => {
+    Logger.info('Resetando estado do usuário', { prefix: 'User' })
     set({ isLoading: false, errorCode: null })
   }
 })) 

@@ -16,8 +16,10 @@ export default function AdminRootLayout({ children }: AdminRootLayoutProps) {
     <RouteGuard type={RouteType.PRIVATE} allowedTypes={[UserType.ADMIN]}>
       <div className="flex h-screen">
         <Sidebar items={routes[UserType.ADMIN]} title={UserType.ADMIN.toString()} />
-        <div className="flex-1 flex flex-col">
-          <Header />
+        <div className="flex-1 flex flex-col pt-16">
+          <div className="px-4">
+            <Header />
+          </div>
           <main className="flex-1 overflow-y-auto p-4">
             {children}
           </main>

@@ -16,8 +16,10 @@ export default function LawyerRootLayout({ children }: LawyerRootLayoutProps) {
     <RouteGuard type={RouteType.PRIVATE} allowedTypes={[UserType.LAWYER]}>
       <div className="flex h-screen">
         <Sidebar items={routes[UserType.LAWYER]} title={UserType.LAWYER.toString()} />
-        <div className="flex-1 flex flex-col">
-          <Header />
+        <div className="flex-1 flex flex-col pt-16">
+          <div className="px-4">
+            <Header />
+          </div>
           <main className="flex-1 overflow-y-auto p-4">
             {children}
           </main>

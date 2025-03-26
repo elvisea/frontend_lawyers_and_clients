@@ -14,8 +14,8 @@ export function Header() {
   }
 
   return (
-    <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-full items-center justify-between px-4">
+    <header className="fixed top-0 left-0 right-0 h-16 border-b bg-background/95 supports-[backdrop-filter]:bg-background/60">
+      <div className="h-full flex items-center justify-between">
         {/* Lado esquerdo - pode conter breadcrumbs ou título da página */}
         <div>
           {/* Espaço reservado para breadcrumbs ou título */}
@@ -23,13 +23,11 @@ export function Header() {
 
         {/* Lado direito - ações globais */}
         <div className="flex items-center gap-2">
-
           <ModeToggle />
 
           <Button
             variant="ghost"
             size="icon"
-            className="ghost"
             onClick={handleLogout}
             aria-label="Sair do sistema"
           >
