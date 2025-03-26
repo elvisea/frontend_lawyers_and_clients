@@ -36,8 +36,12 @@ if (typeof window !== 'undefined') {
   });
 }
 
+type EventParams = {
+  [key: string]: string | number | boolean
+}
+
 // Função para log de eventos
-export const logAnalyticsEvent = (eventName: string, eventParams?: { [key: string]: any }) => {
+export const logAnalyticsEvent = (eventName: string, eventParams?: EventParams) => {
   if (analytics) {
     try {
       logEvent(analytics, eventName, eventParams);
