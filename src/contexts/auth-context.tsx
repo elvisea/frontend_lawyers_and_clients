@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       Logger.info('Nenhum token encontrado no localStorage', { prefix: 'Auth' })
       return false
     } catch (error) {
-      Logger.error('Erro ao decodificar token', { prefix: 'Auth' })
+      Logger.error(`Erro ao decodificar token: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, { prefix: 'Auth' })
       return false
     }
   }
@@ -97,7 +97,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       Logger.info(`Redirecionando para: ${redirectPath}`, { prefix: 'Auth' })
       router.push(redirectPath)
     } catch (error) {
-      Logger.error('Falha no login', { prefix: 'Auth' })
+      Logger.error(`Erro no login: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, { prefix: 'Auth' })
       throw error
     } finally {
       Logger.info('Processo de login finalizado', { prefix: 'Auth' })
@@ -120,7 +120,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       Logger.info('Redirecionando para login', { prefix: 'Auth' })
       router.push('/auth/sign-in')
     } catch (error) {
-      Logger.error('Erro durante logout', { prefix: 'Auth' })
+      Logger.error(`Erro durante logout: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, { prefix: 'Auth' })
     } finally {
       Logger.info('Logout concluído', { prefix: 'Auth' })
       setIsLoading(false)
