@@ -13,6 +13,9 @@ import { parseToken } from '@/utils/token'
 import { signIn } from '@/http/auth'
 import { SignInRequest } from '@/http/auth/types'
 
+import { logAnalyticsEvent } from '@/lib/firebase-client'
+import { AUTH_EVENTS } from '@/constants/analytics'
+
 type User = {
   id: string
   type: UserType
@@ -96,8 +99,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const redirectPath = routes[decoded.type].dashboard.href
       Logger.info(`Redirecionando para: ${redirectPath}`, { prefix: 'Auth' })
       router.push(redirectPath)
+
+      logAnalyticsEvent(AUTH_EVENTS.LOGIN, { method: 'email' })
     } catch (error) {
       Logger.error(`Erro no login: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, { prefix: 'Auth' })
+      logAnalyticsEvent(AUTH_EVENTS.LOGIN_ERROR, { error: error instanceof Error ? error.message : 'unknown_error' })
       throw error
     } finally {
       Logger.info('Processo de login finalizado', { prefix: 'Auth' })
@@ -119,8 +125,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       Logger.info('Redirecionando para login', { prefix: 'Auth' })
       router.push('/auth/sign-in')
+
+      logAnalyticsEvent(AUTH_EVENTS.LOGOUT)
     } catch (error) {
       Logger.error(`Erro durante logout: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, { prefix: 'Auth' })
+      logAnalyticsEvent(AUTH_EVENTS.LOGOUT_ERROR, { error: error instanceof Error ? error.message : 'unknown_error' })
     } finally {
       Logger.info('Logout concluído', { prefix: 'Auth' })
       setIsLoading(false)
