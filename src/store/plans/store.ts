@@ -1,7 +1,11 @@
 import { create } from 'zustand'
+
 import api from '@/http/api'
-import { Plan } from '@/types/subscription'
+import Logger from '@/utils/logger'
+
 import { PlansStore } from './types'
+import { Plan } from '@/types/subscription'
+import { AppError } from '@/errors/app-error'
 
 const initialState = {
   plans: [],
@@ -15,7 +19,7 @@ export const usePlansStore = create<PlansStore>((set) => ({
 
   fetchPlans: async () => {
     set({ isLoading: true, error: null })
-    console.log('🔄 [Planos] Iniciando o carregamento dos planos disponíveis...')
+    Logger.info('Iniciando o carregamento dos planos disponíveis', { prefix: 'Plans' })
 
     try {
       const { data } = await api.get<Plan[]>('/plans/available')
@@ -24,31 +28,31 @@ export const usePlansStore = create<PlansStore>((set) => ({
       await new Promise((resolve) => setTimeout(resolve, 350))
 
       const activePlans = data.filter((plan) => plan.isActive)
-      console.log('✅ [Planos] Planos carregados com sucesso. Total de planos ativos:', activePlans.length)
+      Logger.info(`Planos carregados com sucesso. Total de planos ativos: ${activePlans.length}`, { prefix: 'Plans' })
 
       set({ plans: activePlans })
     } catch (error) {
-      const errorMessage = '⚠️ [Planos] Erro ao carregar planos. Tente novamente.'
-      console.error(errorMessage, error)
+      const errorMessage = 'Erro ao carregar planos. Tente novamente.'
+      Logger.error(`${errorMessage}: ${error instanceof AppError ? error.message : 'Erro desconhecido'}`, { prefix: 'Plans' })
       set({ error: errorMessage })
     } finally {
       set({ isLoading: false })
-      console.log('🔄 [Planos] Carregamento finalizado.')
+      Logger.info('Carregamento finalizado', { prefix: 'Plans' })
     }
   },
 
   setSelectedPlan: (plan) => {
-    console.log('💾 [Plano Selecionado] Salvando plano selecionado:', plan.name)
+    Logger.info(`Salvando plano selecionado: ${plan.name}`, { prefix: 'Plans', sensitive: true })
     set({ selected: plan })
   },
 
   clearSelectedPlan: () => {
-    console.log('🗑️ [Plano Selecionado] Limpando plano selecionado da store')
+    Logger.info('Limpando plano selecionado da store', { prefix: 'Plans' })
     set({ selected: null })
   },
 
   resetState: () => {
-    console.log('🔄 [Plano] Resetando estado da store para o estado inicial.')
+    Logger.info('Resetando estado da store para o estado inicial', { prefix: 'Plans' })
     set(initialState)
   },
 }))

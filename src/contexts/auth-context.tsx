@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import api from '@/http/api'
+import Logger from '@/utils/logger'
 
 import { routes } from '@/constants/routes'
 import { UserType } from '@/enums/type'
@@ -40,90 +41,88 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const isAuthenticated = !!user
 
   const loadTokenFromStorage = () => {
-    console.log('🔍 [Auth] Verificando tokens armazenados...')
+    Logger.info('Verificando tokens armazenados...', { prefix: 'Auth' })
     try {
       const accessToken = localStorage.getItem('accessToken')
 
       if (accessToken) {
-        console.log('✅ [Auth] Token encontrado no localStorage')
+        Logger.info('Token encontrado no localStorage', { prefix: 'Auth' })
         const decoded = parseToken(accessToken)
-        console.log(`   ➔ Tipo de usuário: ${decoded.type}`)
-        console.log(`   ➔ ID do usuário: ${decoded.sub}`)
+        Logger.info(`Usuário decodificado - Tipo: ${decoded.type}, ID: ${decoded.sub}`, { prefix: 'Auth', sensitive: true })
 
         setUser({ id: decoded.sub, type: decoded.type })
         api.defaults.headers.common.Authorization = `Bearer ${accessToken}`
 
-        console.log('⚙️ [Auth] Configurações da API atualizadas com token')
+        Logger.info('Configurações da API atualizadas com token', { prefix: 'Auth' })
         return true
       }
 
-      console.log('❌ [Auth] Nenhum token encontrado no localStorage')
+      Logger.info('Nenhum token encontrado no localStorage', { prefix: 'Auth' })
       return false
     } catch (error) {
-      console.error('🚨 [Auth] Erro ao decodificar token:', error)
+      Logger.error('Erro ao decodificar token', { prefix: 'Auth' })
       return false
     }
   }
 
   useEffect(() => {
-    console.log('🏁 [Auth] Inicializando provedor de autenticação')
+    Logger.info('Inicializando provedor de autenticação', { prefix: 'Auth' })
     const tokenLoaded = loadTokenFromStorage()
-    console.log(`   ➔ Token ${tokenLoaded ? 'encontrado' : 'não encontrado'}`)
+    Logger.info(`Token ${tokenLoaded ? 'encontrado' : 'não encontrado'}`, { prefix: 'Auth' })
   }, [])
 
   const login = async ({ email, password }: SignInRequest) => {
-    console.log('🔑 [Auth] Iniciando processo de login...')
+    Logger.info('Iniciando processo de login', { prefix: 'Auth' })
     setIsLoading(true)
 
     try {
-      console.log('📡 [Auth] Fazendo requisição de autenticação...')
+      Logger.info('Fazendo requisição de autenticação', { prefix: 'Auth' })
       const { accessToken, refreshToken } = await signIn({ email, password })
 
-      console.log('✅ [Auth] Login bem-sucedido')
-      console.log('   ➔ Access Token:', accessToken.substring(0, 15) + '...')
-      console.log('   ➔ Refresh Token:', refreshToken.substring(0, 15) + '...')
+      Logger.info('Login bem-sucedido', { prefix: 'Auth' })
+      Logger.info('Tokens recebidos e validados', { prefix: 'Auth', sensitive: true })
 
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
-      console.log('💾 [Auth] Tokens armazenados no localStorage')
+      Logger.info('Tokens armazenados no localStorage', { prefix: 'Auth' })
 
       api.defaults.headers.common.Authorization = `Bearer ${accessToken}`
-      console.log('⚙️ [Auth] Configurações da API atualizadas')
+      Logger.info('Configurações da API atualizadas', { prefix: 'Auth' })
 
       const decoded = parseToken(accessToken)
       setUser({ id: decoded.sub, type: decoded.type })
-      console.log(`👤 [Auth] Estado do usuário atualizado → Tipo: ${decoded.type}`)
+      Logger.info(`Usuário autenticado com tipo: ${decoded.type}`, { prefix: 'Auth' })
 
       const redirectPath = routes[decoded.type].dashboard.href
-      console.log(`⏩ [Auth] Redirecionando para: ${redirectPath}`)
+      Logger.info(`Redirecionando para: ${redirectPath}`, { prefix: 'Auth' })
       router.push(redirectPath)
     } catch (error) {
-      console.error('🚨 [Auth] Falha no login:', error)
+      Logger.error('Falha no login', { prefix: 'Auth' })
       throw error
     } finally {
-      console.log('🏁 [Auth] Finalizando processo de login')
+      Logger.info('Processo de login finalizado', { prefix: 'Auth' })
       setIsLoading(false)
     }
   }
 
   const logout = async () => {
-    console.log('🚪 [Auth] Iniciando logout...')
+    Logger.info('Iniciando logout', { prefix: 'Auth' })
     setIsLoading(true)
 
     try {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
-      console.log('🗑️ [Auth] Tokens removidos do localStorage')
+      Logger.info('Tokens removidos do localStorage', { prefix: 'Auth' })
 
       setUser(null)
-      console.log('🔄 [Auth] Estado do usuário resetado')
+      Logger.info('Estado do usuário resetado', { prefix: 'Auth' })
 
-      console.log('⏩ [Auth] Redirecionando para login')
+      Logger.info('Redirecionando para login', { prefix: 'Auth' })
       router.push('/auth/sign-in')
     } catch (error) {
-      console.error('🚨 [Auth] Erro durante logout:', error)
+      Logger.error('Erro durante logout', { prefix: 'Auth' })
     } finally {
-      console.log('🏁 [Auth] Logout concluído')
+      Logger.info('Logout concluído', { prefix: 'Auth' })
       setIsLoading(false)
     }
   }
@@ -147,7 +146,7 @@ export const useAuth = () => {
   const context = useContext(AuthContext)
 
   if (!context) {
-    console.error('🚨 [Auth] useAuth usado fora do AuthProvider')
+    Logger.error('useAuth usado fora do AuthProvider', { prefix: 'Auth' })
     throw new Error('useAuth deve ser usado dentro de um AuthProvider')
   }
 

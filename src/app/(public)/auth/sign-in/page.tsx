@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 
 import { Form } from './types'
+import Logger from '@/utils/logger'
 import { schema } from './constants'
 
 import { Label } from '@/components/ui/label'
@@ -42,26 +43,27 @@ export default function SignInPage() {
   const { login } = useAuth()
 
   const onSubmit = async ({ email, password }: Form) => {
-    console.log('🔑 [Auth] Iniciando processo de login...')
-    console.log('   ➔ Email:', email)
+    Logger.info('Iniciando processo de login', { prefix: 'SignIn' })
+    Logger.info(`Tentativa de login com email: ${email}`, { prefix: 'SignIn', sensitive: true })
 
     startTransition(async () => {
       try {
-        console.log('📡 [Auth] Validando credenciais...')
+        Logger.info('Validando credenciais', { prefix: 'SignIn' })
         await login({ email, password })
 
-        console.log('✅ [Auth] Login bem-sucedido')
-        console.log('⏩ [Auth] Redirecionando para área autenticada...')
+        Logger.info('Login bem-sucedido', { prefix: 'SignIn' })
+        Logger.info('Redirecionando para área autenticada', { prefix: 'SignIn' })
       } catch (error) {
-        console.error('🚨 [Auth] Falha no login:')
+        Logger.error('Falha no login', { prefix: 'SignIn' })
 
         if (error instanceof AppError) {
-          console.error(`   ➔ Código: ${error.errorCode}`)
-          console.error(`   ➔ Mensagem: ${error.message}`)
-          console.error(`   ➔ Status HTTP: ${error.statusCode}`)
+          Logger.error(`Detalhes do erro - Código: ${error.errorCode}, Status: ${error.statusCode}`, {
+            prefix: 'SignIn',
+            sensitive: true
+          })
           setErrorCode(error.errorCode)
         } else {
-          console.error('   ➔ Erro desconhecido:', error)
+          Logger.error('Erro desconhecido durante o login', { prefix: 'SignIn' })
           setErrorCode(ErrorCode.UNKNOWN_ERROR)
         }
       }
