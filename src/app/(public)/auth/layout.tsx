@@ -4,12 +4,13 @@ import Link from "next/link";
 
 import { LogoIcon } from "@/components/Icons";
 import { ModeToggle } from "@/components/mode-toggle";
+import { env } from "@/env";
 
 type AuthLayoutProps = {
   children: React.ReactNode;
 }
 
-const appName = process.env.APP_NAME || 'App_Name'
+const appName = env.NEXT_PUBLIC_SITE_NAME
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
