@@ -23,6 +23,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+import { env } from "@/env";
 import { LogoIcon } from "./Icons";
 import { ModeToggle } from "./mode-toggle";
 
@@ -59,7 +60,7 @@ const routes = [
   // },
 ];
 
-const appName = process.env.NEXT_PUBLIC_APP_NAME || 'App_Name'
+const appName = env.NEXT_PUBLIC_SITE_NAME
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);

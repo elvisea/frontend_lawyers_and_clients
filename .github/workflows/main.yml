@@ -17,6 +17,9 @@ env:
   NEXT_PUBLIC_WEBSOCKET_URL: ${{ secrets.NEXT_PUBLIC_WEBSOCKET_URL }}
   IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}
   CONTAINER_NAME_APP: ${{ secrets.CONTAINER_NAME_APP }}
+  NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+  NEXT_PUBLIC_SITE_NAME: ${{ secrets.NEXT_PUBLIC_SITE_NAME }}
+  NEXT_PUBLIC_SITE_DESCRIPTION: ${{ secrets.NEXT_PUBLIC_SITE_DESCRIPTION }}
 jobs:
   build:
     name: Build Docker Image
@@ -78,6 +81,9 @@ jobs:
           echo "IMAGE_NAME=${{ env.IMAGE_NAME }}" >> .env
           echo "CONTAINER_NAME_APP=${{ secrets.CONTAINER_NAME_APP }}" >> .env
           echo "NODE_ENV=production" >> .env
+          echo "NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}" >> .env
+          echo "NEXT_PUBLIC_SITE_NAME=${{ secrets.NEXT_PUBLIC_SITE_NAME }}" >> .env
+          echo "NEXT_PUBLIC_SITE_DESCRIPTION=${{ secrets.NEXT_PUBLIC_SITE_DESCRIPTION }}" >> .env
           
           # Transfira os arquivos necessários para o servidor
           scp -i ~/.ssh/deploy_key -P ${{ secrets.REMOTE_PORT }} docker-compose.yml Dockerfile .env ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
