@@ -1,4 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
+
+import Logger from "@/utils/logger";
 import { AppError } from "@/errors/app-error";
 
 type PromiseType = {
@@ -16,14 +18,22 @@ let isRefreshing = false;
 let failedQueued: Array<PromiseType> = [];
 
 const singOut = () => {
-  console.log('🔐 [Auth] Iniciando processo de logout...');
+  Logger.info('Iniciando processo de logout', {
+    prefix: 'Auth'
+  });
+
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
-  console.log('🗑️ [Auth] Tokens removidos do localStorage');
+
+  Logger.info('Tokens removidos do localStorage', {
+    prefix: 'Auth'
+  });
 };
 
 export const saveTokens = (accessToken: string, refreshToken: string) => {
-  console.log('🔑 [Auth] Iniciando armazenamento de novos tokens...');
+  Logger.info('Iniciando armazenamento de novos tokens', {
+    prefix: 'Auth'
+  });
 
   try {
     localStorage.setItem('accessToken', accessToken);
@@ -31,42 +41,62 @@ export const saveTokens = (accessToken: string, refreshToken: string) => {
 
     api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-    console.log('✅ [Auth] Tokens atualizados com sucesso');
-    console.log('   ➔ Access Token: ', accessToken.substring(0, 15) + '...');
-    console.log('   ➔ Refresh Token: ', refreshToken.substring(0, 15) + '...');
+    Logger.info('Tokens atualizados com sucesso', {
+      prefix: 'Auth',
+      data: {
+        accessToken: accessToken.substring(0, 15) + '...',
+        refreshToken: refreshToken.substring(0, 15) + '...'
+      }
+    });
   } catch (error) {
-    console.error('❌ [Auth] Falha ao salvar tokens:', error);
+    Logger.error('Falha ao salvar tokens', {
+      prefix: 'Auth',
+      error
+    });
     throw error;
   }
 };
 
 api.interceptors.response.use(
   (response) => {
-    console.log(`✅ [${response.config.method?.toUpperCase()}] ${response.config.url} → ${response.status}`);
+    Logger.info(`${response.config.method?.toUpperCase()} ${response.config.url}`, {
+      prefix: 'API',
+      data: { status: response.status }
+    });
     return response;
   },
   async (error) => {
-    const requestInfo = `[${error.config?.method?.toUpperCase()}] ${error.config?.url}`;
+    const requestInfo = `${error.config?.method?.toUpperCase()} ${error.config?.url}`;
 
-    console.log(`❌ ${requestInfo} → Erro ${error.response?.status || 'DESCONHECIDO'}`);
-    console.log('   ➔ Detalhes:', error.response?.data || 'Nenhum detalhe adicional');
+    Logger.error(`Erro na requisição`, {
+      prefix: 'API',
+      error,
+      data: {
+        request: requestInfo,
+        status: error.response?.status || 'DESCONHECIDO',
+        details: error.response?.data || 'Nenhum detalhe adicional'
+      }
+    });
 
     if (error.response?.status === 401) {
-      console.log('🔒 [Auth] Detecção de erro de autenticação');
-      const errorMessage = error.response.data?.message;
+      Logger.warn('Detecção de erro de autenticação', {
+        prefix: 'Auth',
+        data: {
+          errorMessage: error.response.data?.message || 'Não especificado'
+        }
+      });
 
-      console.log(`📋 [Auth] Motivo do erro: ${errorMessage || 'Não especificado'}`);
+      if (["Unauthorized", "token.invalid", "token.expired"].includes(error.response.data?.message)) {
+        Logger.info('Iniciando fluxo de renovação de token', {
+          prefix: 'Auth'
+        });
 
-      if (["Unauthorized", "token.invalid", "token.expired"].includes(errorMessage)) {
-        console.log('🔄 [Auth] Iniciando fluxo de renovação de token');
         const refreshToken = localStorage.getItem('refreshToken');
 
-        console.log(refreshToken
-          ? '   ➔ Refresh Token encontrado'
-          : '❌ [Auth] Refresh Token não disponível');
-
         if (!refreshToken) {
-          console.log('⏩ [Auth] Redirecionando para logout...');
+          Logger.warn('Refresh Token não disponível, redirecionando para logout', {
+            prefix: 'Auth'
+          });
           singOut();
           return Promise.reject(error);
         }
@@ -74,28 +104,35 @@ api.interceptors.response.use(
         const originalRequestConfig = error.config;
 
         if (isRefreshing) {
-          console.log(`⏳ [Auth] Refresh em andamento (${failedQueued.length} requisições na fila)`);
+          Logger.info('Refresh em andamento', {
+            prefix: 'Auth',
+            data: { queuedRequests: failedQueued.length }
+          });
+
           return new Promise((resolve, reject) => {
             failedQueued.push({
               onSuccess: (token: string) => {
-                console.log('   ➔ Reexecutando requisição com novo token');
+                Logger.info('Reexecutando requisição com novo token', {
+                  prefix: 'Auth'
+                });
 
-                // Preservar headers originais, incluindo Content-Type para FormData
                 const headers = {
                   ...originalRequestConfig.headers,
                   Authorization: `Bearer ${token}`
                 };
 
-                // Se for FormData, garantir que o Content-Type seja multipart/form-data
                 if (originalRequestConfig.data instanceof FormData) {
-                  delete headers['Content-Type']; // Deixar o Axios definir automaticamente
+                  delete headers['Content-Type'];
                 }
 
                 originalRequestConfig.headers = headers;
                 resolve(api(originalRequestConfig));
               },
               onFailure: (error: AxiosError) => {
-                console.log('❌ [Auth] Falha na requisição em fila');
+                Logger.error('Falha na requisição em fila', {
+                  prefix: 'Auth',
+                  error
+                });
                 reject(error);
               },
             });
@@ -103,14 +140,20 @@ api.interceptors.response.use(
         }
 
         isRefreshing = true;
-        console.log('📡 [Auth] Fazendo requisição de refresh token...');
+        Logger.info('Fazendo requisição de refresh token', {
+          prefix: 'Auth'
+        });
 
         return new Promise(async (resolve, reject) => {
           try {
             const { data } = await api.post("/auth/refresh-token", { refreshToken });
 
-            console.log('✅ [Auth] Refresh token realizado com sucesso');
-            console.log('   ➔ Novo Access Token: ', data.accessToken.substring(0, 15) + '...');
+            Logger.info('Refresh token realizado com sucesso', {
+              prefix: 'Auth',
+              data: {
+                newAccessToken: data.accessToken.substring(0, 15) + '...'
+              }
+            });
 
             saveTokens(data.accessToken, data.refreshToken);
 
@@ -125,50 +168,69 @@ api.interceptors.response.use(
               Authorization: `Bearer ${data.accessToken}`
             };
 
-            // Se for FormData, garantir que o Content-Type seja multipart/form-data
             if (originalRequestConfig.data instanceof FormData) {
-              delete headers['Content-Type']; // Deixar o Axios definir automaticamente
+              delete headers['Content-Type'];
             }
 
             originalRequestConfig.headers = headers;
             api.defaults.headers.common["Authorization"] = `Bearer ${data.accessToken}`;
 
-            console.log(`🔄 [Auth] Reprocessando ${failedQueued.length + 1} requisições pendentes`);
+            Logger.info('Reprocessando requisições pendentes', {
+              prefix: 'Auth',
+              data: {
+                pendingRequests: failedQueued.length + 1,
+                requestInfo
+              }
+            });
+
             failedQueued.forEach((request) => request.onSuccess(data.accessToken));
 
-            console.log(`⏩ [Auth] Reexecutando requisição original: ${requestInfo}`);
-
             if (originalRequestConfig.data instanceof FormData) {
-              console.log('📦 [Auth] Requisição contém FormData, preservando Content-Type');
-              console.log('   ➔ Headers:', {
-                before: originalRequestConfig.headers,
-                after: headers
+              Logger.info('Requisição contém FormData', {
+                prefix: 'Auth',
+                data: {
+                  headers: {
+                    before: originalRequestConfig.headers,
+                    after: headers
+                  }
+                }
               });
             }
 
             resolve(api(originalRequestConfig));
           } catch (error: unknown) {
-            console.error('❌ [Auth] Falha crítica no refresh token:', error);
-            console.log('⏩ [Auth] Redirecionando todas as requisições para logout...');
+            Logger.error('Falha crítica no refresh token', {
+              prefix: 'Auth',
+              error
+            });
+
             failedQueued.forEach((request) => request.onFailure(error as AxiosError));
             singOut();
             reject(error);
           } finally {
-            console.log('🏁 [Auth] Finalizando processo de refresh token');
+            Logger.info('Finalizando processo de refresh token', {
+              prefix: 'Auth'
+            });
             isRefreshing = false;
             failedQueued = [];
           }
         });
       }
 
-      console.log('🚨 [Auth] Erro de autenticação não recuperável');
+      Logger.error('Erro de autenticação não recuperável', {
+        prefix: 'Auth'
+      });
       singOut();
     }
 
     if (error.response && error.response.data) {
-      console.log('📄 [API] Resposta de erro detalhada:');
-      console.log('   ➔ Código:', error.response.data.errorCode);
-      console.log('   ➔ Mensagem:', error.response.data.message);
+      Logger.error('Resposta de erro detalhada', {
+        prefix: 'API',
+        data: {
+          code: error.response.data.errorCode,
+          message: error.response.data.message
+        }
+      });
 
       return Promise.reject(
         new AppError(
@@ -179,8 +241,13 @@ api.interceptors.response.use(
         )
       );
     } else {
-      console.log('⚠️ [Network] Erro de conexão/comunicação');
-      console.log('   ➔ Detalhes:', error.message);
+      Logger.error('Erro de conexão/comunicação', {
+        prefix: 'Network',
+        error,
+        data: {
+          message: error.message
+        }
+      });
       return Promise.reject(error);
     }
   }

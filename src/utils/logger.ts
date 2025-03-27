@@ -7,24 +7,29 @@ type LogLevel = 'info' | 'warn' | 'error'
 interface LogOptions {
   sensitive?: boolean
   prefix?: string
+  data?: Record<string, unknown>
+  error?: unknown
 }
 
 class Logger {
   private static log(level: LogLevel, message: string, options: LogOptions = {}) {
-    if (!isDevelopment && options.sensitive) return
+    if (!isDevelopment) return
 
     const prefix = options.prefix ? `[${options.prefix}] ` : ''
     const fullMessage = `${prefix}${message}`
 
+    const hasData = options.data || options.error
+    const logData = hasData ? [fullMessage, options] : [fullMessage]
+
     switch (level) {
       case 'info':
-        console.log(fullMessage)
+        console.log(...logData)
         break
       case 'warn':
-        console.warn(fullMessage)
+        console.warn(...logData)
         break
       case 'error':
-        console.error(fullMessage)
+        console.error(...logData)
         break
     }
   }
@@ -38,7 +43,7 @@ class Logger {
   }
 
   static error(message: string, options: LogOptions = {}) {
-    this.log('error', message, { ...options, sensitive: false }) // Erros sempre são logados
+    this.log('error', message, options)
   }
 }
 
