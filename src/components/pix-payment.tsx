@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 import { Loading } from '@/components/loading'
 import { PaymentAlert } from '@/components/payment-alert'
+import Logger from '@/utils/logger'
 
 type Pix = {
   image: string
@@ -31,9 +32,23 @@ export function PixPayment({ isLoading, pix, onRetry }: PixPaymentProps) {
     try {
       await navigator.clipboard.writeText(pix.code)
       setCopySuccess(true)
+      
+      Logger.info('Código PIX copiado com sucesso', {
+        prefix: 'Pagamento',
+        data: { 
+          pixId: pix.code.substring(0, 8) // Apenas os primeiros 8 caracteres para segurança
+        }
+      })
+      
       setTimeout(() => setCopySuccess(false), 2000)
     } catch (error) {
-      console.error('Erro ao copiar código:', error)
+      Logger.error('Erro ao copiar código PIX', {
+        prefix: 'Pagamento',
+        error,
+        data: { 
+          pixId: pix.code.substring(0, 8) // Apenas os primeiros 8 caracteres para segurança
+        }
+      })
     }
   }
 

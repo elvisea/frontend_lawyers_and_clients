@@ -26,6 +26,8 @@ import { useSubscriptionPaymentMonitor } from '@/hooks/use-subscription-payment-
 
 import { intervalLabels } from '../utils/interval-labels'
 
+import Logger from '@/utils/logger'
+
 export default function SubscriptionCheckout() {
   const hasInitializedRef = useRef(false)
   const router = useRouter()
@@ -61,10 +63,23 @@ export default function SubscriptionCheckout() {
 
       // Delay artificial para suavizar a transição
       await new Promise(resolve => setTimeout(resolve, 350))
+      
+      Logger.info('Plano gratuito ativado com sucesso', {
+        prefix: 'Subscription',
+        data: {
+          planId: selected?.id
+        }
+      })
 
       router.push('/lawyer/subscription/success')
     } catch (error) {
-      console.error('❌ Erro ao ativar plano gratuito:', error)
+      Logger.error('Erro ao ativar plano gratuito', {
+        prefix: 'Subscription',
+        error,
+        data: {
+          planId: selected?.id
+        }
+      })
     } finally {
       setIsActivating(false)
     }

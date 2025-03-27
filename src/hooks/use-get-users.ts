@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import api from '@/http/api'
+import Logger from '@/utils/logger'
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
 import { UsersResponse } from '@/app/(private)/(staff)/dashboard/types'
@@ -19,11 +20,13 @@ export const useGetUsers = (params?: GetUsersParams) => {
 
   const fetchUsers = async (searchParams?: GetUsersParams) => {
     try {
-      console.log('🔄 [Users] Iniciando busca de usuários...')
-      console.log('📝 [Users] Parâmetros:', {
-        tipo: searchParams?.type || 'todos',
-        página: searchParams?.page || 1,
-        limite: searchParams?.limit || 'padrão'
+      Logger.info('Iniciando busca de usuários', {
+        prefix: 'Users',
+        data: {
+          tipo: searchParams?.type || 'todos',
+          pagina: searchParams?.page || 1,
+          limite: searchParams?.limit || 'padrão'
+        }
       })
 
       setIsLoading(true)
@@ -35,50 +38,70 @@ export const useGetUsers = (params?: GetUsersParams) => {
       if (searchParams?.limit) queryParams.append('limit', String(searchParams.limit))
 
       const url = `/users?${queryParams.toString()}`
-      console.log(`🔍 [Users] URL da requisição: ${url}`)
+      
+      Logger.info('Realizando requisição', {
+        prefix: 'Users',
+        data: { url }
+      })
 
       const response = await api.get<UsersResponse>(url)
 
-      console.log('✅ [Users] Usuários carregados com sucesso!')
-      console.log('📊 [Users] Resumo dos dados:', {
-        total: response.data.meta.total.items,
-        páginas: response.data.meta.total.pages,
-        páginaAtual: response.data.meta.page,
-        usuáriosNaPágina: response.data.data.length
+      Logger.info('Usuários carregados com sucesso', {
+        prefix: 'Users',
+        data: {
+          total: response.data.meta.total.items,
+          paginas: response.data.meta.total.pages,
+          paginaAtual: response.data.meta.page,
+          quantidade: response.data.data.length,
+          primeirosUsuarios: response.data.data.slice(0, 3).map(user => ({
+            id: user.id.substring(0, 8),
+            nome: user.name,
+            tipo: user.type,
+            criado: new Date(user.createdAt).toISOString()
+          }))
+        }
       })
-
-      // Log detalhado dos usuários (limitado a 3 para não poluir o console)
-      console.log('👥 [Users] Primeiros usuários da página:', response.data.data.slice(0, 3).map(user => ({
-        id: user.id,
-        nome: user.name,
-        tipo: user.type,
-        criado: new Date(user.createdAt).toLocaleString()
-      })))
 
       setData(response.data)
 
     } catch (error) {
       if (error instanceof AppError) {
-        console.error(`❌ [Users] Erro ao buscar usuários: Código ${error.errorCode}`, error)
+        Logger.error('Erro ao buscar usuários', {
+          prefix: 'Users',
+          error,
+          data: { 
+            errorCode: error.errorCode,
+            params: searchParams 
+          }
+        })
         setErrorCode(error.errorCode)
       } else {
-        console.error('❌ [Users] Erro desconhecido ao buscar usuários:', error)
+        Logger.error('Erro desconhecido ao buscar usuários', {
+          prefix: 'Users',
+          error
+        })
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
 
     } finally {
-      // Delay artificial para suavizar a transição
       await new Promise(resolve => setTimeout(resolve, 350))
-      console.log('🏁 [Users] Operação de busca finalizada')
+      
+      Logger.info('Operação de busca finalizada', {
+        prefix: 'Users'
+      })
+      
       setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    console.log('👀 [Users] Detectada mudança nos parâmetros:', {
-      tipo: params?.type || 'todos',
-      página: params?.page || 1,
-      limite: params?.limit || 'padrão'
+    Logger.info('Detectada mudança nos parâmetros de busca', {
+      prefix: 'Users',
+      data: {
+        tipo: params?.type || 'todos',
+        pagina: params?.page || 1,
+        limite: params?.limit || 'padrão'
+      }
     })
     fetchUsers(params)
   }, [params?.page, params?.type, params?.limit])

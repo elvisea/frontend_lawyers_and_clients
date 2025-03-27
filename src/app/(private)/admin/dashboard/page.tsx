@@ -1,6 +1,7 @@
 'use client'
 
 import api from "@/http/api"
+import Logger from "@/utils/logger"
 import { useEffect, useRef } from "react"
 
 import { UsersResponse } from "./types"
@@ -10,66 +11,103 @@ export default function AdminDashboardPage() {
   const fetchedRef = useRef(false)
 
   useEffect(() => {
-    console.log('🏁 [Admin] Iniciando dashboard administrativo')
+    Logger.info('Iniciando dashboard administrativo', {
+      prefix: 'Admin'
+    })
 
     if (fetchedRef.current) {
-      console.log('⏩ [Admin] Requisição já realizada - evitando duplicação')
+      Logger.info('Requisição já realizada - evitando duplicação', {
+        prefix: 'Admin'
+      })
       return
     }
 
     const fetchUsers = async () => {
       try {
-        console.log('📡 [Admin] Iniciando requisição de usuários')
-        console.log('   ➔ Endpoint: GET /users')
+        Logger.info('Iniciando requisição de usuários', {
+          prefix: 'Admin',
+          data: {
+            endpoint: 'GET /users'
+          }
+        })
 
         const response = await api.get<UsersResponse>('/users')
 
-        console.log('✅ [Admin] Requisição concluída com sucesso')
-        console.log(`   ➔ Status: ${response.status}`)
-        console.log('📊 [Admin] Metadados da resposta:')
-        console.log('   ➔ Página atual:', response.data.meta.page)
-        console.log('   ➔ Itens por página:', response.data.meta.limit)
-        console.log('   ➔ Total de itens:', response.data.meta.total.items)
-        console.log('   ➔ Total de páginas:', response.data.meta.total.pages)
+        Logger.info('Requisição concluída com sucesso', {
+          prefix: 'Admin',
+          data: {
+            status: response.status,
+            meta: {
+              page: response.data.meta.page,
+              limit: response.data.meta.limit,
+              totalItems: response.data.meta.total.items,
+              totalPages: response.data.meta.total.pages
+            }
+          }
+        })
 
         if (response.data.data.length > 0) {
-          console.log('👥 [Admin] Primeiro usuário da lista:')
           const firstUser = response.data.data[0]
-          console.log('   ➔ ID:', firstUser.id.substring(0, 8) + '...')
-          console.log('   ➔ Nome:', firstUser.name)
-          console.log('   ➔ Email:', firstUser.email)
-          console.log('   ➔ Tipo:', firstUser.type)
-          console.log('   ➔ Criado em:', firstUser.createdAt)
+          Logger.info('Primeiro usuário da lista', {
+            prefix: 'Admin',
+            data: {
+              id: firstUser.id.substring(0, 8) + '...',
+              name: firstUser.name,
+              email: firstUser.email,
+              type: firstUser.type,
+              createdAt: firstUser.createdAt
+            }
+          })
         } else {
-          console.log('📭 [Admin] Nenhum usuário encontrado')
+          Logger.info('Nenhum usuário encontrado', {
+            prefix: 'Admin'
+          })
         }
       } catch (error) {
-        console.error('🚨 [Admin] Falha na requisição de usuários:')
-
         if (error instanceof AppError) {
-          console.error('   ➔ Tipo: Erro de aplicação')
-          console.error(`   ➔ Código: ${error.errorCode}`)
-          console.error(`   ➔ Status HTTP: ${error.statusCode}`)
-          console.error(`   ➔ Mensagem: ${error.message}`)
+          Logger.error('Falha na requisição de usuários', {
+            prefix: 'Admin',
+            error,
+            data: {
+              type: 'Erro de aplicação',
+              errorCode: error.errorCode,
+              statusCode: error.statusCode,
+              message: error.message
+            }
+          })
         } else {
-          console.error('   ➔ Tipo: Erro genérico')
-          console.error(`   ➔ Mensagem: ${error}`)
+          Logger.error('Falha na requisição de usuários', {
+            prefix: 'Admin',
+            error,
+            data: {
+              type: 'Erro genérico',
+              message: error
+            }
+          })
         }
 
-        console.log('📋 [Admin] Detalhes completos do erro:', error)
-        console.log('⏳ [Admin] Tentando recarregar os dados...')
+        Logger.info('Tentando recarregar os dados', {
+          prefix: 'Admin'
+        })
       }
     }
 
-    console.log('🔍 [Admin] Buscando dados do servidor...')
+    Logger.info('Buscando dados do servidor', {
+      prefix: 'Admin'
+    })
+
     fetchUsers().then(() => {
-      console.log('🏁 [Admin] Carregamento inicial concluído')
+      Logger.info('Carregamento inicial concluído', {
+        prefix: 'Admin'
+      })
     })
 
     fetchedRef.current = true
 
     return () => {
-      console.log('🧹 [Admin] Resetando estado do componente')
+      Logger.info('Resetando estado do componente', {
+        prefix: 'Admin'
+      })
       fetchedRef.current = false
     }
   }, [])

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import api from '@/http/api'
-
+import Logger from '@/utils/logger'
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
 
@@ -20,33 +20,54 @@ export const useForgotPassword = () => {
 
   const requestPasswordReset = async (data: ForgotPasswordData) => {
     try {
-      console.log('🔄 [Recuperação de Senha] Iniciando solicitação...')
+      Logger.info('Iniciando solicitação de recuperação de senha', {
+        prefix: 'Reset',
+        data: { email: data.email }
+      })
+
       setIsLoading(true)
       setErrorCode(null)
 
       await api.post('password-reset/request', data)
 
-      console.log('✅ [Recuperação de Senha] Email enviado com sucesso!')
+      Logger.info('Email de recuperação enviado com sucesso', {
+        prefix: 'Reset',
+        data: { email: data.email }
+      })
 
-      // Redireciona para a página de confirmação
-      router.push(`/auth/confirm-token?email=${encodeURIComponent(data.email)}`)
+      const redirectUrl = `/auth/confirm-token?email=${encodeURIComponent(data.email)}`
+            
+      router.push(redirectUrl)
 
     } catch (error) {
-      console.error('❌ [Recuperação de Senha] Erro ao solicitar recuperação:', error)
       if (error instanceof AppError) {
+        Logger.error('Erro ao solicitar recuperação de senha', {
+          prefix: 'Reset',
+          error,
+          data: { 
+            email: data.email,
+            errorCode: error.errorCode 
+          }
+        })
         setErrorCode(error.errorCode)
       } else {
+        Logger.error('Erro desconhecido ao solicitar recuperação de senha', {
+          prefix: 'Reset',
+          error,
+          data: { email: data.email }
+        })
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
 
     } finally {
+      // Delay artificial para suavizar a transição
+      await new Promise(resolve => setTimeout(resolve, 350))
+      
+      Logger.info('Operação de recuperação de senha finalizada', {
+        prefix: 'Reset'
+      })
+      
       setIsLoading(false)
-
-      // Delay artificial para suavizar a transição de 350ms
-      setTimeout(() => {
-        setIsLoading(false)
-        console.log('🏁 [Recuperação de Senha] Operação finalizada')
-      }, 350)
     }
   }
 

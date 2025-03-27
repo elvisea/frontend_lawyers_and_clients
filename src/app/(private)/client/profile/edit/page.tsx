@@ -16,7 +16,7 @@ import { ErrorCode } from '@/enums/error-code'
 import { useClientProfile } from '@/hooks/use-client-profile'
 import { profileSchema, type ProfileFormData } from '../schema'
 import { formatDateToISO, formatDateToBR } from '@/utils/date'
-
+import Logger from '@/utils/logger'
 export default function EditProfilePage() {
   const router = useRouter()
   const { profile, isLoading, errorCode } = useClientProfile()
@@ -49,9 +49,25 @@ export default function EditProfilePage() {
       }
 
       await api.put('/clients/profile', formattedData)
+
+      Logger.info('Perfil atualizado com sucesso', {
+        prefix: 'Perfil',
+        data: {
+          ...data
+        }
+      })
+      
       router.push('/client/profile')
     } catch (error) {
-      console.error('Erro ao atualizar perfil:', error)
+
+      Logger.error('Erro ao atualizar perfil', {
+        prefix: 'Perfil',
+        error,
+        data: {
+          ...data
+        }
+      })
+
       alert('Erro ao atualizar perfil. Tente novamente.')
     }
   }

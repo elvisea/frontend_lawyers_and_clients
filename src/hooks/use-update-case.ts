@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import api from '@/http/api'
+import Logger from '@/utils/logger'
 
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
@@ -27,35 +28,52 @@ export const useUpdateCase = (caseId: string) => {
     setErrorCode(null)
 
     try {
-      console.log('📝 [Caso] Iniciando atualização do caso ID:', caseId)
-      console.log('📋 [Caso] Dados para atualização:', {
-        título: data.title,
-        descrição: `${data.description.substring(0, 50)}${data.description.length > 50 ? '...' : ''}`
+      Logger.info('Iniciando atualização do caso', {
+        prefix: 'Case',
+        data: { 
+          caseId,
+          title: data.title,
+          description: data.description.substring(0, 50) + (data.description.length > 50 ? '...' : '')
+        }
       })
 
       const response = await api.put<EditCaseResponse>(`/cases/${caseId}`, data)
 
-      console.log(`✅ [Caso] Caso atualizado com sucesso! Status: ${response.status}`)
-      console.log('📊 [Caso] Dados atualizados:', {
-        id: response.data.id,
-        título: response.data.title,
-        atualizado: new Date(response.data.updatedAt).toLocaleString()
+      Logger.info('Caso atualizado com sucesso', {
+        prefix: 'Case',
+        data: {
+          id: response.data.id,
+          title: response.data.title,
+          updatedAt: new Date(response.data.updatedAt).toISOString()
+        }
       })
 
       return true
 
     } catch (error) {
       if (error instanceof AppError) {
-        console.error(`❌ [Caso] Erro ao atualizar caso: Código ${error.errorCode}`, error)
+        Logger.error('Erro ao atualizar caso', {
+          prefix: 'Case',
+          error,
+          data: { 
+            caseId,
+            errorCode: error.errorCode 
+          }
+        })
         setErrorCode(error.errorCode)
       } else {
-        console.error('❌ [Caso] Erro desconhecido ao atualizar caso:', error)
+        Logger.error('Erro desconhecido ao atualizar caso', {
+          prefix: 'Case',
+          error
+        })
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
       return false
 
     } finally {
-      console.log('🏁 [Caso] Operação de atualização finalizada')
+      Logger.info('Operação de atualização finalizada', {
+        prefix: 'Case'
+      })
       setIsLoading(false)
     }
   }

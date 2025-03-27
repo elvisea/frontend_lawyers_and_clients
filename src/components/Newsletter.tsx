@@ -1,11 +1,17 @@
 import { FormEvent } from "react";
+
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+
+import Logger from "@/utils/logger";
 
 export const Newsletter = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Subscribed!");
+    
+    Logger.info('Inscrição realizada com sucesso', {
+      prefix: 'Newsletter',
+    })
   };
 
   return (

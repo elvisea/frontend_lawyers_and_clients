@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 
 import { io, Socket } from 'socket.io-client';
 
+import Logger from '@/utils/logger';
 import { Payment } from '@/types/payment';
 import { Subscription } from '@/types/subscription';
 
@@ -26,19 +27,26 @@ export const useSubscriptionPaymentMonitor = (txid: string | null | undefined) =
 
   useEffect(() => {
     if (!txid) {
-      console.log('⚠️ [WebSocket] TXID não fornecido. Conexão WebSocket será ignorada');
+      Logger.warn('TXID não fornecido, conexão WebSocket ignorada', {
+        prefix: 'WebSocket'
+      });
       return;
     }
 
     if (socketRef.current) {
-      console.log('🔄 [WebSocket] Conexão já iniciada, ignorando nova tentativa');
+      Logger.info('Conexão já iniciada, ignorando nova tentativa', {
+        prefix: 'WebSocket',
+        data: { txid }
+      });
       return;
     }
 
     const url = 'https://lawyers-and-clients-api.bytefulcode.tech/payments';
 
     if (!url) {
-      console.error('❌ [WebSocket] URL do WebSocket não configurada');
+      Logger.error('URL do WebSocket não configurada', {
+        prefix: 'WebSocket'
+      });
       return;
     }
 
@@ -52,64 +60,87 @@ export const useSubscriptionPaymentMonitor = (txid: string | null | undefined) =
 
     // Handlers de conexão
     socket.on('connect', () => {
-      console.log(`✅ [WebSocket] Conexão estabelecida com sucesso`, {
-        socketId: socket.id,
-        connected: socket.connected,
-        txid
+      Logger.info('Conexão estabelecida com sucesso', {
+        prefix: 'WebSocket',
+        data: {
+          socketId: socket.id,
+          connected: socket.connected,
+          txid
+        }
       });
     });
 
     socket.on('connect_error', (error) => {
-      console.error('❌ [WebSocket] Erro na conexão:', {
-        message: error.message,
-        txid,
-        details: error
+      Logger.error('Erro na conexão', {
+        prefix: 'WebSocket',
+        error,
+        data: {
+          txid,
+          message: error.message
+        }
       });
     });
 
     socket.on('disconnect', (reason) => {
-      console.log(`🔌 [WebSocket] Conexão desconectada. Motivo: ${reason}`, {
-        txid,
-        wasConnected: socket.connected
+      Logger.info('Conexão desconectada', {
+        prefix: 'WebSocket',
+        data: {
+          reason,
+          txid,
+          wasConnected: socket.connected
+        }
       });
     });
 
     // Handler de status do pagamento
     socket.on('payment_success', (data: PaymentSuccessData) => {
-      console.log('💰 [Pagamento] Sucesso no pagamento recebido:', {
-        txid,
-        status: data.payment.status,
-        subscriptionId: data.subscription?.id,
-        timestamp: new Date().toISOString()
+      Logger.info('Sucesso no pagamento recebido', {
+        prefix: 'Pagamento',
+        data: {
+          txid,
+          status: data.payment.status,
+          subscriptionId: data.subscription?.id,
+          timestamp: new Date().toISOString()
+        }
       });
 
       if (data.payment.status === 'COMPLETED') {
         setSubscription(data.subscription);
-        router.push('/lawyer/subscription/success');
-
-        console.log('✨ [Pagamento] Pagamento concluído com sucesso. Atualizando UI...', {
-          txid,
-          subscription: data.subscription
+        
+        Logger.info('Pagamento concluído com sucesso', {
+          prefix: 'Pagamento',
+          data: {
+            txid,
+            subscriptionId: data.subscription?.id
+          }
         });
 
+        router.push('/lawyer/subscription/success');
       }
     });
 
     // Handler de erro no pagamento
     socket.on('payment_error', (error: PaymentError) => {
-      console.error('❌ [Pagamento] Erro no pagamento recebido:', {
-        txid,
+      Logger.error('Erro no pagamento recebido', {
+        prefix: 'Pagamento',
         error,
-        timestamp: new Date().toISOString()
+        data: {
+          txid,
+          code: error.code,
+          timestamp: new Date().toISOString()
+        }
       });
     });
 
     // Cleanup
     return () => {
       if (socket) {
-        console.log(`🧹 [WebSocket] Limpando a conexão WebSocket`, {
-          txid,
-          wasConnected: socket.connected
+        Logger.info('Limpando a conexão WebSocket', {
+          prefix: 'WebSocket',
+          data: {
+            txid,
+            wasConnected: socket.connected
+          }
         });
 
         socket.off('connect');
@@ -121,7 +152,9 @@ export const useSubscriptionPaymentMonitor = (txid: string | null | undefined) =
         socket.disconnect();
         socketRef.current = null;
 
-        console.log('🔌 [WebSocket] Conexão WebSocket limpa com sucesso');
+        Logger.info('Conexão WebSocket limpa com sucesso', {
+          prefix: 'WebSocket'
+        });
       }
     };
   }, [txid, router, setSubscription]);

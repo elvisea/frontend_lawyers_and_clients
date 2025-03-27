@@ -18,6 +18,8 @@ import { ErrorCode } from '@/enums/error-code'
 import { useLawyerProfile } from '@/hooks/use-lawyer-profile'
 import { profileSchema, type ProfileFormData } from '../schema'
 
+import Logger from '@/utils/logger'
+
 export default function EditProfilePage() {
   const router = useRouter()
   const { profile, isLoading, errorCode } = useLawyerProfile()
@@ -50,9 +52,23 @@ export default function EditProfilePage() {
   const handleSubmit = async (data: ProfileFormData) => {
     try {
       await api.put('/lawyers/profile', data)
+      
+      Logger.info('Perfil atualizado com sucesso', {
+        prefix: 'Perfil',
+        data: {
+          ...data
+        }
+      })
+      
       router.push('/lawyer/profile')
     } catch (error) {
-      console.error('Erro ao atualizar perfil:', error)
+      Logger.error('Erro ao atualizar perfil', {
+        prefix: 'Perfil',
+        error,
+        data: {
+          ...data
+        }
+      })
       alert('Erro ao atualizar perfil. Tente novamente.')
     }
   }

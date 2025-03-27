@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '@/http/api'
+import Logger from '@/utils/logger'
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
 import { CaseStatus } from '@/types/case'
@@ -63,48 +64,71 @@ export const useLawyerDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      console.log('🔄 [Dashboard Advogado] Buscando dados da dashboard...')
+      Logger.info('Buscando dados da dashboard do advogado', {
+        prefix: 'Dashboard'
+      })
+
       setIsLoading(true)
       setErrorCode(null)
 
       const response = await api.get<DashboardData>('/lawyers/dashboard')
 
-      // Log dos dados recebidos
-      console.log('✅ [Dashboard Advogado] Dados recebidos com sucesso!')
-      console.log('📊 [Dashboard Advogado] Métricas:', {
-        casos: {
-          disponíveis: response.data.casesMetrics.available,
-          andamento: response.data.casesMetrics.inProgress,
-          concluídos: response.data.casesMetrics.closed
-        },
-        perfil: {
-          completo: response.data.lawyerProfile.isComplete,
-          especialidades: response.data.lawyerProfile.specialties.length,
-          certificados: response.data.lawyerProfile.certificates.length
-        },
-        financeiro: {
-          total: response.data.financialSummary.totalAmount,
-          casos: response.data.financialSummary.casesAmount,
-          assinaturas: response.data.financialSummary.subscriptionsAmount
-        },
-        transacoes: response.data.recentTransactions.length
+      Logger.info('Dados da dashboard recebidos com sucesso', {
+        prefix: 'Dashboard',
+        data: {
+          casos: {
+            disponiveis: response.data.casesMetrics.available,
+            andamento: response.data.casesMetrics.inProgress,
+            concluidos: response.data.casesMetrics.closed
+          },
+          perfil: {
+            completo: response.data.lawyerProfile.isComplete,
+            especialidades: response.data.lawyerProfile.specialties.length,
+            certificados: response.data.lawyerProfile.certificates.length,
+            experiencia: response.data.lawyerProfile.yearsOfExperience
+          },
+          financeiro: {
+            total: response.data.financialSummary.totalAmount,
+            casos: response.data.financialSummary.casesAmount,
+            assinaturas: response.data.financialSummary.subscriptionsAmount
+          },
+          transacoes: {
+            total: response.data.recentTransactions.length,
+            recentes: response.data.recentTransactions.slice(0, 3).map(t => ({
+              id: t.id.substring(0, 8),
+              tipo: t.type,
+              status: t.status
+            }))
+          }
+        }
       })
 
       setData(response.data)
 
     } catch (error) {
       if (error instanceof AppError) {
-        console.error(`❌ [Dashboard Advogado] Erro ao buscar dados: Código ${error.errorCode}`, error)
+        Logger.error('Erro ao buscar dados da dashboard', {
+          prefix: 'Dashboard',
+          error,
+          data: { errorCode: error.errorCode }
+        })
         setErrorCode(error.errorCode)
       } else {
-        console.error('❌ [Dashboard Advogado] Erro desconhecido ao buscar dados:', error)
+        Logger.error('Erro desconhecido ao buscar dados da dashboard', {
+          prefix: 'Dashboard',
+          error
+        })
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
 
     } finally {
       // Delay artificial para suavizar a transição
       await new Promise(resolve => setTimeout(resolve, 350))
-      console.log('🏁 [Dashboard Advogado] Operação de busca finalizada')
+      
+      Logger.info('Operação de busca da dashboard finalizada', {
+        prefix: 'Dashboard'
+      })
+      
       setIsLoading(false)
     }
   }

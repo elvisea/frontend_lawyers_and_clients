@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 import api from '@/http/api'
+import Logger from '@/utils/logger'
 
 import { CaseStatus } from '@/types/case'
 import { useDocumentDownload } from '@/hooks/use-document-download'
@@ -83,8 +84,21 @@ export default function AcceptedCasePage({ params }: AcceptedCasePageProps) {
         setIsLoading(true)
         const response = await api.get<AcceptedCase>(`/cases/${id}/accepted`)
         setCaseData(response.data)
+
+        Logger.info('Caso carregado com sucesso', {
+          prefix: 'Caso',
+          data: {
+            id
+          }
+        })
       } catch (error) {
-        console.error('❌ Erro ao carregar caso:', error)
+        Logger.error('Erro ao carregar caso', {
+          prefix: 'Caso',
+          error,
+          data: {
+            id
+          }
+        })
       } finally {
         await new Promise(resolve => setTimeout(resolve, 350))
         setIsLoading(false)

@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/pagination"
 
 import api from '@/http/api'
-import { CardCase } from '@/components/card-case'
+import Logger from '@/utils/logger'
 
+import { CardCase } from '@/components/card-case'
 import { Case, CasesResponse } from '@/types/case'
 
 const ITEMS_PER_PAGE = 8
@@ -54,8 +55,22 @@ export function AcceptedCases() {
         setCases(response.data.cases)
         setTotal(response.data.total)
 
+        Logger.info('Casos carregados com sucesso', {
+          prefix: 'Accepted Cases',
+          data: {
+            total: response.data.total
+          }
+        })
+
       } catch (error) {
-        console.error('Erro ao carregar casos:', error)
+        Logger.error('Erro ao carregar casos', {
+          prefix: 'Accepted Cases',
+          error,
+          data: {
+            currentPage,
+            ITEMS_PER_PAGE
+          }
+        })
       } finally {
         setIsLoading(false)
       }

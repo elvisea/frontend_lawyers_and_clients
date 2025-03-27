@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
 import api from '@/http/api'
+import Logger from '@/utils/logger'
+
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
 
@@ -29,15 +30,34 @@ export const useCreateCase = () => {
     setErrorCode(null)
 
     try {
-      console.log('📝 [Caso] Iniciando criação do caso:', data.title)
+      Logger.info('Iniciando criação do caso', {
+        prefix: 'Case',
+        data: {
+          title: data.title,
+          description: data.description?.substring(0, 50) + '...',
+        }
+      })
 
       const response = await api.post<CreatedCase>('/cases', data)
 
-      console.log('✅ [Caso] Caso criado com sucesso:', response.data.id)
+      Logger.info('Caso criado com sucesso', {
+        prefix: 'Case',
+        data: {
+          caseId: response.data.id.substring(0, 8),
+          title: response.data.title
+        }
+      })
+
       return response.data
 
     } catch (error) {
-      console.error('❌ [Caso] Erro ao criar caso:', errorCode)
+      Logger.error('Erro ao criar caso', {
+        prefix: 'Case',
+        error,
+        data: {
+          title: data.title,
+        }
+      })
 
       if (error instanceof AppError) {
         setErrorCode(error.errorCode)
@@ -51,6 +71,9 @@ export const useCreateCase = () => {
       await new Promise(resolve => setTimeout(resolve, 350))
 
       setIsLoading(false)
+      Logger.info('Operação de criação finalizada', {
+        prefix: 'Case'
+      })
     }
   }
 

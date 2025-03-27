@@ -1,6 +1,7 @@
 import { useState } from "react"
 
 import api from "@/http/api"
+import Logger from "@/utils/logger"
 
 import { AppError } from "@/errors/app-error"
 import { ErrorCode } from "@/enums/error-code"
@@ -24,42 +25,59 @@ export const useRemoveDocument = () => {
   const removeDocument = async (documentId: string): Promise<boolean> => {
     // Validação inicial
     if (!documentId) {
-      console.warn('⚠️ [Documentos] Tentativa de remover documento com ID inválido')
+      Logger.warn('Tentativa de remover documento com ID inválido', {
+        prefix: 'Documentos'
+      })
       return false
     }
 
     try {
-      // Iniciar processo de remoção
-      console.log(`🗑️ [Documentos] Iniciando remoção do documento ID: ${documentId}`)
+      Logger.info('Iniciando remoção do documento', {
+        prefix: 'Documentos',
+        data: { documentId }
+      })
+
       setErrorCode(null)
       setIsLoading(true)
 
-      // Chamada à API
       const response = await api.delete(`/documents/${documentId}`)
-      console.log(`✅ [Documentos] Documento removido com sucesso! Status: ${response.status}`)
+
+      Logger.info('Documento removido com sucesso', {
+        prefix: 'Documentos',
+        data: { status: response.status }
+      })
+
       return true
 
     } catch (error) {
-      // Tratamento de erros
       if (error instanceof AppError) {
-        console.error(`❌ [Documentos] Erro ao remover documento: Código ${error.errorCode}`, error)
+        Logger.error('Erro ao remover documento', {
+          prefix: 'Documentos',
+          error,
+          data: { errorCode: error.errorCode }
+        })
         setErrorCode(error.errorCode)
       } else {
-        console.error('❌ [Documentos] Erro desconhecido ao remover documento:', error)
+        Logger.error('Erro desconhecido ao remover documento', {
+          prefix: 'Documentos',
+          error
+        })
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
       return false
 
     } finally {
       // Delay artificial para suavizar a transição
-      console.log('⏱️ [Documentos] Aguardando transição visual...')
       await new Promise(resolve => setTimeout(resolve, 350))
-      console.log('🏁 [Documentos] Operação de remoção finalizada')
+      
+      Logger.info('Operação de remoção finalizada', {
+        prefix: 'Documentos'
+      })
+      
       setIsLoading(false)
     }
   }
 
-  // Retorna os estados e a função
   return {
     isLoading,
     errorCode,

@@ -3,6 +3,7 @@ import { useState } from "react"
 import { ErrorCode } from "@/enums/error-code"
 import { DocumentFormData } from "@/app/(private)/client/cases/[id]/documents/components/constants"
 import api from "@/http/api"
+import Logger from "@/utils/logger"
 import { CaseDocument } from "@/types/case"
 import { AppError } from "@/errors/app-error"
 
@@ -26,12 +27,16 @@ export const useUploadDocuments = (caseId: string) => {
   const uploadDocuments = async (data: DocumentFormData[]): Promise<CaseDocument[]> => {
     // Validação inicial
     if (!caseId) {
-      console.warn('⚠️ [Documentos] Tentativa de upload sem ID do caso')
+      Logger.warn('Tentativa de upload sem ID do caso', {
+        prefix: 'Documentos'
+      })
       return []
     }
 
     if (!data.length) {
-      console.warn('⚠️ [Documentos] Tentativa de upload sem documentos')
+      Logger.warn('Tentativa de upload sem documentos', {
+        prefix: 'Documentos'
+      })
       return []
     }
 
@@ -40,10 +45,16 @@ export const useUploadDocuments = (caseId: string) => {
     setIsLoading(true)
 
     try {
-      // Preparar dados para upload
-      console.log(`📤 [Documentos] Iniciando upload de ${data.length} documento(s) para o caso ID: ${caseId}`)
-      console.log(`📋 [Documentos] Tipos: ${data.map(d => d.type).join(', ')}`)
+      Logger.info('Iniciando upload de documentos', {
+        prefix: 'Documentos',
+        data: {
+          caseId,
+          quantidade: data.length,
+          tipos: data.map(d => d.type)
+        }
+      })
 
+      // Preparar dados para upload
       const formData = new FormData()
       const types: string[] = []
 
@@ -52,7 +63,16 @@ export const useUploadDocuments = (caseId: string) => {
         if (doc.file) {
           formData.append('files', doc.file)
           types.push(doc.type)
-          console.log(`📎 [Documentos] Arquivo ${index + 1}: ${doc.file.name} (${(doc.file.size / 1024).toFixed(2)} KB)`)
+          
+          Logger.info('Arquivo adicionado ao FormData', {
+            prefix: 'Documentos',
+            data: {
+              index: index + 1,
+              nome: doc.file.name,
+              tamanho: `${(doc.file.size / 1024).toFixed(2)} KB`,
+              tipo: doc.type
+            }
+          })
         }
       })
 
@@ -62,7 +82,10 @@ export const useUploadDocuments = (caseId: string) => {
       })
 
       // Enviar requisição
-      console.log('🔄 [Documentos] Enviando requisição para o servidor...')
+      Logger.info('Enviando requisição para o servidor', {
+        prefix: 'Documentos',
+        data: { caseId }
+      })
       const response = await api.post<CaseDocument[]>(`/documents/case/${caseId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -70,18 +93,37 @@ export const useUploadDocuments = (caseId: string) => {
       })
 
       // Processar resposta
-      console.log(`✅ [Documentos] Upload concluído com sucesso! Status: ${response.status}`)
-      console.log(`📦 [Documentos] ${response.data.length} documento(s) processado(s) pelo servidor`)
+      Logger.info('Upload concluído com sucesso', {
+        prefix: 'Documentos',
+        data: {
+          status: response.status,
+          documentosProcessados: response.data.length,
+          documentos: response.data.map(doc => ({
+            id: doc.id,
+            tipo: doc.type
+          }))
+        }
+      })
 
       return response.data
 
     } catch (error) {
       // Tratamento de erros
       if (error instanceof AppError) {
-        console.error(`❌ [Documentos] Erro no upload: Código ${error.errorCode}`, error)
+        Logger.error('Erro no upload de documentos', {
+          prefix: 'Documentos',
+          error,
+          data: { 
+            caseId,
+            errorCode: error.errorCode 
+          }
+        })
         setErrorCode(error.errorCode)
       } else {
-        console.error('❌ [Documentos] Erro desconhecido no upload:', error)
+        Logger.error('Erro desconhecido no upload de documentos', {
+          prefix: 'Documentos',
+          error
+        })
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
 
@@ -89,9 +131,12 @@ export const useUploadDocuments = (caseId: string) => {
 
     } finally {
       // Finalização
-      console.log('⏱️ [Documentos] Aguardando transição visual...')
       await new Promise(resolve => setTimeout(resolve, 350))
-      console.log('🏁 [Documentos] Operação de upload finalizada')
+      
+      Logger.info('Operação de upload finalizada', {
+        prefix: 'Documentos'
+      })
+      
       setIsLoading(false)
     }
   }

@@ -27,7 +27,9 @@ import {
 } from '@/components/ui/form'
 
 import { profileSchema, type ProfileFormData } from '../schema'
+
 import api from '@/http/api'
+import Logger from '@/utils/logger'
 
 export default function CreateProfilePage() {
   const router = useRouter()
@@ -61,8 +63,21 @@ export default function CreateProfilePage() {
     try {
       await api.post('/lawyers/profile', data)
       router.push('/lawyer/profile')
+
+      Logger.info('Perfil criado com sucesso', {
+        prefix: 'Perfil',
+        data: {
+          ...data
+        }
+      })
     } catch (error) {
-      console.error('Erro ao criar perfil:', error)
+      Logger.error('Erro ao criar perfil', {
+        prefix: 'Perfil',
+        error,
+        data: {
+          ...data
+        }
+      })
       alert('Erro ao criar perfil. Tente novamente.')
     }
   }
