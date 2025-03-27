@@ -1,14 +1,23 @@
+import Logger from '@/utils/logger'
+
 export const validateFileType = (file: File) => {
   const fileType = file.type.toLowerCase();
 
-  console.log('📝 Validação de Arquivo');
-  console.log('├─ Nome:', file.name);
-  console.log('├─ Tipo:', fileType || 'Não identificado');
-  console.log('└─ Tamanho:', `${(file.size / 1024 / 1024).toFixed(2)}MB`);
+  Logger.info('Iniciando validação de arquivo', {
+    prefix: 'Validação',
+    data: {
+      nome: file.name,
+      tipo: fileType || 'Não identificado',
+      tamanho: `${(file.size / 1024 / 1024).toFixed(2)}MB`
+    }
+  });
 
   // Verifica se é uma imagem
   if (fileType.startsWith('image/')) {
-    console.log('✅ Arquivo aceito como imagem');
+    Logger.info('Arquivo validado como imagem', {
+      prefix: 'Validação',
+      data: { tipo: fileType }
+    });
     return true;
   }
 
@@ -26,9 +35,18 @@ export const validateFileType = (file: File) => {
   const isAllowed = allowedTypes.includes(fileType);
 
   if (isAllowed) {
-    console.log('✅ Arquivo aceito como documento');
+    Logger.info('Arquivo validado como documento', {
+      prefix: 'Validação',
+      data: { tipo: fileType }
+    });
   } else {
-    console.log('❌ Tipo de arquivo não permitido');
+    Logger.warn('Tipo de arquivo não permitido', {
+      prefix: 'Validação',
+      data: { 
+        tipo: fileType,
+        tiposPermitidos: allowedTypes 
+      }
+    });
   }
 
   return isAllowed;
@@ -39,7 +57,20 @@ export const validateFileSize = (file: File) => {
   const isValid = file.size <= maxSize;
 
   if (!isValid) {
-    console.log('❌ Arquivo excede o limite de 10MB');
+    Logger.warn('Arquivo excede o limite de tamanho', {
+      prefix: 'Validação',
+      data: {
+        tamanhoAtual: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
+        tamanhoMaximo: '10MB'
+      }
+    });
+  } else {
+    Logger.info('Tamanho do arquivo válido', {
+      prefix: 'Validação',
+      data: {
+        tamanho: `${(file.size / 1024 / 1024).toFixed(2)}MB`
+      }
+    });
   }
 
   return isValid;

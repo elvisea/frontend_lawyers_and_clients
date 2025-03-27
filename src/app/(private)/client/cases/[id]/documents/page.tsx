@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
+import Logger from '@/utils/logger'
 import { CaseDocument } from '@/types/case'
 
 import { DocumentForm } from './components/document-form'
@@ -56,20 +57,33 @@ export default function CaseDocumentsPage({ params }: { params: Promise<{ id: st
    * Handler para upload de documentos
    */
   const handleUploadDocuments = async (data: DocumentFormData) => {
-    console.log('📤 [Página Documentos] Iniciando upload de documento...')
-    console.log('📋 [Página Documentos] Dados:', {
-      tipo: data.type,
-      arquivo: data.file?.name,
-      tamanho: `${(data.file?.size ?? 0 / 1024).toFixed(2)} KB`
+    Logger.info('Iniciando upload de documento', {
+      prefix: 'Documentos',
+      data: {
+        tipo: data.type,
+        arquivo: data.file?.name,
+        tamanho: `${(data.file?.size ?? 0 / 1024).toFixed(2)} KB`
+      }
     })
 
     const newDocuments = await uploadDocuments([data])
 
     if (newDocuments.length > 0) {
-      console.log('✅ [Página Documentos] Documento adicionado com sucesso')
+      Logger.info('Documento adicionado com sucesso', {
+        prefix: 'Documentos',
+        data: {
+          documentos: newDocuments.map(doc => ({
+            id: doc.id,
+            tipo: doc.type,
+            nome: doc.name
+          }))
+        }
+      })
       setDocuments(prev => [...prev, ...newDocuments])
     } else {
-      console.warn('⚠️ [Página Documentos] Nenhum documento retornado do servidor')
+      Logger.warn('Nenhum documento retornado do servidor', {
+        prefix: 'Documentos'
+      })
     }
   }
 
@@ -77,15 +91,24 @@ export default function CaseDocumentsPage({ params }: { params: Promise<{ id: st
    * Handler para remoção de documentos
    */
   const handleRemoveDocument = async (documentId: string) => {
-    console.log(`🗑️ [Página Documentos] Solicitando remoção do documento ID: ${documentId}`)
+    Logger.info('Solicitando remoção do documento', {
+      prefix: 'Documentos',
+      data: { documentId }
+    })
 
     const success = await removeDocument(documentId)
 
     if (success) {
-      console.log('✅ [Página Documentos] Documento removido com sucesso')
+      Logger.info('Documento removido com sucesso', {
+        prefix: 'Documentos',
+        data: { documentId }
+      })
       setDocuments(prev => prev.filter(doc => doc.id !== documentId))
     } else {
-      console.error('❌ [Página Documentos] Falha ao remover documento')
+      Logger.error('Falha ao remover documento', {
+        prefix: 'Documentos',
+        data: { documentId }
+      })
     }
   }
 
@@ -93,7 +116,10 @@ export default function CaseDocumentsPage({ params }: { params: Promise<{ id: st
    * Handler para navegação para visualização do caso
    */
   const handleViewCase = () => {
-    console.log('🔄 [Página Documentos] Navegando para visualização do caso...')
+    Logger.info('Navegando para visualização do caso', {
+      prefix: 'Documentos',
+      data: { caseId }
+    })
     router.push(`/client/cases/${caseId}`)
   }
 
@@ -176,7 +202,6 @@ export default function CaseDocumentsPage({ params }: { params: Promise<{ id: st
               <DocumentList
                 documents={documents}
                 onDelete={handleRemoveDocument}
-
               />
             ) : (
               <div className="text-center py-8 text-muted-foreground">
