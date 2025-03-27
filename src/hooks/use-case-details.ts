@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 
 import api from '@/http/api'
+import Logger from '@/utils/logger'
+
 import { DetailedCase } from '@/types/case'
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
@@ -17,20 +19,28 @@ export const useCaseDetails = (caseId: string) => {
     setErrorCode(null)
 
     try {
-      console.log('🔍 [Caso] Buscando detalhes do caso ID:', caseId)
+      Logger.info('Buscando detalhes do caso', {
+        prefix: 'Case',
+        data: { caseId }
+      })
 
       const response = await api.get<DetailedCase>(`/cases/client/${caseId}`)
 
+      Logger.info('Aguardando transição visual', {
+        prefix: 'Case'
+      })
+
       // Delay artificial para suavizar a transição
-      console.log('⏱️ [Caso] Aguardando transição visual...')
       await new Promise(resolve => setTimeout(resolve, 350))
 
-      console.log('✅ [Caso] Detalhes do caso obtidos com sucesso!')
-      console.log('📊 [Caso] Resumo:', {
-        título: response.data.title,
-        status: response.data.status,
-        documentos: response.data.documents.length,
-        advogado: response.data.lawyer ? response.data.lawyer.name : 'Nenhum'
+      Logger.info('Detalhes do caso obtidos com sucesso', {
+        prefix: 'Case',
+        data: {
+          title: response.data.title,
+          status: response.data.status,
+          documentsCount: response.data.documents.length,
+          lawyer: response.data.lawyer ? response.data.lawyer.name : 'Nenhum'
+        }
       })
 
       setCaseData(response.data)
@@ -38,16 +48,25 @@ export const useCaseDetails = (caseId: string) => {
 
     } catch (error) {
       if (error instanceof AppError) {
-        console.error(`❌ [Caso] Erro ao buscar detalhes: Código ${error.errorCode}`, error)
+        Logger.error('Erro ao buscar detalhes do caso', {
+          prefix: 'Case',
+          error,
+          data: { errorCode: error.errorCode }
+        })
         setErrorCode(error.errorCode)
       } else {
-        console.error('❌ [Caso] Erro desconhecido ao buscar detalhes:', error)
+        Logger.error('Erro desconhecido ao buscar detalhes do caso', {
+          prefix: 'Case',
+          error
+        })
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
       return null
 
     } finally {
-      console.log('🏁 [Caso] Operação de busca de detalhes finalizada')
+      Logger.info('Operação de busca de detalhes finalizada', {
+        prefix: 'Case'
+      })
       setIsLoading(false)
     }
   }, [caseId])
