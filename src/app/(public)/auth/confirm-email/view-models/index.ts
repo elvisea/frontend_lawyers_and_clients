@@ -5,6 +5,7 @@ import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
 
 import api from '@/http/api'
+import Logger from '@/utils/logger'
 
 export const useConfirmEmailViewModel = (email: string | null) => {
   const router = useRouter()
@@ -15,7 +16,11 @@ export const useConfirmEmailViewModel = (email: string | null) => {
     if (!email) return
 
     try {
-      console.log('🔄 [Verificação] Iniciando verificação do token...')
+      Logger.info('Iniciando verificação do token', {
+        prefix: 'Verificação',
+        data: { email }
+      })
+
       setIsLoading(true)
       setErrorCode(null)
 
@@ -24,26 +29,41 @@ export const useConfirmEmailViewModel = (email: string | null) => {
         token
       })
 
-      console.log('✅ [Verificação] token verificado com sucesso!')
+      Logger.info('Token verificado com sucesso', {
+        prefix: 'Verificação',
+        data: { email }
+      })
 
-      // Redireciona para a página de redefinição de senha
       router.push('/auth/confirm-email/success')
 
     } catch (error) {
-      console.error('❌ [Verificação] Erro ao verificar código:', error)
       if (error instanceof AppError) {
+        Logger.error('Erro ao verificar token', {
+          prefix: 'Verificação',
+          error,
+          data: { 
+            email,
+            errorCode: error.errorCode 
+          }
+        })
         setErrorCode(error.errorCode)
       } else {
+        Logger.error('Erro desconhecido ao verificar token', {
+          prefix: 'Verificação',
+          error
+        })
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
 
     } finally {
-
-      // Delay artificial para suavizar a transição de 350ms
-      setTimeout(() => {
-        setIsLoading(false)
-        console.log('🏁 [Verificação] Operação finalizada')
-      }, 350)
+      // Delay artificial para suavizar a transição
+      await new Promise(resolve => setTimeout(resolve, 350))
+      
+      Logger.info('Operação de verificação finalizada', {
+        prefix: 'Verificação'
+      })
+      
+      setIsLoading(false)
     }
   }
 
@@ -55,7 +75,6 @@ export const useConfirmEmailViewModel = (email: string | null) => {
 }
 
 export const useUpdateTokenModel = () => {
-
   const [isLoading, setIsLoading] = useState(false)
   const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
 
@@ -63,29 +82,49 @@ export const useUpdateTokenModel = () => {
     if (!email) return
 
     try {
-      console.log('🔄 [Atualização] Iniciando atualização do token...')
+      Logger.info('Iniciando atualização do token', {
+        prefix: 'Atualização',
+        data: { email }
+      })
+
       setIsLoading(true)
       setErrorCode(null)
 
       await api.put(`users/request-new-token/${email}`)
 
-      console.log('✅ [Atualização] token atualizado com sucesso!')
+      Logger.info('Token atualizado com sucesso', {
+        prefix: 'Atualização',
+        data: { email }
+      })
 
     } catch (error) {
-      console.error('❌ [Atualização] Erro ao atualizar token:', error)
       if (error instanceof AppError) {
+        Logger.error('Erro ao atualizar token', {
+          prefix: 'Atualização',
+          error,
+          data: { 
+            email,
+            errorCode: error.errorCode 
+          }
+        })
         setErrorCode(error.errorCode)
       } else {
+        Logger.error('Erro desconhecido ao atualizar token', {
+          prefix: 'Atualização',
+          error
+        })
         setErrorCode(ErrorCode.UNKNOWN_ERROR)
       }
 
     } finally {
-
-      // Delay artificial para suavizar a transição de 350ms
-      setTimeout(() => {
-        setIsLoading(false)
-        console.log('🏁 [Atualização] Operação finalizada')
-      }, 350)
+      // Delay artificial para suavizar a transição
+      await new Promise(resolve => setTimeout(resolve, 350))
+      
+      Logger.info('Operação de atualização finalizada', {
+        prefix: 'Atualização'
+      })
+      
+      setIsLoading(false)
     }
   }
 
