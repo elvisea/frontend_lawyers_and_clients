@@ -16,8 +16,9 @@ import {
 import { Loader2 } from 'lucide-react'
 
 import api from '@/http/api'
-import { Case, CasesResponse } from '@/types/case'
+import Logger from '@/utils/logger'
 
+import { Case, CasesResponse } from '@/types/case'
 import { CardCase } from '@/components/card-case'
 
 const ITEMS_PER_PAGE = 8
@@ -53,8 +54,21 @@ export function CasesList() {
 
         setCases(response.data.cases)
         setTotal(response.data.total)
+
+        Logger.info('Casos carregados com sucesso', {
+          prefix: 'Cases List',
+          data: {
+            total: response.data.total
+          }
+        })
       } catch (error) {
-        console.error('Erro ao carregar casos:', error)
+        Logger.error('Erro ao carregar casos', {
+          prefix: 'Cases List',
+          error,
+          data: {
+            currentPage
+          }
+        })
       } finally {
         setIsLoading(false)
       }

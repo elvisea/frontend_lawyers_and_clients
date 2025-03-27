@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import Logger from '@/utils/logger'
 import { useSubscriptionsStore } from '../store/subscriptions/store'
 
 export const useSubscription = () => {
@@ -7,25 +8,35 @@ export const useSubscription = () => {
 
   useEffect(() => {
     const hasSubscription = subscription
-    console.log(
-      `🔍 [Assinatura] Verificando assinatura atual: ${hasSubscription ? 'Assinatura encontrada' : 'Nenhuma assinatura encontrada'
-      }`
-    )
+    Logger.info('Verificando estado da assinatura', {
+      prefix: 'Assinatura',
+      data: { 
+        status: hasSubscription ? 'Encontrada' : 'Não encontrada',
+        id: hasSubscription?.id
+      }
+    })
 
     if (!hasSubscription) {
-      console.log('⚠️ [Assinatura] Nenhuma assinatura encontrada. Iniciando carregamento...')
+      Logger.info('Iniciando carregamento da assinatura', {
+        prefix: 'Assinatura'
+      })
       fetchSubscription()
     }
   }, [subscription, fetchSubscription])
 
   useEffect(() => {
     if (subscription) {
-      console.log('✅ [Assinatura] Assinatura carregada com sucesso:', subscription)
+      Logger.info('Assinatura carregada com sucesso', {
+        prefix: 'Assinatura',
+        data: {...subscription}
+      })
     }
   }, [subscription])
 
   const resetSubscriptionState = () => {
-    console.log('🔄 [Assinatura] Resetando estado da assinatura...')
+    Logger.info('Resetando estado da assinatura', {
+      prefix: 'Assinatura'
+    })
     resetState()
   }
 

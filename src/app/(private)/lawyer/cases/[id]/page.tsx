@@ -11,6 +11,8 @@ import { DocumentsList } from '@/components/documents-list'
 import { useSubscription } from '@/hooks/use-subscription';
 import { useCaseFeatures } from '@/hooks/use-case-features';
 
+import Logger from '@/utils/logger'
+
 interface CaseDetailsProps {
   params: Promise<{ id: string }>
 }
@@ -27,13 +29,28 @@ export default function CaseDetails({ params }: CaseDetailsProps) {
   const handleBack = () => router.push('/lawyer/cases')
 
   const handleBuyCase = () => {
-    console.log('🔍 [Case] Iniciando o processo de compra do caso')
+    Logger.info('Iniciando o processo de compra do caso', {
+      prefix: 'Case Details',
+      data: {
+        id
+      }
+    })
 
     if (subscription) {
-      console.log('✅ [Case] Assinatura ativa encontrada, redirecionando para checkout...')
+      Logger.info('Assinatura ativa encontrada, redirecionando para checkout...', {
+        prefix: 'Case Details',
+        data: {
+          id
+        }
+      })
       router.push(`/lawyer/cases/${id}/checkout`)
     } else {
-      console.log('⚠️ [Case] Nenhuma assinatura ativa encontrada, redirecionando para página de assinatura...')
+      Logger.info('Nenhuma assinatura ativa encontrada, redirecionando para página de assinatura...', {
+        prefix: 'Case Details',
+        data: {
+          id
+        }
+      })
       router.push('/lawyer/subscription')
     }
   }

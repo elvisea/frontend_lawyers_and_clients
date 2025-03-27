@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form'
 
 import api from '@/http/api'
+import Logger from '@/utils/logger'
 import { formatDateToISO } from '@/utils/date'
 
 import { profileSchema, type ProfileFormData } from '../schema'
@@ -55,8 +56,21 @@ export default function CreateProfilePage() {
 
       await api.post('/clients/profile', formattedData)
       router.push('/client/profile')
+
+      Logger.info('Perfil criado com sucesso', {
+        prefix: 'Perfil',
+        data: {
+          ...data
+        }
+      })
     } catch (error) {
-      console.error('Erro ao criar perfil:', error)
+      Logger.error('Erro ao criar perfil', {
+        prefix: 'Perfil',
+        error,
+        data: {
+          ...data
+        }
+      })
       alert('Erro ao criar perfil. Tente novamente.')
     }
   }
