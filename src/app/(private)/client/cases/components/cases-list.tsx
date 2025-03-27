@@ -15,11 +15,13 @@ import {
 import { Loader2 } from 'lucide-react'
 
 import api from '@/http/api'
+import Logger from '@/utils/logger'
 import { Case, CasesResponse } from '@/types/case'
 
-import { CaseCard } from './case-card'
 import { AppError } from '@/errors/app-error'
 import { ErrorCode } from '@/enums/error-code'
+
+import { CaseCard } from './case-card'
 
 const ITEMS_PER_PAGE = 8
 
@@ -30,7 +32,10 @@ export function CasesList() {
   const [isLoading, setIsLoading] = useState(true)
   const [errorCode, setErrorCode] = useState<ErrorCode | null>(null)
 
-  console.log('🚨 [CasesList] errorCode:', errorCode)
+  Logger.info('🚨 [CasesList] errorCode:', {
+    prefix: 'CasesList',
+    data: { errorCode }
+  })
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE)
 
